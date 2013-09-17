@@ -8,7 +8,22 @@ from . import tasks
 
 
 class Server(object):
-    """xtas front-end server/WSGI app."""
+    """xtas front-end server/WSGI app.
+
+    Constructing a Server only configures it. To actually run the Server,
+    call the run method.
+
+    Parameters
+    ----------
+    broker : string, optional
+        URL of broker instance for Celery. By default, connects to RabbitMQ
+        on localhost.
+    debug : boolean, optional
+        Turn debugging on. Since this enables Flask debugging, it's a
+        potential security hazard, so don't enable it in production.
+    port : integer
+        Port number of REST API.
+    """
 
     def __init__(self, broker='amqp://guest@localhost//', debug=False,
                  port=5000):
