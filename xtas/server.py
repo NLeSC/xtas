@@ -43,11 +43,33 @@ class Server(object):
                 print("%s at %s" % (f.__name__, url))
 
         for f, url in TASKS:
-            #f = taskq.task(f)
+            # We explicitly set the name because automatic naming and relative
+            # imports don't go well (http://tinyurl.com/tasknaming).
+            f = taskq.task(f, name=url)
+            f = self._delay(f)
             wsgi.route(url)(f)
+
+        wsgi.route('/result/<task_id>')(self._force)
 
         self._wsgi = wsgi
         self._taskq = taskq
 
         # Celery starts running immediately, so no run for taskq
         wsgi.run(debug=self.debug, use_reloader=False)
+
+    @staticmethod
+    def _delay(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            return f.delay(*args, **kwargs).task_id
+
+        return wrapper
+
+    def _force(self, task_id):
+        """Force execution of task_id and return its results."""
+        # XXX this should check whether the task exists in the broker.
+
+        if self.debug:
+            print('Forcing result for %s' % task_id)
+
+        return self._taskq.AsyncResult(task_id).get()
