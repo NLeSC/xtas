@@ -12,5 +12,6 @@ setup(name="xtas",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Information Analysis",
         "Topic :: Text Processing",
-      ]
+      ],
+      install_requires=["flask>=0.10.1"],
 )
