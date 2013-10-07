@@ -3,8 +3,8 @@ from functools import wraps
 from celery import Celery
 from flask import Flask
 
-from .taskregistry import TASKS
-from . import tasks
+from ..taskregistry import TASKS
+from .. import tasks
 
 
 class Server(object):
