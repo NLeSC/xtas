@@ -8,7 +8,7 @@ from celery import Celery
 from ..taskregistry import TASKS
 
 
-argp = ArgumentParser(description='xtas-lite worker')
+argp = ArgumentParser(description='xtas worker')
 argp.add_argument('--debug', action='store_true')
 
 args = argp.parse_args()
