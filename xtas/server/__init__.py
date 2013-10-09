@@ -55,7 +55,7 @@ class Server(object):
         self._taskq = taskq
 
         # Celery starts running immediately, so no run for taskq
-        wsgi.run(debug=self.debug, use_reloader=False)
+        wsgi.run(debug=self.debug, port=self.port, use_reloader=False)
 
     @staticmethod
     def _delay(f):
