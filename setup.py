@@ -17,5 +17,6 @@ setup(
     install_requires=[
         "celery>=3.0.0",
         "flask>=0.10.1",
+        "pyyaml>=3.10",
     ],
 )
