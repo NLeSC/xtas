@@ -1,11 +1,14 @@
 main:
   # URL of broker (task queue) that server and workers use to communicate.
   broker: amqp://guest@localhost:5672//
+  elasticsearch: http://localhost:9200/
 
 server:
+  debug: False
   # REST API port.
   port: 5000
 
 worker:
   # Where to store results of tasks. "amqp" uses the task queue itself.
   backend: amqp
+  debug: False

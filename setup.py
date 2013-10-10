@@ -16,6 +16,7 @@ setup(
     ],
     install_requires=[
         "celery>=3.0.0",
+        "elasticsearch",
         "flask>=0.10.1",
         "pyyaml>=3.10",
     ],

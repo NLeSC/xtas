@@ -1,18 +1,21 @@
 """Utility functions."""
 
 
-def getconf(config, option, default=None):
-    """Get value of option from the configuration tree config.
+def getconf(config, key, default=None, error='default'):
+    """Get value of key from the configuration tree config.
 
     Parameters
     ----------
     config : Mapping
         Configuration tree.
-    option : string
+    key : string
         Name of option. Whitespace may be used to indicate a deeply nested
         option, e.g. "server port".
     default : object, optional
-        Default value to be returned if option can't be found in config.
+        Default value to be returned if key can't be found in config.
+    error : string, optional
+        What to do when a KeyError occurs: 'default' means return the default
+        value, 'raise' means re-raise the exception.
 
     Examples
     --------
@@ -25,9 +28,12 @@ def getconf(config, option, default=None):
     'amqp'
     """
     try:
-        for o in option.split():
+        for o in key.split():
             config = config[o]
     except KeyError:
-        return default
+        if error == 'default':
+            return default
+        else:
+            raise KeyError('Key {} not found in configuration'.format(key))
 
     return config

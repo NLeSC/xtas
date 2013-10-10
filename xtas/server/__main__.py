@@ -21,6 +21,5 @@ with open(args.config) as f:
 
 config.setdefault('server', {})['debug'] = args.debug
 
-server = Server(broker=getconf(config, 'main broker'),
-                **config.get('server', {}))
+server = Server(config)
 server.run()

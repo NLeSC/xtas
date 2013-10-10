@@ -36,3 +36,6 @@ nosetests.xml
 
 # Vim
 .*.sw[op]
+
+# Configuration files
+xtas.yaml

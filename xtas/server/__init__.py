@@ -1,10 +1,13 @@
-from functools import wraps
+from copy import deepcopy
+from functools import partial, wraps
 
 from celery import Celery
+from elasticsearch import Elasticsearch
 from flask import Flask
 
 from ..taskregistry import TASKS
 from .. import tasks
+from ..util import getconf
 
 
 class Server(object):
@@ -24,18 +27,22 @@ class Server(object):
     port : integer
         Port number of REST API.
     """
+    # XXX the parameters above are now passed inside config as keys,
+    # need a systematic way to document this.
 
-    def __init__(self, broker='amqp://guest@localhost//', debug=False,
-                 port=5000):
-        self.broker = broker
-        self.debug = debug
-        self.port = port
+    def __init__(self, config):
+        self.config = deepcopy(config)
 
     def run(self):
-        # We turn off the reloader because it doesn't seem to work with our
-        # package structure: it complains about relative imports.
+        conf = partial(getconf, config, error='raise')
+
+        broker = conf('main broker')
+        self.debug = conf('server debug')
+        #es = Elasticsearch(conf('main elasticsearch'))
+        port = conf('server port')
+
         wsgi = Flask('xtas')
-        taskq = Celery(broker=self.broker, backend='amqp')
+        taskq = Celery(broker=broker, backend='amqp')
 
         if self.debug:
             print('Registered tasks:')
@@ -54,14 +61,15 @@ class Server(object):
         self._wsgi = wsgi
         self._taskq = taskq
 
-        # Celery starts running immediately, so no run for taskq
-        wsgi.run(debug=self.debug, port=self.port, use_reloader=False)
+        # Celery starts running immediately, so no run for taskq.
+        # We turn off the reloader because it doesn't seem to work with our
+        # package structure: it complains about relative imports.
+        wsgi.run(debug=self.debug, port=port, use_reloader=False)
 
-    @staticmethod
-    def _delay(f):
+    def _delay(self, f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            return f.delay(*args, **kwargs).task_id
+            return f.delay(*args, config=self.config, **kwargs).task_id
 
         return wrapper
 
