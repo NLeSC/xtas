@@ -8,7 +8,7 @@ import sys
 import yaml
 
 from ..taskregistry import TASKS
-from .. import tasks
+from .. import tasks        # noqa
 from ..util import getconf
 
 

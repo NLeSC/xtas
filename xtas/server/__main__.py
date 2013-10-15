@@ -7,7 +7,6 @@ from argparse import ArgumentParser
 import yaml
 
 from . import Server
-from ..util import getconf
 
 
 argp = ArgumentParser(description='xtas server')

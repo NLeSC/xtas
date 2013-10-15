@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch
 from flask import Flask
 
 from ..taskregistry import TASKS
-from .. import tasks
+from .. import tasks        # noqa
 from ..util import getconf
 
 
