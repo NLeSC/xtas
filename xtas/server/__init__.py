@@ -34,7 +34,7 @@ class Server(object):
         self.config = deepcopy(config)
 
     def run(self):
-        conf = partial(getconf, config, error='raise')
+        conf = partial(getconf, self.config, error='raise')
 
         broker = conf('main broker')
         self.debug = conf('server debug')
