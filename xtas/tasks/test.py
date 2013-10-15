@@ -1,4 +1,4 @@
-"""Task that always succeeds, for testing and debugging."""
+"""Simple tasks for testing and debugging."""
 
 import simplejson as json
 
@@ -7,7 +7,7 @@ from ..util import getconf
 
 
 @task('/test')
-def test_task(config):
+def trivial_task(config):
     return "success"
 
 
