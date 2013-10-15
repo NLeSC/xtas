@@ -19,5 +19,6 @@ setup(
         "elasticsearch",
         "flask>=0.10.1",
         "pyyaml>=3.10",
+        "simplejson>=2.6.2",
     ],
 )
