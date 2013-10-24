@@ -1,22 +1,29 @@
 """Task registry singleton."""
 
-from functools import wraps
+
+# Task registry (singletons).
+SYNC_TASKS = []
+ASYNC_TASKS = []
 
 
-TASKS = []      # Task registry (singleton)
+def task(url, sync=False, methods=('GET',)):
+    """Register f as a task (decorator).
 
-
-def task(url):
-    """Register f as a task (decorator)."""
+    Parameters
+    ----------
+    path : string
+        Path component of URL. Interpreted by Flask.
+    sync : boolean, optional
+        Whether the task is synchronous (executed on the web server frontend)
+        or asynchronous (default, executed on worker nodes).
+    methods : sequence, optional
+        Allowed HTTP methods.
+    """
 
     def wrap(f):
-        global TASKS
-        TASKS.append((f, url))
+        global SYNC_TASKS, ASYNC_TASKS
+        (SYNC_TASKS if sync else ASYNC_TASKS).append((f, url))
 
-        @wraps(f)
-        def wrapper(*args, **kwargs):
-            return f(*args, **kwargs)
-
-        return wrapper
+        return f
 
     return wrap

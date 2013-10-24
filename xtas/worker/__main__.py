@@ -7,7 +7,7 @@ from celery import Celery
 import sys
 import yaml
 
-from ..taskregistry import TASKS
+from ..taskregistry import ASYNC_TASKS
 from .. import tasks        # noqa
 from ..util import getconf
 
@@ -29,7 +29,7 @@ config.setdefault('worker', {})['debug'] = args.debug
 celery = Celery(broker=getconf(config, 'main broker'),
                 backend=getconf(config, 'worker backend'))
 
-for f, url in TASKS:
+for f, url in ASYNC_TASKS:
     if args.debug:
         print("Providing task %s" % url)
     celery.task(f, name=url)

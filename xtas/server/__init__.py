@@ -2,10 +2,10 @@ from copy import deepcopy
 from functools import partial, wraps
 
 from celery import Celery
-from elasticsearch import Elasticsearch
 from flask import Flask
 
-from ..taskregistry import TASKS
+from .. import elastic      # noqa
+from ..taskregistry import ASYNC_TASKS, SYNC_TASKS
 from .. import tasks        # noqa
 from ..util import getconf
 
@@ -38,7 +38,6 @@ class Server(object):
 
         broker = conf('main broker')
         self.debug = conf('server debug')
-        #es = Elasticsearch(conf('main elasticsearch'))
         port = conf('server port')
 
         wsgi = Flask('xtas')
@@ -46,14 +45,22 @@ class Server(object):
 
         if self.debug:
             print('Registered tasks:')
-            for f, url in TASKS:
+            for f, url in ASYNC_TASKS:
                 print("%s at %s" % (f.__name__, url))
 
-        for f, url in TASKS:
+        for f, url in ASYNC_TASKS:
             # We explicitly set the name because automatic naming and relative
             # imports don't go well (http://tinyurl.com/tasknaming).
             f = taskq.task(f, name=url)
             f = self._delay(f)
+            wsgi.route(url)(f)
+
+        for f, url in SYNC_TASKS:
+            # Partials don't have an __name__, but Flask wants one.
+            name = f.__name__
+            f = partial(f, config=self.config)
+            f.__name__ = name
+
             wsgi.route(url)(f)
 
         wsgi.route('/result/<task_id>')(self._force)
