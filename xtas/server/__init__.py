@@ -45,23 +45,22 @@ class Server(object):
 
         if self.debug:
             print('Registered tasks:')
-            for f, url in ASYNC_TASKS:
+            for f, url, _ in ASYNC_TASKS:
                 print("%s at %s" % (f.__name__, url))
 
-        for f, url in ASYNC_TASKS:
+        for f, url, methods in ASYNC_TASKS:
             # We explicitly set the name because automatic naming and relative
             # imports don't go well (http://tinyurl.com/tasknaming).
             f = taskq.task(f, name=url)
             f = self._delay(f)
-            wsgi.route(url)(f)
+            wsgi.add_url_rule(url, f.__name__, f, methods=methods)
 
-        for f, url in SYNC_TASKS:
+        for f, url, methods in SYNC_TASKS:
             # Partials don't have an __name__, but Flask wants one.
             name = f.__name__
             f = partial(f, config=self.config)
-            f.__name__ = name
 
-            wsgi.route(url)(f)
+            wsgi.add_url_rule(url, name, f, methods=methods)
 
         wsgi.route('/result/<task_id>')(self._force)
 

@@ -22,7 +22,7 @@ def task(url, sync=False, methods=('GET',)):
 
     def wrap(f):
         global SYNC_TASKS, ASYNC_TASKS
-        (SYNC_TASKS if sync else ASYNC_TASKS).append((f, url))
+        (SYNC_TASKS if sync else ASYNC_TASKS).append((f, url, methods))
 
         return f
 
