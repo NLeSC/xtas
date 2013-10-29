@@ -11,7 +11,13 @@ Set up a virtualenv and activate it, if desired. Then::
 
     pip install git+https://github.com/NLeSC/xtas.git
 
-Next, make sure you have RabbitMQ running (currently only supported on localhost).
+Next, make sure you have RabbitMQ running (currently only supported on
+localhost).
+
+If you've cloned xtas to a local directory and want to install from there
+(maybe you've modified it), do::
+
+    pip install git+file:///home/you/projects/xtas
 
 
 Usage
