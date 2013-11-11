@@ -29,7 +29,7 @@ config.setdefault('worker', {})['debug'] = args.debug
 celery = Celery(broker=getconf(config, 'main broker'),
                 backend=getconf(config, 'worker backend'))
 
-for f, url in ASYNC_TASKS:
+for f, url, _ in ASYNC_TASKS:
     if args.debug:
         print("Providing task %s" % url)
     celery.task(f, name=url)
