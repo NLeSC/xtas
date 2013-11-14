@@ -2,11 +2,31 @@
           "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 
-  <head><title>xtas</title></head>
+  <head>
+    <title>xtas console</title>
+
+    <style type="text/css">
+      body {
+        font-family: Verdana, Helvetica, Geneva, sans-serif;
+      }
+      a {
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
 
   <body>
     <h1>xtas console</h1>
     <ul>
+      {% if debug %}
+        <li>
+          <a href="/config">xtas configuration</a>
+        </li>
+      {% endif %}
+
       {% if rabbitmq %}
         <li>
           <!-- XXX can we find out where this one lives via Celery? -->

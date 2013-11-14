@@ -15,8 +15,12 @@ from ..util import getconf
 def _render_console(config):
     es = getconf(config, 'main elasticsearch')
     rabbitmq = getconf(config, 'main broker', '').startswith('amqp')
+    debug = getconf(config, 'main debug', False)
+
     return render_template('console.html',
-                           rabbitmq=rabbitmq, elasticsearch=es)
+                           rabbitmq=rabbitmq,
+                           elasticsearch=es,
+                           debug=debug)
 
 
 class Server(object):
