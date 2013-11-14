@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+  <head><title>xtas</title></head>
+
+  <body>
+    <h1>xtas console</h1>
+    <ul>
+      {% if rabbitmq %}
+        <li>
+          <!-- XXX can we find out where this one lives via Celery? -->
+          <a href="http://localhost:15672">RabbitMQ</a>
+        </li>
+      {% endif %}
+
+      <li>
+        <!-- just assume ES-head is installed -->
+        <a href="{{ elasticsearch }}/_plugin/head/">Elasticsearch</a>
+      </li>
+    </ul>
+  </body>
+
+</html>

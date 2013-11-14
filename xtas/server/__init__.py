@@ -1,14 +1,22 @@
 from copy import deepcopy
 from functools import partial, wraps
+import os.path
 
 from celery import Celery
-from flask import Flask, request
+from flask import Flask, render_template, request
 import simplejson as json
 
 from .. import elastic      # noqa
 from ..taskregistry import ASYNC_TASKS, SYNC_TASKS
 from .. import tasks        # noqa
 from ..util import getconf
+
+
+def _render_console(config):
+    es = getconf(config, 'main elasticsearch')
+    rabbitmq = getconf(config, 'main broker', '').startswith('amqp')
+    return render_template('console.html',
+                           rabbitmq=rabbitmq, elasticsearch=es)
 
 
 class Server(object):
@@ -64,6 +72,8 @@ class Server(object):
 
             wsgi.add_url_rule(url, name, f, methods=methods)
 
+        wsgi.add_url_rule('/', 'console', partial(_render_console,
+                                                  config=self.config))
         wsgi.route('/result/<task_id>')(self._force)
 
         self._wsgi = wsgi
