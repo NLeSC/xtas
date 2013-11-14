@@ -29,6 +29,9 @@ class Server(object):
     Constructing a Server only configures it. To actually run the Server,
     call the run method.
 
+    Be sure to never construct multiple Servers that talk to the same broker,
+    not even in separate processes.
+
     Parameters
     ----------
     broker : string, optional
