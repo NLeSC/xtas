@@ -1,9 +1,8 @@
 from copy import deepcopy
 from functools import partial, wraps
-import os.path
 
 from celery import Celery
-from flask import Flask, render_template, request
+from flask import Flask, render_template
 import simplejson as json
 
 from .. import elastic      # noqa
@@ -84,12 +83,12 @@ class Server(object):
         wsgi.route('/result/<task_id>')(self._force)
         wsgi.route('/state/<task_id>')(self._get_task_state)
         wsgi.route('/tasks')(self._task_list)
-        
+
         wsgi.route('/empty_results')(self._clear_completed_tasks)
 
         self._wsgi = wsgi
         self._taskq = taskq
-        
+
         # locally cached task list, to be updated each time Celery talks to
         # the broker
         self._tasklist = {}
@@ -129,14 +128,14 @@ class Server(object):
         return state
 
     def _task_list(self):
-        """Retrieves a list of active and reserved tasks and returns these as json."""
-        
+        """Retrieves a list of active and reserved tasks, as json."""
+
         inspector = self._taskq.control.inspect()
         active = inspector.active()
         reserved = inspector.reserved()
-        
+
         found_tasks = []
-        
+
         for node in active:
             for task in active[node]:
                 if task['id'] not in found_tasks:
@@ -153,16 +152,15 @@ class Server(object):
         for id in self._tasklist:
             if id not in found_tasks:
                 self._tasklist[id] = 'SUCCESS'
-        
+
         return json.dumps(self._tasklist)
-        
+
     def _clear_completed_tasks(self):
         """Remove all results which have not been requested from the queue."""
-        
+
         # update the task list
         self._task_list()
-        
+
         for id in self._tasklist:
-            if id['state']=='SUCCCES':
+            if id['state'] == 'SUCCCES':
                 self.force(id)
-            
