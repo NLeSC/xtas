@@ -82,9 +82,17 @@ class Server(object):
         wsgi.add_url_rule('/', 'console', partial(_render_console,
                                                   config=self.config))
         wsgi.route('/result/<task_id>')(self._force)
+        wsgi.route('/state/<task_id>')(self._get_task_state)
+        wsgi.route('/tasks')(self._task_list)
+        
+        wsgi.route('/empty_results')(self._clear_completed_tasks)
 
         self._wsgi = wsgi
         self._taskq = taskq
+        
+        # locally cached task list, to be updated each time Celery talks to
+        # the broker
+        self._tasklist = {}
 
         # Celery starts running immediately, so no run for taskq.
         # We turn off the reloader because it doesn't seem to work with our
@@ -94,7 +102,9 @@ class Server(object):
     def _delay(self, f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            return f.delay(*args, config=self.config, **kwargs).task_id
+            task_id = f.delay(*args, config=self.config, **kwargs).task_id
+            self._tasklist[task_id] = {'state': 'QUEUEING'}
+            return task_id
 
         return wrapper
 
@@ -104,4 +114,55 @@ class Server(object):
         if self.debug:
             print('Forcing result for %s' % task_id)
 
+        if task_id in self._tasklist:
+            del self._tasklist[task_id]
+
         return json.dumps(self._taskq.AsyncResult(task_id).get())
+
+    def _get_task_state(self, task_id):
+        """Retrieve and return state of of task_id."""
+        state = self._taskq.AsyncResult(task_id).state
+
+        if task_id in self._tasklist:
+            self._tasklist[task_id]['state'] = state
+
+        return state
+
+    def _task_list(self):
+        """Retrieves a list of active and reserved tasks and returns these as json."""
+        
+        inspector = self._taskq.control.inspect()
+        active = inspector.active()
+        reserved = inspector.reserved()
+        
+        found_tasks = []
+        
+        for node in active:
+            for task in active[node]:
+                if task['id'] not in found_tasks:
+                    found_tasks.append(task['id'])
+                if task['id'] in self._tasklist:
+                    self._tasklist[task['id']]['state'] = 'RUNNING'
+                    self._tasklist[task['id']]['details'] = task
+            for task in reserved[node]:
+                if task['id'] not in found_tasks:
+                    found_tasks.append(task['id'])
+                if task['id'] in self._tasklist:
+                    self._tasklist[task['id']] = 'WAITING'
+                    self._tasklist[task['id']]['details'] = task
+        for id in self._tasklist:
+            if id not in found_tasks:
+                self._tasklist[id] = 'SUCCESS'
+        
+        return json.dumps(self._tasklist)
+        
+    def _clear_completed_tasks(self):
+        """Remove all results which have not been requested from the queue."""
+        
+        # update the task list
+        self._task_list()
+        
+        for id in self._tasklist:
+            if id['state']=='SUCCCES':
+                self.force(id)
+            
