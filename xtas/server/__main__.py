@@ -20,8 +20,8 @@ args = argp.parse_args()
 with open(args.config) as f:
     config = yaml.load(f)
 
-config.setdefault('server', {})['debug'] = args.debug
-config.setdefault('server', {})['local'] = args.local
+config.setdefault('main', {})['debug'] = args.debug
+config.setdefault('main', {})['local'] = args.local
 
 server = Server(config)
 server.run()

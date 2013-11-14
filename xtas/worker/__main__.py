@@ -24,7 +24,7 @@ del sys.argv[1:]
 with open(args.config) as f:
     config = yaml.load(f)
 
-config.setdefault('worker', {})['debug'] = args.debug
+config.setdefault('main', {})['debug'] = args.debug
 
 celery = Celery(broker=getconf(config, 'main broker'),
                 backend=getconf(config, 'worker backend'))

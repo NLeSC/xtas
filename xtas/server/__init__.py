@@ -43,7 +43,7 @@ class Server(object):
 
         wsgi = Flask('xtas')
         taskq = Celery(broker=broker, backend='amqp')
-        taskq.conf.CELERY_ALWAYS_EAGER = conf('server local')
+        taskq.conf.CELERY_ALWAYS_EAGER = conf('server local', error='default')
 
         if self.debug:
             print('Registered tasks:')

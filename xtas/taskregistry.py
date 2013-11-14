@@ -12,7 +12,7 @@ SYNC_TASKS = []
 ASYNC_TASKS = []
 
 
-def task(sync=False, methods=('GET',)):
+def task(sync=False, methods=('GET',), takes='document'):
     """Decorator to register a function as a task.
 
     This puts a wrapper around the task that makes it fetch its input from
@@ -34,21 +34,29 @@ def task(sync=False, methods=('GET',)):
         or asynchronous (default, executed on worker nodes).
     methods : sequence, optional
         Allowed HTTP methods.
+    takes : string, optional
+        Type of input. 'document' for strings representing entire documents,
+        None for no input.
     """
 
     def wrap(f):
         global SYNC_TASKS, ASYNC_TASKS
 
-        url = slashjoin(['/', f.__module__.rsplit('.', 1)[-1],
-                         '<index>/<doc_type>/<int:id>/<bodyfield>'])
+        if takes == 'document':
+            url = slashjoin(['/', f.__module__.rsplit('.', 1)[-1],
+                             '<index>/<doc_type>/<int:id>/<bodyfield>'])
 
-        @wraps(f)
-        def f_task(doc_type, id, index, bodyfield, config):
-            es = getconf(config, 'main elasticsearch', error='raise')
-            doc = requests.get(slashjoin([es, index, doc_type, str(id)]))
-            content = doc.json()['_source'][bodyfield]
+            @wraps(f)
+            def f_task(doc_type, id, index, bodyfield, config):
+                es = getconf(config, 'main elasticsearch', error='raise')
+                doc = requests.get(slashjoin([es, index, doc_type, str(id)]))
+                content = doc.json()['_source'][bodyfield]
 
-            return f(content, config)
+                return f(content, config)
+
+        elif takes == None:
+            url = '/' + f.__module__.rsplit('.', 1)[-1]
+            f_task = f
 
         (SYNC_TASKS if sync else ASYNC_TASKS).append((f_task, url, methods))
 
