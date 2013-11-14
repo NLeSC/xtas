@@ -17,7 +17,10 @@ def task(sync=False, methods=('GET',)):
 
     This puts a wrapper around the task that makes it fetch its input from
     Elasticsearch and routes it through a URL via Flask. The front-end server
-    will then treat the function as a Celery task.
+    will then treat the wrapper as a Celery task.
+
+    The original function is still usable as a vanilla Python function with
+    its original argument list.
 
     The url is determined from the module name of the function, __module__
     (not __name__!).
@@ -37,13 +40,14 @@ def task(sync=False, methods=('GET',)):
         global SYNC_TASKS, ASYNC_TASKS
 
         url = slashjoin(['/', f.__module__.rsplit('.', 1)[-1],
-                         '<index>/<doc_type>/<int:id>'])
+                         '<index>/<doc_type>/<int:id>/<bodyfield>'])
 
         @wraps(f)
-        def f_task(doc_type, id, index, config):
+        def f_task(doc_type, id, index, bodyfield, config):
             es = getconf(config, 'main elasticsearch', error='raise')
             doc = requests.get(slashjoin([es, index, doc_type, str(id)]))
-            content = doc.json()['_source']['body']
+            content = doc.json()['_source'][bodyfield]
+
             return f(content, config)
 
         (SYNC_TASKS if sync else ASYNC_TASKS).append((f_task, url, methods))
