@@ -20,6 +20,7 @@ setup(
         "celery>=3.0.0",
         "elasticsearch",
         "flask>=0.10.1",
+        "langid",
         "pyyaml>=3.10",
         "requests>=1.1.0",
         "simplejson>=2.6.2",
