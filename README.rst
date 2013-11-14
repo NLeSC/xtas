@@ -11,9 +11,6 @@ Set up a virtualenv and activate it, if desired. Then::
 
     pip install git+https://github.com/NLeSC/xtas.git
 
-Next, make sure you have RabbitMQ running (currently only supported on
-localhost).
-
 If you've cloned xtas to a local directory and want to install from there
 (maybe you've modified it), do::
 
@@ -32,13 +29,21 @@ such a file. A template can be generated using::
 
     python -m xtas.configure > xtas.yaml
 
-To start a server, do::
+Make sure you have RabbitMQ running and that the ``broker`` configuration
+option points to the RabbitMQ broker.
+
+Then start a server::
 
     python -m xtas.server
 
-Similarly, to start a worker::
+Similarly, start a worker::
 
     python -m xtas.worker
+
+Test whether things work by querying the server for its configuration,
+which it will return in JSON format. With the default settings::
+
+    curl http://localhost:5000/config | python -m json.tool
 
 
 Developing
