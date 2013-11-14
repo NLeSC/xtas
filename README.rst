@@ -45,6 +45,8 @@ which it will return in JSON format. With the default settings::
 
     curl http://localhost:5000/config | python -m json.tool
 
+You'll also find the `web console <http://localhost:5000>`_ useful.
+
 
 Developing
 ----------
