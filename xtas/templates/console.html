@@ -39,6 +39,25 @@
         <a href="{{ elasticsearch }}/_plugin/head/">Elasticsearch</a>
       </li>
     </ul>
+
+    <h2>Current tasks (doesn't autorefresh)</h2>
+
+    {% if tasks %}
+      <table>
+        <tr>
+          <th>id</th>
+          <th>State/details</th>
+        </tr>
+        {% for task in tasks %}
+          <tr>
+            <td>{{ task[0] }}</td>
+            <td>{{ task[1] }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <p>No tasks uncompleted.</p>
+    {% endif %}
   </body>
 
 </html>

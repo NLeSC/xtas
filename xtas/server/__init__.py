@@ -11,17 +11,6 @@ from .. import tasks        # noqa
 from ..util import getconf
 
 
-def _render_console(config):
-    es = getconf(config, 'main elasticsearch')
-    rabbitmq = getconf(config, 'main broker', '').startswith('amqp')
-    debug = getconf(config, 'main debug', False)
-
-    return render_template('console.html',
-                           rabbitmq=rabbitmq,
-                           elasticsearch=es,
-                           debug=debug)
-
-
 class Server(object):
     """xtas front-end server/WSGI app.
 
@@ -78,11 +67,10 @@ class Server(object):
 
             wsgi.add_url_rule(url, name, f, methods=methods)
 
-        wsgi.add_url_rule('/', 'console', partial(_render_console,
-                                                  config=self.config))
+        wsgi.add_url_rule('/', 'console', self._render_console)
         wsgi.route('/result/<task_id>')(self._force)
         wsgi.route('/state/<task_id>')(self._get_task_state)
-        wsgi.route('/tasks')(self._task_list)
+        wsgi.route('/tasks')(self._task_list_json)
 
         wsgi.route('/empty_results')(self._clear_completed_tasks)
 
@@ -127,8 +115,27 @@ class Server(object):
 
         return state
 
+    def _render_console(self):
+        """Render the web console."""
+
+        conf = partial(getconf, self.config)
+
+        es = conf('main elasticsearch')
+        rabbitmq = conf('main broker', '').startswith('amqp')
+        debug = conf('main debug', False)
+
+        print(self._task_list())
+        return render_template('console.html',
+                               rabbitmq=rabbitmq,
+                               elasticsearch=es,
+                               debug=debug,
+                               tasks=self._task_list().items())
+
+    def _task_list_json(self):
+        return json.dumps(self._task_list())
+
     def _task_list(self):
-        """Retrieves a list of active and reserved tasks, as json."""
+        """Update and retrieve a list of active and reserved tasks."""
 
         inspector = self._taskq.control.inspect()
         active = inspector.active()
@@ -153,7 +160,7 @@ class Server(object):
             if id not in found_tasks:
                 self._tasklist[id] = 'SUCCESS'
 
-        return json.dumps(self._tasklist)
+        return self._tasklist
 
     def _clear_completed_tasks(self):
         """Remove all results which have not been requested from the queue."""
