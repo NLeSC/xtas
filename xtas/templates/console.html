@@ -43,6 +43,9 @@
     <h2>Current tasks (doesn't autorefresh)</h2>
 
     {% if tasks %}
+      <p>
+        Clicking "result" removes a task from the queue.
+      </p>
       <table>
         <tr>
           <th>id</th>
@@ -51,7 +54,12 @@
         {% for task in tasks %}
           <tr>
             <td>{{ task[0] }}</td>
-            <td>{{ task[1] }}</td>
+            <td>
+              {{ task[1] }}
+              {% if task[1] == "SUCCESS" %}
+                (<a href="/result/{{ task[0] }}">result</a>)
+              {% endif %}
+            </td>
           </tr>
         {% endfor %}
       </table>
