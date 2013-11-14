@@ -161,6 +161,7 @@ class Server(object):
         # update the task list
         self._task_list()
 
+        # XXX should be using a control.revoke here
         for id in self._tasklist:
-            if id['state'] == 'SUCCCES':
-                self.force(id)
+            if id['state'] == 'SUCCESS':
+                self._force(id)
