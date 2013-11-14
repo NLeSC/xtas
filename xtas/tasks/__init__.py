@@ -2,5 +2,5 @@
 # the server class (see ../server.py).
 
 from .config import config                      # noqa
-from .langid import guess                       # noqa
+from .langid import run_langid                  # noqa
 from .test import trivial_task                  # noqa

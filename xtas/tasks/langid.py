@@ -8,5 +8,5 @@ from ..util import getconf, slashjoin
 
 
 @task()
-def guess(content, config):
+def run_langid(content, config):
     return langid.rank(content)
