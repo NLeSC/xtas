@@ -124,7 +124,6 @@ class Server(object):
         rabbitmq = conf('main broker', '').startswith('amqp')
         debug = conf('main debug', False)
 
-        print(self._task_list())
         return render_template('console.html',
                                rabbitmq=rabbitmq,
                                elasticsearch=es,
