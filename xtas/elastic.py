@@ -16,7 +16,7 @@ from .util import getconf
 estask = partial(task, sync=True)
 
 
-@estask('/es/<path:path>', methods=['GET', 'POST', 'PUT'])
+@estask(methods=['GET', 'POST', 'PUT'])
 def es(config, path):
     """Route Elasticsearch request through to ES."""
 
