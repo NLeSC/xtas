@@ -2,7 +2,8 @@ from copy import deepcopy
 from functools import partial, wraps
 
 from celery import Celery
-from flask import Flask
+from flask import Flask, request
+import simplejson as json
 
 from .. import elastic      # noqa
 from ..taskregistry import ASYNC_TASKS, SYNC_TASKS
@@ -82,9 +83,8 @@ class Server(object):
 
     def _force(self, task_id):
         """Force execution of task_id and return its results."""
-        # XXX this should check whether the task exists in the broker.
 
         if self.debug:
             print('Forcing result for %s' % task_id)
 
-        return self._taskq.AsyncResult(task_id).get()
+        return json.dumps(self._taskq.AsyncResult(task_id).get())

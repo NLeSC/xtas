@@ -37,3 +37,15 @@ def getconf(config, key, default=None, error='default'):
             raise KeyError('Key {} not found in configuration'.format(key))
 
     return config
+
+
+def slashjoin(components):
+    """Join a list of URL components with single slashes.
+
+    Semanticizer in particular is picky about its urls:
+    https://github.com/semanticize/semanticizer/issues/21
+    """
+    a = components.pop(0)
+    z = components.pop(-1)
+
+    return '/'.join([a.rstrip('/')] + components + [z.lstrip('/')])
