@@ -39,3 +39,18 @@ To start a server, do::
 Similarly, to start a worker::
 
     python -m xtas.worker
+
+
+Developing
+----------
+
+Make sure you have a fork of the Git repo over at GitHub, and a virtualenv.
+Then install xtas in editable mode::
+
+    pip install -e git+git@github.com:yourname/xtas.git
+
+You now have a local clone of the repository in the ``src`` subdirectory of
+the virtualenv. You can commit to this clone and push changes to your fork.
+
+When developing, be sure to give the ``--debug`` flag to both the server and
+the workers.
