@@ -7,7 +7,15 @@ Distributed text analysis suite based on Celery.
 Installation
 ------------
 
-Set up a virtualenv and activate it, if desired. Then::
+Set up a virtualenv and activate it, if desired. xtas drags in some heavy
+dependencies that need compilers and C libraries to be installed, and its a
+good idea to install NumPy and perhaps Celery locally, then make a virtualenv
+with::
+
+    virtualenv --system-site-packages /path/to/venv
+    . /path/to/venv/bin/activate
+
+Then::
 
     pip install git+https://github.com/NLeSC/xtas.git
 

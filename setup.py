@@ -9,7 +9,8 @@ setup(
     author_email="l.buitinck@esciencecenter.nl",
     packages=["xtas", "xtas.configure", "xtas.server", "xtas.tasks",
               "xtas.worker"],
-    package_data={"xtas.configure": ["*.yaml"]},
+    package_data={"xtas": ["templates/*.html"],
+                  "xtas.configure": ["*.yaml"]},
     classifiers=[
         "Intended Audience :: Science/Research",
         "Topic :: Scientific/Engineering",
