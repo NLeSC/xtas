@@ -3,5 +3,6 @@
 
 from .config import config                      # noqa
 from .langid import run_langid                  # noqa
-from .test import trivial_task                  # noqa
 from .tasklist import tasklist                  # noqa
+from .test import trivial_task                  # noqa
+from .tokenize import tokenize                  # noqa
