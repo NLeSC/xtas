@@ -21,7 +21,7 @@ setup(
         "celery>=3.0.0",
         "elasticsearch",
         "flask>=0.10.1",
-        "langid",
+        "langid>=1.1.4dev",
         "librabbitmq",
         "nltk",
         "pyyaml>=3.10",
