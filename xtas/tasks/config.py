@@ -5,7 +5,7 @@ from ..util import getconf
 
 
 @task(sync=True, takes=None)
-def config(config):
+def show_config(config):
     if getconf(config, 'main debug'):
         return config
     else:
