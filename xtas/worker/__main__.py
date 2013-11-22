@@ -8,8 +8,7 @@ import sys
 import yaml
 
 from ..taskregistry import ASYNC_TASKS
-from .. import tasks        # noqa
-from ..util import getconf
+from ..util import getconf, import_plugins
 
 
 argp = ArgumentParser(description='xtas worker', prog='xtas.worker')
@@ -25,6 +24,8 @@ with open(args.config) as f:
     config = yaml.load(f)
 
 config.setdefault('main', {})['debug'] = args.debug
+
+import_plugins(config)
 
 celery = Celery(broker=getconf(config, 'main broker'),
                 backend=getconf(config, 'worker backend'))

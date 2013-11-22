@@ -1,5 +1,7 @@
 """Utility functions."""
 
+from importlib import import_module
+
 
 def getconf(config, key, default=None, error='default'):
     """Get value of key from the configuration tree config.
@@ -37,6 +39,22 @@ def getconf(config, key, default=None, error='default'):
             raise KeyError('Key {} not found in configuration'.format(key))
 
     return config
+
+
+def import_plugins(config):
+    """Import plugins listed in the configuration object config.
+
+    This imports the modules listed, which must be findable using sys.path.
+
+    The plugins themselves should use the task decorator to register
+    themselves.
+    """
+    # XXX allow appending to sys.path via the config file?
+    modules = getconf(config, 'main plugins', ['xtas.plugins'])
+    if isinstance(modules, basestring):
+        modules = [modules]
+    for m in modules:
+        import_module(m)
 
 
 def slashjoin(components):

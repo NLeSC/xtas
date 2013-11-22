@@ -3,6 +3,7 @@ main:
   broker: amqp://guest@localhost:5672//
   debug: False
   elasticsearch: http://localhost:9200/
+  plugins: ["xtas.plugins"]
 
 server:
   # REST API port.

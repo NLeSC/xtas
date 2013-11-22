@@ -7,8 +7,7 @@ import simplejson as json
 
 from .. import elastic      # noqa
 from ..taskregistry import ASYNC_TASKS, SYNC_TASKS
-from .. import tasks        # noqa
-from ..util import getconf
+from ..util import getconf, import_plugins
 
 
 class Server(object):
@@ -36,6 +35,7 @@ class Server(object):
 
     def __init__(self, config):
         self.config = deepcopy(config)
+        import_plugins(config)
 
     def run(self):
         conf = partial(getconf, self.config, error='raise')
