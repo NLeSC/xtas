@@ -56,22 +56,13 @@ def fetch_query_batch(idx, typ, query, field):
 
 
 @app.task
-def morphy(tokens):
-    """Lemmatize tokens using morphy, WordNet's lemmatizer"""
-
+def morphy(doc):
+    """Lemmatize tokens using morphy, WordNet's lemmatizer."""
+    # XXX Results will be better if we do POS tagging first, but then we
+    # need to map Penn Treebank tags to WordNet tags.
     nltk.download('wordnet', quiet=False)
-    lemmatize = nltk.WordNetLemmatizer().lemmatize
-    for t in tokens:
-        tok = t["token"]
-        # XXX WordNet POS tags don't align with Penn Treebank ones
-        pos = t.get("pos")
-        try:
-            t["lemma"] = lemmatize(tok, pos)
-        except KeyError:
-            # raised for an unknown part of speech tag
-            pass
-
-    return tokens
+    return map(nltk.WordNetLemmatizer().lemmatize,
+               _tokenize_if_needed(fetch(doc)))
 
 
 def _tokenize_if_needed(s):
