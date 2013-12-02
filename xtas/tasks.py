@@ -18,8 +18,33 @@ def fetch_es(idx, typ, id, field):
 
 
 @app.task
+def morphy(tokens):
+    """Lemmatize tokens using morphy, WordNet's lemmatizer"""
+
+    lemmatize = nltk.WordNetLemmatizer().lemmatize
+    for t in tokens:
+        tok = t["token"]
+        # XXX WordNet POS tags don't align with Penn Treebank ones
+        pos = t.get("pos")
+        try:
+            t["lemma"] = lemmatize(tok, pos)
+        except KeyError:
+            # raised for an unknown part of speech tag
+            pass
+
+    return tokens
+
+
+@app.task
+def pos_tag(model, tokens):
+    if model != 'nltk':
+        raise ValueError("unknown POS tagger %r" % model)
+    return nltk.pos_tag(tokens)
+
+
+@app.task
 def tokenize(text):
-    return nltk.word_tokenize(text)
+    return [{"token": t} for t in nltk.word_tokenize(text)]
 
 
 @app.task
