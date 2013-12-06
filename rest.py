@@ -3,6 +3,7 @@ from __future__ import absolute_import
 from flask import Flask, abort
 import json
 from xtas.tasks import app as taskq
+from xtas.tasks import fetch_es, store_es
 
 app = Flask(__name__)
 
@@ -14,7 +15,10 @@ def run_task_on_es(task, index, type, id):
     except KeyError:
         abort(404)
 
-    return chain(fetch_es.s(index, type, id) | task).delay().id
+    return chain(fetch_es.s(index, type, id)
+                 | task
+                 | store_es(task, index, type, id)
+                ).delay().id
 
 
 @app.route('/tasks')

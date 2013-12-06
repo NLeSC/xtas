@@ -43,6 +43,18 @@ def pos_tag(tokens, model):
 
 
 @app.task
+def store_es(data, taskname, idx, typ, id):
+    # XXX there's a way to do this using _update and POST, but I can't get it
+    # to work with rawes.
+    handle = es[idx][typ][id]
+    doc = handle.get()
+    doc.setdefault('xtas-result', {})[taskname] = data
+    handle.put(data=doc)
+
+    return data
+
+
+@app.task
 def tokenize(text):
     return [{"token": t} for t in nltk.word_tokenize(text)]
 
