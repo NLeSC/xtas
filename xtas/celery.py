@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 from celery import Celery
 
-app = Celery('proj', include=['xtas.tasks'])
+app = Celery('xtas', include=['xtas.tasks'])
 app.config_from_object('celeryconfig')
 
 # Optional configuration, see the application user guide.
