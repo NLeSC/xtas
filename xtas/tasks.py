@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+from datetime import datetime
 import json
 import nltk
 from rawes import Elastic
@@ -47,8 +48,13 @@ def store_es(data, taskname, idx, typ, id):
     # XXX there's a way to do this using _update and POST, but I can't get it
     # to work with rawes.
     handle = es[idx][typ][id]
-    doc = handle.get()
-    doc.setdefault('xtas-result', {})[taskname] = data
+    doc = handle.get()['_source']
+
+    results = doc.setdefault('xtas_results', {})
+    results[taskname] = {}
+    results[taskname]['data'] = data
+    results[taskname]['timestamp'] = datetime.now().isoformat()
+
     handle.put(data=doc)
 
     return data
