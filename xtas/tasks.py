@@ -36,10 +36,10 @@ def morphy(tokens):
 
 
 @app.task
-def pos_tag(model, tokens):
+def pos_tag(tokens, model):
     if model != 'nltk':
         raise ValueError("unknown POS tagger %r" % model)
-    return nltk.pos_tag(tokens)
+    return nltk.pos_tag([t["token"] for t in tokens])
 
 
 @app.task
