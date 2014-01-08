@@ -26,6 +26,11 @@ def run_task_on_es(task, index, type, id, field):
                 ).delay().id
 
 
+@app.route('/result/<jobid>')
+def result(jobid):
+    return celery.result.AsyncResult(jobid).get()
+
+
 @app.route('/tasks')
 def show_tasks():
     return json.dumps([t.split('.', 3)[-1] for t in taskq.tasks
