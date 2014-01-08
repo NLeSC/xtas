@@ -26,9 +26,9 @@ def run_task_on_es(task, index, type, id, field):
                 ).delay().id
 
 
-@app.route('/result/<jobid>')
-def result(jobid):
-    return celery.result.AsyncResult(jobid).get()
+#@app.route('/result/<jobid>')
+#def result(jobid):
+#    celery.result.AsyncResult(jobid).get()
 
 
 @app.route('/tasks')
