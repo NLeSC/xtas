@@ -66,7 +66,8 @@ def tokenize(text):
 
 
 @app.task
-def semanticize(lang, text):
+def semanticize(text):
+    lang = 'nl'
     if not lang.isalpha():
         raise ValueError("not a valid language: %r" % lang)
     url = 'http://semanticize.uva.nl/api/%s?%s' % (lang,
