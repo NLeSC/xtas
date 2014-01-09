@@ -33,8 +33,9 @@ def run_task_on_es(task, index, type, id, field):
 
 @app.route('/tasks')
 def show_tasks():
-    return json.dumps([t.split('.', 3)[-1] for t in taskq.tasks
-                                           if t.startswith('xtas.tasks')])
+    tasknames = sorted(t.split('.', 3)[-1] for t in taskq.tasks
+                                           if t.startswith('xtas.tasks'))
+    return json.dumps(tasknames)
 
 
 if __name__ == "__main__":
