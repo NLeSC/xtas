@@ -1,15 +1,31 @@
 from __future__ import absolute_import
 
 from celery import Task, chain
+from celery import __version__ as celery_version
 import celery.result
-from flask import Flask, abort
+from flask import Flask, Response, abort
+from flask import __version__ as flask_version
 import json
+import sys
 
 from xtas.tasks import app as taskq
 from xtas.tasks import fetch_es, store_es
 
 app = Flask(__name__)
 app.debug = True
+
+
+@app.route("/")
+def home():
+    # XXX should do this only in debug mode or when key is given to prevent
+    # attacks on specific Flask versions.
+    pyver = sys.version_info
+    text = '\n'.join(["xtas web server\n",
+                      "Python version %d.%d.%d" % (pyver.major, pyver.minor,
+                                                   pyver.micro),
+                      "Celery version %s" % celery_version,
+                      "Flask version %s" % flask_version])
+    return Response(text, mimetype="text/plain")
 
 
 @app.route("/run_es/<task>/<index>/<type>/<id>/<field>")
