@@ -1,14 +1,18 @@
 from __future__ import absolute_import
 
+import logging
+
 from celery import Celery
 
-app = Celery('xtas', include=['xtas.tasks'])
-app.config_from_object('celeryconfig')
+logger = logging.getLogger(__name__)
 
-# Optional configuration, see the application user guide.
-app.conf.update(
-    CELERY_TASK_RESULT_EXPIRES=3600,
-)
+app = Celery('xtas', include=['xtas.tasks'])
+try:
+    app.config_from_object('xtas_celeryconfig')
+    app.conf    # force ImportError; http://stackoverflow.com/q/21092859/166749
+except ImportError:
+    logger.warning('Cannot import celeryconfig, falling back to default')
+    app.config_from_object('xtas.celeryconfig')
 
 if __name__ == '__main__':
     app.start()
