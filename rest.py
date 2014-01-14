@@ -1,18 +1,20 @@
 from __future__ import absolute_import
 
+import argparse
+import json
+import logging
+import sys
+
 from celery import Task, chain
 from celery import __version__ as celery_version
 import celery.result
 from flask import Flask, Response, abort
 from flask import __version__ as flask_version
-import json
-import sys
 
 from xtas.tasks import app as taskq
 from xtas.tasks import fetch_es, store_es
 
 app = Flask(__name__)
-app.debug = True
 
 
 @app.route("/")
@@ -55,4 +57,12 @@ def show_tasks():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="xtas web server")
+    parser.add_argument('--debug', dest='debug', action='store_true')
+    args = parser.parse_args()
+
+    loglevel = logging.DEBUG if args.debug else logging.INFO
+    logging.basicConfig(level=loglevel)
+
+    app.debug = args.debug
     app.run()
