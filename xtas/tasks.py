@@ -57,7 +57,7 @@ def pos_tag(tokens, model):
 
 
 @app.task
-def store_es(data, taskname, idx, typ, id):
+def store_single(data, taskname, idx, typ, id):
     # XXX there's a way to do this using _update and POST, but I can't get it
     # to work with rawes.
     handle = es[idx][typ][id]
