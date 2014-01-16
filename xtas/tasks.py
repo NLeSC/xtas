@@ -129,3 +129,11 @@ def kmeans(docs, k, lsa=None):
 
     # XXX return friendlier output?
     return kmeans.fit(docs).steps[-1][1].labels_.tolist()
+
+
+@app.task
+def parsimonious_wordcloud(docs, w=.5, k=10):
+    from weighwords import ParsimoniousLM
+
+    model = ParsimoniousLM(docs, w=w)
+    return [model.top(10, d) for d in docs]
