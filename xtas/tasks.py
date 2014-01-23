@@ -134,10 +134,12 @@ def kmeans(docs, k, lsa=None):
     from sklearn.decomposition import TruncatedSVD
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import Normalizer
 
     if lsa is not None:
         kmeans = make_pipeline(TfidfVectorizer(min_df=2),
                                TruncatedSVD(n_components=lsa),
+                               Normalizer(),
                                MiniBatchKMeans(n_clusters=k))
     else:
         kmeans = make_pipeline(TfidfVectorizer(min_df=2),
