@@ -13,10 +13,23 @@ from xtas.celery import app
 es = Elastic()
 
 
-@app.task
-def fetch_single(idx, typ, id, field):
-    """Get a single document from Elasticsearch."""
-    return es[idx][typ][id].get()['_source'][field]
+class ESDocument(object):
+    """Handle on a document living in the ES store."""
+
+    def __init__(self, idx, typ, id):
+        self.index = idx
+        self.type = typ
+        self.id = id
+
+    def fetch(self):
+        return es[self.index][self.type][self.id].get()['_source'][field]
+
+
+def fetch(doc):
+    """Fetch document (if necessary). Returns strings as-is."""
+    if hasattr(doc, "fetch"):
+        doc = doc.fetch()
+    return doc
 
 
 @app.task
@@ -74,12 +87,15 @@ def store_single(data, taskname, idx, typ, id):
 
 
 @app.task
-def tokenize(text):
+def tokenize(doc):
+    text = fetch(doc)
     return [{"token": t} for t in nltk.word_tokenize(text)]
 
 
 @app.task
-def semanticize(text):
+def semanticize(doc):
+    text = fetch(doc)
+
     lang = 'nl'
     if not lang.isalpha():
         raise ValueError("not a valid language: %r" % lang)

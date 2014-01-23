@@ -38,8 +38,7 @@ def run_task_on_es(task, index, type, id, field):
     except KeyError:
         abort(404)
 
-    return chain(fetch_single.s(index, type, id, field)
-                 | task.s()
+    return chain(task.s(index, type, id, field)
                  | store_single.s(taskname, index, type, id)
                 ).delay().id
 
