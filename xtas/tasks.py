@@ -68,18 +68,44 @@ def _tokenize_if_needed(s):
     return s
 
 
+_STANFORD_DEFAULT_MODEL = \
+    'stanford-ner-2014-01-04/classifiers/english.all.3class.distsim.crf.ser.gz'
+_STANFORD_DEFAULT_JAR = \
+    'stanford-ner-2014-01-04/stanford-ner.jar'
+
 @app.task
-def ner_tag(sentences, model='stanford'):
-    if model != 'stanford':
-        raise ValueError("unknown NER tagger %r" % model)
+def stanford_ner_tag(sentences, model=None, jar=None):
+    """Named entity recognizer using Stanford NER.
+
+    Parameters
+    ----------
+    sentences : iterable over {str, sequence of str}
+        Input sentences, either as strings or sequences of words. Strings
+        will be tokenized with a default tokenizer.
+
+    model : str, optional
+        Path to model file for Stanford NER tagger.
+
+    jar : str, optional
+        Path to JAR file of Stanford NER tagger.
+
+    Returns
+    -------
+    tagged : list of list of pair of string
+        For each sentence, a list of (word, tag) pairs.
+    """
+    # TODO introduce config file that can hold these paths.
 
     from nltk.tag.stanford import NERTagger
 
+    if model is None:
+        model = _STANFORD_DEFAULT_MODEL
+    if jar is None:
+        jar = _STANFORD_DEFAULT_JAR
+
     sentences = map(_tokenize_if_needed, sentences)
 
-    # XXX these paths should be configurable
-    tagger = NERTagger('stanford-ner-2014-01-04/classifiers/english.all.3class.distsim.crf.ser.gz',
-                       'stanford-ner-2014-01-04/stanford-ner.jar')
+    tagger = NERTagger(model, jar)
     return tagger.batch_tag(sentences)
 
 
