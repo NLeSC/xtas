@@ -62,6 +62,27 @@ def morphy(tokens):
     return tokens
 
 
+def _tokenize_if_needed(s):
+    if isinstance(s, basestr):
+        return tokenize(s)
+    return s
+
+
+@app.task
+def ner_tag(sentences, model='stanford'):
+    if model != 'stanford':
+        raise ValueError("unknown NER tagger %r" % model)
+
+    from nltk.tag.stanford import NERTagger
+
+    sentences = map(_tokenize_if_needed, sentences)
+
+    # XXX these paths should be configurable
+    tagger = NERTagger('stanford-ner-2014-01-04/classifiers/english.all.3class.distsim.crf.ser.gz',
+                       'stanford-ner-2014-01-04/stanford-ner.jar')
+    return tagger.batch_tag(sentences)
+
+
 @app.task
 def pos_tag(tokens, model):
     if model != 'nltk':
