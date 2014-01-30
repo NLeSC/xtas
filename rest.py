@@ -12,7 +12,7 @@ from flask import Flask, Response, abort
 from flask import __version__ as flask_version
 
 from xtas.tasks import app as taskq
-from xtas.tasks import fetch_single, store_single
+from xtas.tasks import store_single
 
 app = Flask(__name__)
 
