@@ -58,6 +58,7 @@ def fetch_query_batch(idx, typ, query, field):
 def morphy(tokens):
     """Lemmatize tokens using morphy, WordNet's lemmatizer"""
 
+    nltk.download('wordnet')
     lemmatize = nltk.WordNetLemmatizer().lemmatize
     for t in tokens:
         tok = t["token"]
