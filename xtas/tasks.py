@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+from collections import Sequence
 from datetime import datetime
 import json
 from urllib import urlencode
@@ -13,23 +14,32 @@ from xtas.celery import app
 es = Elastic()
 
 
-class ESDocument(object):
-    """Handle on a document living in the ES store."""
+_ES_DOC_FIELDS = ('index', 'type', 'id', 'field')
 
-    def __init__(self, idx, typ, id):
-        self.index = idx
-        self.type = typ
-        self.id = id
+def es_document(idx, typ, id, field):
+    """Returns a handle on a document living in the ES store.
 
-    def fetch(self):
-        return es[self.index][self.type][self.id].get()['_source'][field]
+    Returns a dict instead of a custom object to ensure JSON serialization
+    works.
+    """
+    return {'index': idx, 'type': typ, 'id': id, 'field': field}
 
 
 def fetch(doc):
-    """Fetch document (if necessary). Returns strings as-is."""
-    if hasattr(doc, "fetch"):
-        doc = doc.fetch()
-    return doc
+    """Fetch document (if necessary).
+
+    Parameters
+    ----------
+    doc : {dict, string}
+        A dictionary representing a handle returned by es_document, or a plain
+        string.
+    """
+    if isinstance(doc, dict) and set(doc.keys()) == set(_ES_DOC_FIELDS):
+        idx, typ, id, field = [doc[k] for k in _ES_DOC_FIELDS]
+        return es[idx][typ][id].get()['_source'][field]
+    else:
+        # Assume simple string
+        return doc
 
 
 @app.task
@@ -63,8 +73,9 @@ def morphy(tokens):
 
 
 def _tokenize_if_needed(s):
-    if isinstance(s, basestr):
-        return tokenize(s)
+    if isinstance(s, basestring):
+        # XXX building token dictionaries is actually wasteful...
+        return [tok['token'] for tok in tokenize(s)]
     return s
 
 
@@ -74,14 +85,12 @@ _STANFORD_DEFAULT_JAR = \
     'stanford-ner-2014-01-04/stanford-ner.jar'
 
 @app.task
-def stanford_ner_tag(sentences, model=None, jar=None):
+def stanford_ner_tag(doc, model=None, jar=None):
     """Named entity recognizer using Stanford NER.
 
     Parameters
     ----------
-    sentences : iterable over {str, sequence of str}
-        Input sentences, either as strings or sequences of words. Strings
-        will be tokenized with a default tokenizer.
+    doc : document
 
     model : str, optional
         Path to model file for Stanford NER tagger.
@@ -96,14 +105,17 @@ def stanford_ner_tag(sentences, model=None, jar=None):
     """
     # TODO introduce config file that can hold these paths.
 
+    import nltk
     from nltk.tag.stanford import NERTagger
+    nltk.download('punkt')
 
     if model is None:
         model = _STANFORD_DEFAULT_MODEL
     if jar is None:
         jar = _STANFORD_DEFAULT_JAR
 
-    sentences = map(_tokenize_if_needed, sentences)
+    doc = fetch(doc)
+    sentences = (_tokenize_if_needed(s) for s in nltk.sent_tokenize(doc))
 
     tagger = NERTagger(model, jar)
     return tagger.batch_tag(sentences)

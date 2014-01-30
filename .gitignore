@@ -39,3 +39,4 @@ nosetests.xml
 
 # Java dependencies
 *.jar
+stanford-ner*

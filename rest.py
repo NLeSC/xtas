@@ -12,7 +12,7 @@ from flask import Flask, Response, abort
 from flask import __version__ as flask_version
 
 from xtas.tasks import app as taskq
-from xtas.tasks import store_single
+from xtas.tasks import es_document, store_single
 
 app = Flask(__name__)
 
@@ -38,7 +38,7 @@ def run_task_on_es(task, index, type, id, field):
     except KeyError:
         abort(404)
 
-    return chain(task.s(index, type, id, field)
+    return chain(task.s(es_document(index, type, id, field))
                  | store_single.s(taskname, index, type, id)
                 ).delay().id
 
