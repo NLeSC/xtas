@@ -18,9 +18,8 @@ DOCS = [
 
 def test_kmeans():
     clusters = kmeans.s(2).delay(DOCS).get()
-    assert_equal(len(set(clusters[:3])), 1)
-    assert_equal(len(set(clusters[3:])), 1)
-    assert_not_equal(clusters[0], clusters[-1])
+    assert_equal(len(clusters), len(DOCS))
+    assert_equal(set([0, 1]), set(clusters))
 
 
 def test_wordcloud():
