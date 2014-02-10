@@ -3,7 +3,7 @@
 from nose.tools import assert_equal, assert_not_equal
 
 from celery import chain
-from xtas.tasks import kmeans, parsimonious_wordcloud
+from xtas.tasks import big_kmeans, kmeans, parsimonious_wordcloud
 
 # The clusters in these should be obvious.
 DOCS = [
@@ -18,6 +18,10 @@ DOCS = [
 
 def test_kmeans():
     clusters = kmeans.s(2).delay(DOCS).get()
+    assert_equal(len(clusters), len(DOCS))
+    assert_equal(set([0, 1]), set(clusters))
+
+    clusters = big_kmeans.s(2).delay(DOCS).get()
     assert_equal(len(clusters), len(DOCS))
     assert_equal(set([0, 1]), set(clusters))
 

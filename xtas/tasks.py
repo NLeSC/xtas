@@ -10,6 +10,7 @@ import nltk
 from rawes import Elastic
 
 from xtas.celery import app
+from xtas.utils import batches
 
 es = Elastic()
 
@@ -207,6 +208,36 @@ def kmeans(docs, k, lsa=None):
 
     # XXX return friendlier output?
     return kmeans.fit(docs).steps[-1][1].labels_.tolist()
+
+
+@app.task
+def big_kmeans(docs, k, batch_size=1000, n_features=(2 ** 20),
+               single_pass=True):
+    """k-means for very large sets of documents.
+
+    """
+    from sklearn.cluster import MiniBatchKMeans
+    from sklearn.feature_extraction.text import HashingVectorizer
+    from sklearn.pipeline import make_pipeline
+
+    v = HashingVectorizer(input="content", n_features=n_features, norm="l2")
+    km = MiniBatchKMeans(n_clusters=k)
+
+    labels = []
+    for batch in batches(docs, batch_size):
+        batch = map(fetch, docs)
+        batch = v.transform(batch)
+        y = km.fit_predict(batch)
+        if single_pass:
+            labels.extend(y.tolist())
+
+    if not single_pass:
+        for batch in batches(docs, batch_size):
+            batch = map(fetch, docs)
+            batch = v.transform(batch)
+            labels.extend(km.predict(batch).tolist())
+
+    return labels
 
 
 @app.task
