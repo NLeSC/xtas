@@ -4,6 +4,14 @@ xtaslite
 Distributed text analysis suite based on Celery.
 
 
+Installation
+------------
+
+Use `pip <https://pypi.python.org/pypi/pip/1.1>` to install xtas from GitHub:
+
+    pip install git+https://github.com/NLeSC/xtas.git
+
+
 Getting started
 ---------------
 
@@ -13,7 +21,7 @@ You need to have RabbitMQ and Elasticsearch running. Then start a worker::
 
 Start the web frontend::
 
-    python rest.py
+    python -m xtas.webserver
 
 Verify that it works by visiting::
 
