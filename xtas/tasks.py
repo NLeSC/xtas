@@ -1,6 +1,5 @@
 from __future__ import absolute_import
 
-from collections import Sequence
 from datetime import datetime
 import json
 import os
@@ -203,7 +202,6 @@ def big_kmeans(docs, k, batch_size=1000, n_features=(2 ** 20),
     """
     from sklearn.cluster import MiniBatchKMeans
     from sklearn.feature_extraction.text import HashingVectorizer
-    from sklearn.pipeline import make_pipeline
 
     v = HashingVectorizer(input="content", n_features=n_features, norm="l2")
     km = MiniBatchKMeans(n_clusters=k)
