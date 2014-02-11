@@ -178,17 +178,17 @@ def kmeans(docs, k, lsa=None):
     from sklearn.cluster import MiniBatchKMeans
     from sklearn.decomposition import TruncatedSVD
     from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.pipeline import make_pipeline
+    from sklearn.pipeline import Pipeline
     from sklearn.preprocessing import Normalizer
 
     if lsa is not None:
-        kmeans = make_pipeline(TfidfVectorizer(min_df=2),
-                               TruncatedSVD(n_components=lsa),
-                               Normalizer(),
-                               MiniBatchKMeans(n_clusters=k))
+        kmeans = Pipeline([('tfidf', TfidfVectorizer(min_df=2)),
+                           ('lsa', TruncatedSVD(n_components=lsa)),
+                           ('l2norm', Normalizer()),
+                           ('kmeans', MiniBatchKMeans(n_clusters=k))])
     else:
-        kmeans = make_pipeline(TfidfVectorizer(min_df=2),
-                               MiniBatchKMeans(n_clusters=k))
+        kmeans = Pipeline([('tfidf', TfidfVectorizer(min_df=2)),
+                           ('kmeans', MiniBatchKMeans(n_clusters=k))])
 
     # XXX return friendlier output?
     return kmeans.fit(docs).steps[-1][1].labels_.tolist()
