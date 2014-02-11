@@ -7,7 +7,12 @@ Distributed text analysis suite based on Celery.
 Installation
 ------------
 
-Use `pip <https://pypi.python.org/pypi/pip/1.1>` to install xtas from GitHub:
+(Preferably) set up a virtualenv for xtas::
+
+    virtualenv /some/where
+    . /some/where/bin/activate
+
+Use `pip <https://pypi.python.org/pypi/pip/1.1>` to install xtas from GitHub::
 
     pip install git+https://github.com/NLeSC/xtas.git
 
@@ -45,3 +50,16 @@ To override the built-in Celery configuration (which assumes, a.o., that
 you're in the Amsterdam timezone), copy xtas/celeryconfig.py to a file
 called xtas_celeryconfig.py in your PYTHONPATH and modify it. Note: the
 file should not be in the xtas/ directory.
+
+
+If the installation is taking a long time/fails to compile SciPy
+----------------------------------------------------------------
+
+While you can install xtas outside of a virtualenv, you can also set up one
+that uses the system version of heavy dependencies. To do that, use your
+favorite package manager (yum, apt, pip) to install NumPy, SciPy, NLTK and
+scikit-learn, then::
+
+    virtualenv --system-site-packages /some/where
+
+and proceeds as described above.

@@ -22,9 +22,9 @@ setup(
         "flask>=0.10.1",
         #"langid>=1.1.4dev",
         #"librabbitmq",
-        #"nltk",
+        "nltk",
         "rawes",
-        #"scikit-learn>=0.13",
+        "scikit-learn>=0.13",
         #"simplejson>=2.6.2",
     ],
 )
