@@ -29,6 +29,9 @@ nosetests.xml
 # Translations
 *.mo
 
+# Config files
+xtas_celeryconfig.py
+
 # Mr Developer
 .mr.developer.cfg
 .project
