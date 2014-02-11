@@ -3,6 +3,7 @@ from __future__ import absolute_import
 from collections import Sequence
 from datetime import datetime
 import json
+import os
 from urllib import urlencode
 from urllib2 import urlopen
 
@@ -10,6 +11,7 @@ import nltk
 from rawes import Elastic
 
 from xtas.celery import app
+from xtas.downloader import download_stanford_ner
 from xtas.utils import batches
 
 es = Elastic()
@@ -73,12 +75,10 @@ def _tokenize_if_needed(s):
 
 
 _STANFORD_DEFAULT_MODEL = \
-    'stanford-ner-2014-01-04/classifiers/english.all.3class.distsim.crf.ser.gz'
-_STANFORD_DEFAULT_JAR = \
-    'stanford-ner-2014-01-04/stanford-ner.jar'
+    'classifiers/english.all.3class.distsim.crf.ser.gz'
 
 @app.task
-def stanford_ner_tag(doc, model=None, jar=None):
+def stanford_ner_tag(doc, model=_STANFORD_DEFAULT_MODEL):
     """Named entity recognizer using Stanford NER.
 
     Parameters
@@ -86,31 +86,25 @@ def stanford_ner_tag(doc, model=None, jar=None):
     doc : document
 
     model : str, optional
-        Path to model file for Stanford NER tagger.
-
-    jar : str, optional
-        Path to JAR file of Stanford NER tagger.
+        Name of model file for Stanford NER tagger, relative to Stanford NER
+        installation directory.
 
     Returns
     -------
     tagged : list of list of pair of string
         For each sentence, a list of (word, tag) pairs.
     """
-    # TODO introduce config file that can hold these paths.
-
     import nltk
     from nltk.tag.stanford import NERTagger
-    nltk.download('punkt', quiet=False)
 
-    if model is None:
-        model = _STANFORD_DEFAULT_MODEL
-    if jar is None:
-        jar = _STANFORD_DEFAULT_JAR
+    nltk.download('punkt', quiet=False)
+    ner_dir = download_stanford_ner()
 
     doc = fetch(doc)
     sentences = (_tokenize_if_needed(s) for s in nltk.sent_tokenize(doc))
 
-    tagger = NERTagger(model, jar)
+    tagger = NERTagger(os.path.join(ner_dir, model),
+                       os.path.join(ner_dir, 'stanford-ner.jar'))
     return tagger.batch_tag(sentences)
 
 
