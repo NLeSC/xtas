@@ -59,7 +59,7 @@ def fetch_query_batch(idx, typ, query, field):
 def morphy(tokens):
     """Lemmatize tokens using morphy, WordNet's lemmatizer"""
 
-    nltk.download('wordnet')
+    nltk.download('wordnet', quiet=False)
     lemmatize = nltk.WordNetLemmatizer().lemmatize
     for t in tokens:
         tok = t["token"]
@@ -109,7 +109,7 @@ def stanford_ner_tag(doc, model=None, jar=None):
 
     import nltk
     from nltk.tag.stanford import NERTagger
-    nltk.download('punkt')
+    nltk.download('punkt', quiet=False)
 
     if model is None:
         model = _STANFORD_DEFAULT_MODEL
