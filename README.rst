@@ -93,3 +93,11 @@ Celery calling conventions::
     u'SUCCESS'
     >>> result.get()
     [u'Hello', u',', u'world', u'!']
+
+The ``'SUCCESS'`` value for the ``status`` of the job means that it is
+completed, so the ``get`` method will simply fetch the result from the queue.
+A longer running job may report ``'PENDING'`` instead, in which case ``get``
+will *block*, waiting for the job to complete.
+
+See the `Celery documentation <http://docs.celeryproject.org/en/latest/>` for
+full details.
