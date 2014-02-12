@@ -1,11 +1,14 @@
-xtaslite
-========
+xtas
+====
 
 Distributed text analysis suite based on Celery.
 
+Copyright University of Amsterdam and Netherlands eScience Center, distributed
+under the Apache License (see LICENSE.txt for details).
+
 
 Installation
-------------
+============
 
 (Preferably) set up a virtualenv for xtas::
 
@@ -15,6 +18,23 @@ Installation
 Use `pip <https://pypi.python.org/pypi/pip/1.1>` to install xtas from GitHub::
 
     pip install git+https://github.com/NLeSC/xtas.git
+
+
+If the installation is taking a long time/fails to compile SciPy
+----------------------------------------------------------------
+
+While you can install xtas outside of a virtualenv, you can also set up one
+that uses the system version of heavy dependencies. To do that, use your
+favorite package manager (yum, apt, pip) to install NumPy, SciPy, NLTK and
+scikit-learn, then::
+
+    virtualenv --system-site-packages /some/where
+
+and proceeds as described above.
+
+
+Usage
+=====
 
 
 Getting started
@@ -52,14 +72,24 @@ called xtas_celeryconfig.py in your PYTHONPATH and modify it. Note: the
 file should not be in the xtas/ directory.
 
 
-If the installation is taking a long time/fails to compile SciPy
-----------------------------------------------------------------
+As a library
+------------
 
-While you can install xtas outside of a virtualenv, you can also set up one
-that uses the system version of heavy dependencies. To do that, use your
-favorite package manager (yum, apt, pip) to install NumPy, SciPy, NLTK and
-scikit-learn, then::
+To communicate with xtas from Python programs, import the ``tasks`` module in
+your code and use the functions in that module::
 
-    virtualenv --system-site-packages /some/where
+    >>> import xtas.tasks
+    >>> xtas.tasks.morphy("Hello, worlds!")
+    ['Hello', ',', u'world', '!']
 
-and proceeds as described above.
+This runs the Morphy lemmatizer locally. To submit jobs to the job queue,
+make sure it's running (you don't need the webserver for this) and use the
+Celery calling conventions::
+
+    >>> result = xtas.tasks.morphy.apply_async(["Hello, worlds!"])
+    >>> result
+    <AsyncResult: 97d6f0c0-79ed-4d8f-84ed-cf83f956eae4>
+    >>> result.status
+    u'SUCCESS'
+    >>> result.get()
+    [u'Hello', u',', u'world', u'!']
