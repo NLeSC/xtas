@@ -10,8 +10,8 @@ under the Apache License (see LICENSE.txt for details).
 Installation
 ============
 
-Make sure you have `Elasticsearch <http://www.elasticsearch.org/>` and
-`RabbitMQ <http://www.rabbitmq.com/>` running. Installation instructions for
+Make sure you have `Elasticsearch <http://www.elasticsearch.org/>`_ and
+`RabbitMQ <http://www.rabbitmq.com/>`_ running. Installation instructions for
 those can be found in various places. Make sure you have Python 2.6 or newer.
 
 (Preferably) set up a virtualenv for xtas::
@@ -19,7 +19,7 @@ those can be found in various places. Make sure you have Python 2.6 or newer.
     virtualenv /some/where
     . /some/where/bin/activate
 
-Use `pip <https://pypi.python.org/pypi/pip/1.1>` to install xtas from GitHub::
+Use `pip <https://pypi.python.org/pypi/pip/1.1>`_ to install xtas from GitHub::
 
     pip install git+https://github.com/NLeSC/xtas.git
 
@@ -103,5 +103,5 @@ completed, so the ``get`` method will simply fetch the result from the queue.
 A longer running job may report ``'PENDING'`` instead, in which case ``get``
 will *block*, waiting for the job to complete.
 
-See the `Celery documentation <http://docs.celeryproject.org/en/latest/>` for
-full details.
+See the `Celery documentation <http://docs.celeryproject.org/en/latest/>`_
+for full details.
