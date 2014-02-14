@@ -10,6 +10,10 @@ under the Apache License (see LICENSE.txt for details).
 Installation
 ============
 
+Make sure you have `Elasticsearch <http://www.elasticsearch.org/>` and
+`RabbitMQ <http://www.rabbitmq.com/>` running. Installation instructions for
+those can be found in various places. Make sure you have Python 2.6 or newer.
+
 (Preferably) set up a virtualenv for xtas::
 
     virtualenv /some/where
@@ -30,7 +34,7 @@ scikit-learn, then::
 
     virtualenv --system-site-packages /some/where
 
-and proceeds as described above.
+and proceed as described above.
 
 
 Usage
