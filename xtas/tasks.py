@@ -45,14 +45,14 @@ def fetch(doc):
 
 
 @app.task
-def fetch_query_batch(idx, typ, query, field):
+def fetch_query_batch(idx, typ, query, field='body'):
     """Fetch all documents matching query and return them as a list.
 
     Returns a list of field contents, with documents that don't have the
     required field silently filtered out.
     """
     r = es[idx][typ]._search.get(data={'query': query})
-    r = (hit['_source'].get('body', None) for hit in r['hits']['hits'])
+    r = (hit['_source'].get(field, None) for hit in r['hits']['hits'])
     return [hit for hit in r if hit is not None]
 
 
