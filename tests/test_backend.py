@@ -70,3 +70,6 @@ def test_store_single():
         src = es.get_source(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE, id=id)
         assert_equal(set(src['xtas_results'].keys()), {'task1', 'task2'})
         assert_equal(src['xtas_results']['task1']['data'], 'task1_new_result')
+        # check that the rest of the document is intact
+        assert_equal(set(src.keys()), {'text', 'xtas_results'})
+        assert_equal(src['text'], "test") 
