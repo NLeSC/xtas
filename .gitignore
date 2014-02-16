@@ -43,3 +43,8 @@ xtas_celeryconfig.py
 # Java dependencies
 *.jar
 stanford-ner*
+
+# Emacs meuk 
+*~
+\#*\#
+.\#*
