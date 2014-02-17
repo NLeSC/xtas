@@ -5,7 +5,7 @@ import json
 import logging
 import sys
 
-from celery import Task, chain
+from celery import chain
 from celery import __version__ as celery_version
 import celery.result
 from flask import Flask, Response, abort
@@ -32,8 +32,12 @@ def home():
 
 @app.route("/run_es/<task>/<index>/<type>/<id>/<field>")
 def run_task_on_es(task, index, type, id, field):
+    """Run task on single document given by (index, type, id, field).
+
+    Only works for tasks in xtas.tasks.single.
+    """
     try:
-        taskname = 'xtas.tasks.%s' % task
+        taskname = 'xtas.tasks.single.%s' % task
         task = taskq.tasks[taskname]
     except KeyError:
         abort(404)
