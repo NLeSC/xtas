@@ -67,3 +67,30 @@ def get_single_result(taskname, idx, typ, id):
     r = es.get(index=idx, doc_type=typ, id=id, fields=['xtas_results'])
     if 'fields' in r:
         return r['fields']['xtas_results'][taskname]['data']
+
+
+def get_results(doc, pipeline, block=True):
+    """
+    Get the result for a given document. Pipeline should be a list of dicts, with members task and argument
+    e.g. [{"module" : "tokenize"}, {"module" : "pos_tag", "arguments" : {"model" : "nltk"}}]
+    If block is True, it will block and return the actual result
+    """
+    def get_task(task_dict):
+        "Create a celery task object from a dictionary with module and optional (kw)arguments"
+        task = task_dict['module']
+        if isinstance(task, (str, unicode)):
+            task = app.tasks[task]
+        args = task_dict.get('arguments')
+        if isinstance(args, dict):
+            return task.s(**args)
+        elif args:
+            return task.s()
+
+    tasks = [get_task(t) for t in pipeline]
+    c = celery.chain(*tasks).delay(doc)
+    
+    if block:
+        return c.get()
+    else:
+        return c
+
