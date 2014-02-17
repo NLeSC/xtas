@@ -26,5 +26,6 @@ setup(
     extras_requires={
         "clustering": "scikit-learn>=0.13",
         "fast": "librabbitmq",
+        "lda": "gensim",
     },
 )

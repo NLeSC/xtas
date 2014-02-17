@@ -1,10 +1,11 @@
 # Tests for batch operations.
 from unittest import SkipTest
 
-from nose.tools import assert_equal, assert_not_equal
+from nose.tools import assert_equal
 
-from celery import chain
-from xtas.tasks import big_kmeans, kmeans, parsimonious_wordcloud
+from xtas.tasks.cluster import (big_kmeans, kmeans, lda, lsa,
+                                parsimonious_wordcloud)
+
 
 # The clusters in these should be obvious.
 DOCS = [
@@ -31,11 +32,27 @@ def test_kmeans():
     assert_equal(set([0, 1]), set(clusters))
 
 
+def test_topic_models():
+    try:
+        import gensim
+        import sklearn
+    except ImportError:
+        raise SkipTest("Need Gensim and scikit-learn for topic models.")
+
+    n_topics = 3
+    for estimator in [lda]:
+        topics = estimator.s(n_topics).delay(DOCS).get()
+        assert_equal(len(topics), n_topics)
+        assert_equal(set(term for term, _ in topics[0]),
+                     set(term for term, _ in topics[1]))
+
+
 def test_wordcloud():
     try:
         import weighwords
     except ImportError:
-        raise SkipTest("Module weightwords not installed, skipping wordcloud test")
+        raise SkipTest("Module weightwords not installed,"
+                       " skipping wordcloud test")
     cloud = parsimonious_wordcloud([doc.split() for doc in DOCS])
     assert_equal(len(cloud), len(DOCS))
     assert_equal(len(cloud[0]), 10)
