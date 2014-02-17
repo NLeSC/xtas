@@ -60,3 +60,10 @@ def store_single(data, taskname, idx, typ, id):
     doc = {"xtas_results": {taskname: {'data': data, 'timestamp': now}}}
     es.update(index=idx, doc_type=typ, id=id, body={"doc": doc})
     return data
+
+
+def get_single_result(taskname, idx, typ, id):
+    "Get a single task result from the xtas_results.taskname property"
+    r = es.get(index=idx, doc_type=typ, id=id, fields=['xtas_results'])
+    if 'fields' in r:
+        return r['fields']['xtas_results'][taskname]['data']

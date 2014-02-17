@@ -88,3 +88,13 @@ def test_store_single():
         # check that the rest of the document is intact
         assert_equal(set(src.keys()), {'text', 'xtas_results'})
         assert_equal(src['text'], "test")
+
+
+def test_get_result():
+    from xtas.tasks import store_single, get_single_result
+    with clean_es() as es:
+        id = es.index(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE,
+                      body={"text": "test"})['_id']
+        assert_equal(get_single_result("task1", ES_TEST_INDEX, ES_TEST_TYPE, id), None)
+        store_single("task1_result", "task1", ES_TEST_INDEX, ES_TEST_TYPE, id)
+        assert_equal(get_single_result("task1", ES_TEST_INDEX, ES_TEST_TYPE, id), "task1_result")
