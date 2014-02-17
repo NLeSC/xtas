@@ -4,7 +4,7 @@ from __future__ import absolute_import
 
 from datetime import datetime
 
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, client, exceptions
 
 from ..core import app, _config
 
@@ -60,34 +60,40 @@ def fetch_query_batch(idx, typ, query, field='body'):
     r = (hit['_source'].get(field, None) for hit in r['hits']['hits'])
     return [hit for hit in r if hit is not None]
 
+CHECKED_MAPPINGS = set()
+
+
+def _check_parent_mapping(idx, child_type, parent_type):
+    """
+    Check that a mapping for the child_type exists
+    Creates a new mapping with parent_type if needed
+    """
+    if not child_type in CHECKED_MAPPINGS:
+        indices_client = client.indices.IndicesClient(_es())
+        if not indices_client.exists_type(idx, child_type):
+            body = {child_type: {"_parent": {"type": parent_type}}}
+            indices_client.put_mapping(index=idx, doc_type=child_type,
+                                       body=body)
+        CHECKED_MAPPINGS.add(child_type)
+
 
 @app.task
-def store_single(data, taskname, idx, typ, id, return_data=True):
-    """Store the data in the xtas_results.taskname property of the document.
-
-    If return_data is true, also returns data (useful for debugging). Set this
-    to false to save bandwidth.
-    """
+def store_single(data, taskname, idx, typ, id):
+    """Store the data as a child document."""
+    child_type = "{typ}__{taskname}".format(**locals())
+    _check_parent_mapping(idx, child_type, typ)
     now = datetime.now().isoformat()
-    doc = {"xtas_results": {taskname: {'data': data, 'timestamp': now}}}
-    _es().update(index=idx, doc_type=typ, id=id, body={"doc": doc})
-    return data if return_data else None
-
-
-def get_all_results(idx, typ, id):
-    """
-    Get all xtas results for the document
-    Returns a (possibly empty) {taskname : data} dict
-    """
-    r = _es().get(index=idx, doc_type=typ, id=id, _source=['xtas_results'])
-    if 'xtas_results' in r['_source']:
-        return {k: v['data']
-                for (k, v) in r['_source']['xtas_results'].iteritems()}
-    else:
-        return {}
+    doc = {'data': data, 'timestamp': now}
+    _es().index(index=idx, doc_type=child_type, id=id, body=doc, parent=id)
+    return data
 
 
 def get_single_result(taskname, idx, typ, id):
     """Get a single xtas result"""
-    r = get_all_results(idx, typ, id)
-    return r.get(taskname)
+    child_type = "{typ}__{taskname}".format(**locals())
+    try:
+        r = _es().get_source(index=idx, doc_type=child_type, id=id, parent=id)
+        return r['data']
+    except exceptions.TransportError, e:
+        if e.status_code != 404:
+            raise

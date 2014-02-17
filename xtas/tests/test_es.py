@@ -61,19 +61,15 @@ def test_query_batch():
 
 def test_store_get_result():
     "test whether results can be stored and retrieved"
-    from xtas.tasks.es import store_single, get_single_result, get_all_results
+    from xtas.tasks.es import store_single, get_single_result
     idx, typ = ES_TEST_INDEX, ES_TEST_TYPE
     with clean_es() as es:
         id = es.index(index=idx, doc_type=typ, body={"text": "test"})['_id']
         assert_equal(get_single_result("task1", idx, typ, id), None)
-        assert_equal(get_all_results(idx, typ, id), {})
 
-        r = store_single("task1_result", "task1", idx, typ, id,
-                         return_data=False)
-        assert_equal(r, None)
+        store_single("task1_result", "task1", idx, typ, id)
         client.indices.IndicesClient(es).flush()
         assert_equal(get_single_result("task1", idx, typ, id), "task1_result")
-        assert_equal(get_all_results(idx, typ, id), {"task1": "task1_result"})
 
         # test second result and test non-scalar data
         task2_result = {"a": {"b": ["c", "d"]}}
@@ -81,16 +77,12 @@ def test_store_get_result():
         client.indices.IndicesClient(es).flush()
         assert_equal(get_single_result("task1", idx, typ, id), "task1_result")
         assert_equal(get_single_result("task2", idx, typ, id), task2_result)
-        assert_equal(get_all_results(idx, typ, id),
-                     {"task1": "task1_result", "task2": task2_result})
 
         # store a task result under an existing task, check that it is replaced
         store_single("task1_result2", "task1", idx, typ, id)
         client.indices.IndicesClient(es).flush()
         assert_equal(get_single_result("task1", idx, typ, id), "task1_result2")
         assert_equal(get_single_result("task2", idx, typ, id), task2_result)
-        assert_equal(get_all_results(idx, typ, id),
-                     {"task1": "task1_result2", "task2": task2_result})
 
         # check that the original document is intact
         src = es.get_source(index=idx, doc_type=typ, id=id)
