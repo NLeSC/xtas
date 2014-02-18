@@ -345,3 +345,51 @@ def alpino(doc, output="raw"):
         raise ValueError("Unknown output format %r" % output)
 
     return pipe(doc, fetch, tokenize, parse_raw, transf)
+
+
+@app.task
+def corenlp(doc, output='raw'):
+    """Wrapper around the CoreNLP parser.
+
+    Expects CORENLP_HOME to point to the CoreNLP installation dir.
+    Parameters
+    ----------
+    output : string
+        If 'raw', returns the raw output lines from CoreNLP.
+        If 'saf', returns a SAF dictionary.
+
+    Tested with
+    http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip
+    """
+    from ._corenlp import parse, stanford_to_saf
+    text = fetch(doc)
+    raw = parse(text)
+    if output == 'raw':
+        return raw
+    elif output == 'saf':
+        return stanford_to_saf(raw)
+
+
+@app.task
+def corenlp_lemmatize(doc, output='raw'):
+
+    """
+    Wrapper around the CoreNLP lemmatizer
+    The module expects CORENLP_HOME to point to the CoreNLP installation dir.
+
+    Parameters
+    ----------
+    output : string
+        If 'raw', returns the raw output lines from CoreNLP.
+        If 'saf', returns a SAF dictionary.
+
+    Tested with
+    http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip
+    """
+    from ._corenlp import parse, stanford_to_saf
+    text = fetch(doc)
+    raw = parse(text, annotators=["tokenize", "ssplit", "pos", "lemma"])
+    if output == 'raw':
+        return raw
+    elif output == 'saf':
+        return stanford_to_saf(raw)
