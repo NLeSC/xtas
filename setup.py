@@ -20,7 +20,7 @@ setup(
         "flask>=0.10.1",
         #"langid>=1.1.4dev",
         "nltk",
-        "rawes",
+        "elasticsearch",
         #"simplejson>=2.6.2",
     ],
     extras_requires={
