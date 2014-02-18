@@ -48,7 +48,7 @@ def fetch_query_batch(idx, typ, query, field='body'):
     required field silently filtered out.
     """
     r = _es.search(index=idx, doc_type=typ, body={'query': query},
-                  fields=[field])
+                   fields=[field])
     r = (hit.get('fields', {}).get(field, None) for hit in r['hits']['hits'])
     return [hit for hit in r if hit is not None]
 
