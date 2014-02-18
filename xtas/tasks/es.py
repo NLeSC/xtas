@@ -48,8 +48,8 @@ def fetch_query_batch(idx, typ, query, field='body'):
     required field silently filtered out.
     """
     r = _es.search(index=idx, doc_type=typ, body={'query': query},
-                   fields=[field])
-    r = (hit.get('fields', {}).get(field, None) for hit in r['hits']['hits'])
+                   _source=[field])
+    r = (hit['_source'].get(field, None) for hit in r['hits']['hits'])
     return [hit for hit in r if hit is not None]
 
 
@@ -60,3 +60,22 @@ def store_single(data, taskname, idx, typ, id):
     doc = {"xtas_results": {taskname: {'data': data, 'timestamp': now}}}
     _es.update(index=idx, doc_type=typ, id=id, body={"doc": doc})
     return data
+
+
+def get_all_results(idx, typ, id):
+    """
+    Get all xtas results for the document
+    Returns a (possibly empty) {taskname : data} dict
+    """
+    r = _es.get(index=idx, doc_type=typ, id=id, _source=['xtas_results'])
+    if 'xtas_results' in r['_source']:
+        return {k: v['data']
+                for (k, v) in r['_source']['xtas_results'].iteritems()}
+    else:
+        return {}
+
+
+def get_single_result(taskname, idx, typ, id):
+    """Get a single xtas result"""
+    r = get_all_results(idx, typ, id)
+    return r.get(taskname)
