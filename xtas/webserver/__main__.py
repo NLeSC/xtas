@@ -44,7 +44,7 @@ def run_task_on_es(task, index, type, id, field):
 
     return chain(task.s(es_document(index, type, id, field))
                  | store_single.s(taskname, index, type, id)
-                ).delay().id
+                 ).delay().id
 
 
 @app.route('/result/<jobid>')
@@ -54,8 +54,9 @@ def result(jobid):
 
 @app.route('/tasks')
 def show_tasks():
-    tasknames = sorted(t.split('.', 3)[-1] for t in taskq.tasks
-                                           if t.startswith('xtas.tasks'))
+    tasknames = sorted(t.split('.', 3)[-1]
+                       for t in taskq.tasks
+                       if t.startswith('xtas.tasks'))
     return json.dumps(tasknames)
 
 
