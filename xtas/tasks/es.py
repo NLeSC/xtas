@@ -8,7 +8,7 @@ from elasticsearch import Elasticsearch
 
 from ..celery import app
 
-es = Elasticsearch()
+_es = Elasticsearch()
 
 
 _ES_DOC_FIELDS = ('index', 'type', 'id', 'field')
@@ -34,7 +34,7 @@ def fetch(doc):
     """
     if isinstance(doc, dict) and set(doc.keys()) == set(_ES_DOC_FIELDS):
         idx, typ, id, field = [doc[k] for k in _ES_DOC_FIELDS]
-        return es.get_source(index=idx, doc_type=typ, id=id)[field]
+        return _es.get_source(index=idx, doc_type=typ, id=id)[field]
     else:
         # Assume simple string
         return doc
@@ -47,7 +47,7 @@ def fetch_query_batch(idx, typ, query, field='body'):
     Returns a list of field contents, with documents that don't have the
     required field silently filtered out.
     """
-    r = es.search(index=idx, doc_type=typ, body={'query': query},
+    r = _es.search(index=idx, doc_type=typ, body={'query': query},
                   fields=[field])
     r = (hit.get('fields', {}).get(field, None) for hit in r['hits']['hits'])
     return [hit for hit in r if hit is not None]
@@ -58,5 +58,5 @@ def store_single(data, taskname, idx, typ, id):
     """Store the data in the xtas_results.taskname property of the document."""
     now = datetime.now().isoformat()
     doc = {"xtas_results": {taskname: {'data': data, 'timestamp': now}}}
-    es.update(index=idx, doc_type=typ, id=id, body={"doc": doc})
+    _es.update(index=idx, doc_type=typ, id=id, body={"doc": doc})
     return data
