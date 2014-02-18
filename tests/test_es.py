@@ -32,7 +32,7 @@ def clean_es():
 
 def test_fetch():
     "Test whether tasks.fetch works as documented"
-    from xtas.tasks import fetch, es_document
+    from xtas.tasks.es import fetch, es_document
     # if doc is a string, fetching should return the string
     assert_equal(fetch("Literal string"), "Literal string")
     # index a document and fetch it with an es_document
@@ -45,7 +45,7 @@ def test_fetch():
 
 def test_query_batch():
     "Test getting multiple documents in a batch"
-    from xtas.tasks import fetch_query_batch
+    from xtas.tasks.es import fetch_query_batch
     with clean_es() as es:
         d1 = es.index(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE,
                       body={"text": "test", "test": "batch"})
@@ -59,32 +59,37 @@ def test_query_batch():
         assert_equal(set(b), {"test", "test2"})
 
 
-def test_store_single():
-    "Test storing results as a 'xtas_results' object on the document"
-    from xtas.tasks import store_single
+def test_store_get_result():
+    "test whether results can be stored and retrieved"
+    from xtas.tasks.es import store_single, get_single_result, get_all_results
+    idx, typ = ES_TEST_INDEX, ES_TEST_TYPE
     with clean_es() as es:
-        id = es.index(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE,
-                      body={"text": "test"})['_id']
+        id = es.index(index=idx, doc_type=typ, body={"text": "test"})['_id']
+        assert_equal(get_single_result("task1", idx, typ, id), None)
+        assert_equal(get_all_results(idx, typ, id), {})
 
-        # store a task result, check if it is properly stored
-        store_single("task1_result", "task1", ES_TEST_INDEX, ES_TEST_TYPE, id)
-        src = es.get_source(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE, id=id)
-        assert_equal(set(src['xtas_results'].keys()), {'task1'})
-        assert_equal(src['xtas_results']['task1']['data'], 'task1_result')
+        store_single("task1_result", "task1", idx, typ, id)
+        client.indices.IndicesClient(es).flush()
+        assert_equal(get_single_result("task1", idx, typ, id), "task1_result")
+        assert_equal(get_all_results(idx, typ, id), {"task1": "task1_result"})
 
-        # store a second task result, check if both are now stored
-        store_single("task2_result", "task2", ES_TEST_INDEX, ES_TEST_TYPE, id)
-        src = es.get_source(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE, id=id)
-        assert_equal(set(src['xtas_results'].keys()), {'task1', 'task2'})
-        assert_equal(src['xtas_results']['task2']['data'], 'task2_result')
+        # test second result and test non-scalar data
+        task2_result = {"a": {"b": ["c", "d"]}}
+        store_single(task2_result, "task2", idx, typ, id)
+        client.indices.IndicesClient(es).flush()
+        assert_equal(get_single_result("task1", idx, typ, id), "task1_result")
+        assert_equal(get_single_result("task2", idx, typ, id), task2_result)
+        assert_equal(get_all_results(idx, typ, id),
+                     {"task1": "task1_result", "task2": task2_result})
 
         # store a task result under an existing task, check that it is replaced
-        store_single("task1_new_result", "task1", ES_TEST_INDEX, ES_TEST_TYPE,
-                     id)
-        src = es.get_source(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE, id=id)
-        assert_equal(set(src['xtas_results'].keys()), {'task1', 'task2'})
-        assert_equal(src['xtas_results']['task1']['data'], 'task1_new_result')
+        store_single("task1_result2", "task1", idx, typ, id)
+        client.indices.IndicesClient(es).flush()
+        assert_equal(get_single_result("task1", idx, typ, id), "task1_result2")
+        assert_equal(get_single_result("task2", idx, typ, id), task2_result)
+        assert_equal(get_all_results(idx, typ, id),
+                     {"task1": "task1_result2", "task2": task2_result})
 
-        # check that the rest of the document is intact
-        assert_equal(set(src.keys()), {'text', 'xtas_results'})
+        # check that the original document is intact
+        src = es.get_source(index=idx, doc_type=typ, id=id)
         assert_equal(src['text'], "test")
