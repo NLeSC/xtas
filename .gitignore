@@ -18,6 +18,11 @@ develop-eggs
 lib
 lib64
 
+*.tar
+*.tar.gz
+*.tgz
+*.tbz
+
 # Installer logs
 pip-log.txt
 
@@ -44,7 +49,7 @@ xtas_celeryconfig.py
 *.jar
 stanford-ner*
 
-# Emacs meuk 
+# Emacs cruft
 *~
 \#*\#
 .\#*
