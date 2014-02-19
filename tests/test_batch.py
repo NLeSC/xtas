@@ -51,7 +51,7 @@ def test_wordcloud():
     try:
         import weighwords
     except ImportError:
-        raise SkipTest("Module weightwords not installed,"
+        raise SkipTest("Module weighwords not installed,"
                        " skipping wordcloud test")
     cloud = parsimonious_wordcloud([doc.split() for doc in DOCS])
     assert_equal(len(cloud), len(DOCS))

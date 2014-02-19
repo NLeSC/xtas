@@ -27,5 +27,6 @@ setup(
         "clustering": "scikit-learn>=0.13",
         "fast": "librabbitmq",
         "lda": "gensim",
+        "wordclouds": "weighwords",
     },
 )
