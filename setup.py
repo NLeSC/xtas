@@ -7,7 +7,7 @@ setup(
     description="Distributed text analysis suite",
     author="Lars Buitinck",
     author_email="l.buitinck@esciencecenter.nl",
-    packages=["xtas", "xtas.webserver"],
+    packages=["xtas", "xtas.tasks", "xtas.webserver"],
     classifiers=[
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: Apache Software License",
