@@ -3,8 +3,8 @@ xtas
 
 Distributed text analysis suite based on Celery.
 
-Copyright University of Amsterdam and Netherlands eScience Center, distributed
-under the Apache License (see LICENSE.txt for details).
+Copyright University of Amsterdam, Netherlands eScience Center and
+contributors, distributed under the Apache License (see LICENSE.txt).
 
 
 Installation
@@ -16,25 +16,16 @@ those can be found in various places. Make sure you have Python 2.6 or newer.
 
 (Preferably) set up a virtualenv for xtas::
 
-    virtualenv /some/where
+    virtualenv --system-site-packages /some/where
     . /some/where/bin/activate
+
+The option ``--system-site-packages`` makes sure system NumPy, SciPy and NLTK
+are used, if they are installed (recommended). Compiling these can take quite
+a long time.
 
 Use `pip <https://pypi.python.org/pypi/pip/1.1>`_ to install xtas from GitHub::
 
     pip install git+https://github.com/NLeSC/xtas.git
-
-
-If the installation is taking a long time/fails to compile SciPy
-----------------------------------------------------------------
-
-While you can install xtas outside of a virtualenv, you can also set up one
-that uses the system version of heavy dependencies. To do that, use your
-favorite package manager (yum, apt, pip) to install NumPy, SciPy, NLTK and
-scikit-learn, then::
-
-    virtualenv --system-site-packages /some/where
-
-and proceed as described above.
 
 
 Usage
