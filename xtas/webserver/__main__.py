@@ -62,11 +62,16 @@ def show_tasks():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="xtas web server")
-    parser.add_argument('--debug', dest='debug', action='store_true')
+    parser.add_argument('--debug', dest='debug', action='store_true',
+                        help='Enable debugging mode.')
+    parser.add_argument('--host', dest='host', default='127.0.0.1',
+                        help='Host to listen on.')
+    parser.add_argument('--port', dest='port', default=5000, type=int,
+                        help='Port to listen on.')
     args = parser.parse_args()
 
     loglevel = logging.DEBUG if args.debug else logging.INFO
     logging.basicConfig(level=loglevel)
 
     app.debug = args.debug
-    app.run()
+    app.run(host=args.host, port=args.port)

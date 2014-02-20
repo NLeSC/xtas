@@ -96,3 +96,14 @@ will *block*, waiting for the job to complete.
 
 See the `Celery documentation <http://docs.celeryproject.org/en/latest/>`_
 for full details.
+
+
+As a webservice
+---------------
+
+By default, the webserver listens to port 5000 on localhost *only*. Use the
+``--host`` and `--port`` arguments to change this, e.g.::
+
+    python -m xtas.webserver --host 0.0.0.0 --port 5001
+
+to provide a public service to all the world (not recommended) on port 5001.
