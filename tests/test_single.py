@@ -1,7 +1,17 @@
-from nose.tools import assert_equal, assert_true
-from unittest import skip
+from nose.tools import assert_equal, assert_less, assert_true
+from unittest import skip, SkipTest
 
-from xtas.tasks import stanford_ner_tag, tokenize
+from xtas.tasks import movie_review_polarity, stanford_ner_tag, tokenize
+
+
+def test_movie_review_polarity():
+    try:
+        import sklearn
+    except ImportError:
+        raise SkipTest("movie review classifier requires scikit-learn")
+
+    # <.5 == probably not positive.
+    assert_less(movie_review_polarity("This movie sucks."), .5)
 
 
 def test_tokenize():

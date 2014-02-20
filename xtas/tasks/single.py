@@ -2,8 +2,10 @@
 
 from __future__ import absolute_import
 
+import errno
 import json
 import os
+import os.path
 from urllib import urlencode
 from urllib2 import urlopen
 
@@ -22,6 +24,27 @@ def morphy(doc):
     nltk.download('wordnet', quiet=False)
     return map(nltk.WordNetLemmatizer().lemmatize,
                _tokenize_if_needed(fetch(doc)))
+
+
+@app.task
+def movie_review_polarity(doc):
+    """Returns the probability that the movie review doc is positive."""
+    from .sentiment import train_sentiment_movie_review_polarity
+    from ..downloader import _make_data_home
+    from sklearn.externals.joblib import dump, load
+
+    # TODO we should cache the model per worker process
+    model_path = os.path.join(_make_data_home("movie_reviews"), "lr")
+    try:
+        clf = load(model_path)
+    except IOError as e:
+        if e.errno == errno.ENOENT:
+            clf = train_sentiment_movie_review_polarity()
+            dump(clf, model_path, compress=9)
+        else:
+            raise
+
+    return clf.predict_proba(doc)[0, 1]     # first (only) sample, second class
 
 
 def _tokenize_if_needed(s):
