@@ -394,3 +394,24 @@ def corenlp_lemmatize(doc, output='raw'):
         raise ValueError("Unknown output format %r" % output)
 
     return pipe(doc, fetch, parse, transf)
+
+
+@app.task
+def semafor(saf):
+    """Wrapper around the Semafor semantic parser.
+
+    Expects semafor running in server mode listening to
+    SEMAFOR_HOST:SEMAFOR_PORT (defaults to localhost:9888).
+    It also expects CORENLP_HOME to point to the CoreNLP installation dir.
+
+    Input is expected to be a 'SAF' dictionary with trees and tokens.
+    Output is a SAF dictionary with a frames attribute added.
+
+    References
+    ----------
+    `Semafor github page <https://github.com/sammthomson/semafor>'_
+    `CoreNLP home page <http://nlp.stanford.edu/software/corenlp.shtml>'_
+    """
+    from ._semafor import add_frames
+    add_frames(saf)
+    return saf
