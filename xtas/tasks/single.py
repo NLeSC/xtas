@@ -13,7 +13,7 @@ import nltk
 
 from .es import fetch
 from ..celery import app
-from ..downloader import download_stanford_ner
+from .._downloader import download_stanford_ner
 
 
 @app.task
@@ -29,8 +29,8 @@ def morphy(doc):
 @app.task
 def movie_review_polarity(doc):
     """Returns the probability that the movie review doc is positive."""
-    from .sentiment import train_sentiment_movie_review_polarity
-    from ..downloader import _make_data_home
+    from .polarity_trainer import train_movie_review_polarity
+    from .._downloader import _make_data_home
     from sklearn.externals.joblib import dump, load
 
     # TODO we should cache the model per worker process
@@ -39,7 +39,7 @@ def movie_review_polarity(doc):
         clf = load(model_path)
     except IOError as e:
         if e.errno == errno.ENOENT:
-            clf = train_sentiment_movie_review_polarity()
+            clf = train_movie_review_polarity()
             dump(clf, model_path, compress=9)
         else:
             raise

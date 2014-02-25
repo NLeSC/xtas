@@ -4,7 +4,7 @@ from __future__ import absolute_import
 
 from .es import fetch
 from ..celery import app
-from ..utils import batches
+from .._utils import batches
 
 
 def _vectorizer(**kwargs):

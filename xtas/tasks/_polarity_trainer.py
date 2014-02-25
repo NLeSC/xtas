@@ -1,5 +1,5 @@
-def train_sentiment_movie_review_polarity(param_search=False):
-    from ..downloader import download_movie_reviews, _make_data_home
+def train_movie_review_polarity(param_search=False):
+    from .._downloader import download_movie_reviews, _make_data_home
     from pprint import pprint
     from sklearn.datasets import load_files
     from sklearn.feature_extraction.text import TfidfVectorizer
