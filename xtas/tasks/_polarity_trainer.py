@@ -37,4 +37,5 @@ def train_movie_review_polarity(param_search=False):
         return gs.best_estimator_
 
     else:
+        print("Training logistic regression for movie review polarity")
         return clf.fit(data.data, y)

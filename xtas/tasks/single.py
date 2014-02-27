@@ -29,12 +29,14 @@ def morphy(doc):
 @app.task
 def movie_review_polarity(doc):
     """Returns the probability that the movie review doc is positive."""
-    from .polarity_trainer import train_movie_review_polarity
+    from ._polarity_trainer import train_movie_review_polarity
     from .._downloader import _make_data_home
     from sklearn.externals.joblib import dump, load
 
-    # TODO we should cache the model per worker process
-    model_path = os.path.join(_make_data_home("movie_reviews"), "lr")
+    # TODO We should cache the model per worker process. I already tried
+    # mmap'ing the model instead of compressing it, but that made loading
+    # slower.
+    model_path = os.path.join(_make_data_home("movie_reviews"), "classifier")
     try:
         clf = load(model_path)
     except IOError as e:
