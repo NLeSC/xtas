@@ -3,8 +3,6 @@
 from __future__ import absolute_import
 
 import json
-import os
-import os.path
 from urllib import urlencode
 from urllib2 import urlopen
 
@@ -12,7 +10,6 @@ import nltk
 
 from .es import fetch
 from ..celery import app
-from .._downloader import download_stanford_ner
 
 
 @app.task
@@ -60,18 +57,9 @@ def stanford_ner_tag(doc, model=_STANFORD_DEFAULT_MODEL):
     tagged : list of list of pair of string
         For each sentence, a list of (word, tag) pairs.
     """
-    import nltk
-    from nltk.tag.stanford import NERTagger
-
-    nltk.download('punkt', quiet=False)
-    ner_dir = download_stanford_ner()
-
+    from ._stanford_ner import tag
     doc = fetch(doc)
-    sentences = (_tokenize_if_needed(s) for s in nltk.sent_tokenize(doc))
-
-    tagger = NERTagger(os.path.join(ner_dir, model),
-                       os.path.join(ner_dir, 'stanford-ner.jar'))
-    return tagger.batch_tag(sentences)
+    tag(doc, model, _tokenize_if_needed)
 
 
 @app.task
