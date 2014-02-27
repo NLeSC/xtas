@@ -2,7 +2,6 @@
 
 from __future__ import absolute_import
 
-import errno
 import json
 import os
 import os.path
@@ -29,24 +28,8 @@ def morphy(doc):
 @app.task
 def movie_review_polarity(doc):
     """Returns the probability that the movie review doc is positive."""
-    from ._polarity_trainer import train_movie_review_polarity
-    from .._downloader import _make_data_home
-    from sklearn.externals.joblib import dump, load
-
-    # TODO We should cache the model per worker process. I already tried
-    # mmap'ing the model instead of compressing it, but that made loading
-    # slower.
-    model_path = os.path.join(_make_data_home("movie_reviews"), "classifier")
-    try:
-        clf = load(model_path)
-    except IOError as e:
-        if e.errno == errno.ENOENT:
-            clf = train_movie_review_polarity()
-            dump(clf, model_path, compress=9)
-        else:
-            raise
-
-    return clf.predict_proba(doc)[0, 1]     # first (only) sample, second class
+    from ._polarity import classify
+    return classify(doc)
 
 
 def _tokenize_if_needed(s):

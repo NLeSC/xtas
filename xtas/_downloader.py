@@ -2,16 +2,9 @@ from __future__ import division
 import errno
 import os
 import os.path
-import tarfile
 from tempfile import NamedTemporaryFile
 from urllib import urlretrieve
 from zipfile import ZipFile
-
-
-_MOVIE_REVIEWS = (
-    'http://www.cs.cornell.edu/people/pabo/movie-review-data'
-    '/review_polarity.tar.gz'
-)
 
 
 _STANFORD_NER = (
@@ -37,20 +30,6 @@ def _make_data_home(subdir=None):
 def _progress(i, blocksize, totalsize):
     if i % 100 == 0:
         print("{:>7.2%}".format(min(i * blocksize, totalsize) / totalsize))
-
-
-def download_movie_reviews():
-    # TODO figure out the license on this one, maybe make the user perform
-    # some action.
-    movie_reviews_dir = os.path.join(_make_data_home(), 'movie_reviews')
-
-    if not os.path.exists(movie_reviews_dir):
-        with NamedTemporaryFile() as temp:
-            urlretrieve(_MOVIE_REVIEWS, temp.name, reporthook=_progress)
-            with tarfile.open(temp.name) as tar:
-                tar.extractall(path=movie_reviews_dir)
-
-    return os.path.join(movie_reviews_dir, 'txt_sentoken')
 
 
 def download_stanford_ner():
