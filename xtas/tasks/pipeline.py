@@ -58,13 +58,80 @@ def pipeline(doc, pipeline, store_final=True, store_intermediate=False,
 
 def _get_task(task_dict):
     "Create a celery task object from a dictionary with module and arguments"
-    task = task_dict['module']
+    if isinstance(task_dict, dict):
+        task = task_dict['module']
+        args = task_dict.get('arguments')
+    else:
+        task = task_dict
+        args = None
     if isinstance(task, (str, unicode)):
         task = app.tasks[task]
-    args = task_dict.get('arguments')
     if isinstance(args, dict):
         return task.s(**args)
     elif args:
         return task.s(*args)
     else:
         return task.s()
+
+
+if __name__ == '__main__':
+    # provide a command line interface to pipelining
+    # Maybe this should go to xtas.__main__ (?)
+    # (or as xtas.pipeline)
+    import argparse
+    import sys
+    import json
+
+    from xtas.tasks.es import es_document
+    from xtas.tasks import app
+
+
+    epilog = '''The modules for the pipeline can be either the names of
+                one or more modules, or a json string containing modules
+                and arguments, e.g.:
+                \'[{"module": "xtas.tasks.single.tokenize"},
+                   {"module": "xtas.tasks.single.pos_tag"
+                    "arguments": ["ntlk"]}]\'
+            '''
+
+    parser = argparse.ArgumentParser(epilog=epilog)
+
+    parser.add_argument("module", nargs="+",
+                        help="Name or json list of the module(s) to run")
+    parser.add_argument("--always-eager", "-a", help="Don't use celery",
+                        action="store_true")
+    parser.add_argument("--id", "-i", help="ID of the document to process")
+    parser.add_argument("--index", "-n", help="Elasticsearch index name")
+    parser.add_argument("--doctype", "-d", help="Elasticsearch document type")
+    parser.add_argument("--field", "-F", help="Elasticsearch field type")
+    parser.add_argument("--input-file", "-f", help="Input document name. "
+                        "If not given, use ID/index/doctype/field. "
+                        "If neither are given, read document text from stdin")
+    parser.add_argument("--output-file", "-o",
+                    help="Output file. If not given, will write to stdout")
+    args = parser.parse_args()
+
+    # input
+    if args.input_file is not None:
+        doc = open(args.input_file).read()
+    elif args.id is not None:
+        doc = es_document(args.index, args.doctype, args.id, args.field)
+    else:
+        doc = sys.stdin.read()
+
+    # pipeline
+    if '[' in args.module[0] or '{' in args.module[0]:
+        # json string
+        pipe = json.loads(args.module[0])
+    else:
+        pipe = [{"module": m} for m in args.module]
+
+    # output
+    outfile = (open(args.output_file, 'w') if args.output_file is not None
+               else sys.stdout)
+
+    if args.always_eager:
+        app.conf['CELERY_ALWAYS_EAGER'] = True
+
+    result = pipeline(doc, pipe)
+    json.dump(result, outfile, indent=2)
