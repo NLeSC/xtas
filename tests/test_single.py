@@ -21,12 +21,12 @@ def test_tokenize():
         assert_equal(obs, {"token": exp})
 
 
+# XXX this test fails, but it works from the interactive interpreter.
 @skip
 def test_stanford_ner():
     # From Wikipedia front page, 10 Feb 2014.
     ne = stanford_ner_tag("Academy Award-winning actor Philip Seymour Hoffman"
                           " dies at the age of 46.")
-    [sentence] = ne
-    for token, tag in sentence:
+    for token, tag in ne:
         assert_true(isinstance(token, basestring))
         assert_true(tag in ["O", "PERSON"])

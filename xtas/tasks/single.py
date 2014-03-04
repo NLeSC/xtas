@@ -36,13 +36,11 @@ def _tokenize_if_needed(s):
     return s
 
 
-_STANFORD_DEFAULT_MODEL = \
-    'classifiers/english.all.3class.distsim.crf.ser.gz'
-
-
 @app.task
-def stanford_ner_tag(doc, model=_STANFORD_DEFAULT_MODEL):
+def stanford_ner_tag(doc):
     """Named entity recognizer using Stanford NER.
+
+    Currently only supports the model 'english.all.3class.distsim.crf.ser.gz'.
 
     Parameters
     ----------
@@ -59,7 +57,7 @@ def stanford_ner_tag(doc, model=_STANFORD_DEFAULT_MODEL):
     """
     from ._stanford_ner import tag
     doc = fetch(doc)
-    tag(doc, model, _tokenize_if_needed)
+    tag(doc)
 
 
 @app.task
