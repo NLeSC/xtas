@@ -94,8 +94,7 @@ completed, so the ``get`` method will simply fetch the result from the queue.
 A longer running job may report ``'PENDING'`` instead, in which case ``get``
 will *block*, waiting for the job to complete.
 
-See the `Celery documentation <http://docs.celeryproject.org/en/latest/>`_
-for full details.
+You can now continue to the tutorial in ``doc/tutorial.rst``.
 
 
 As a webservice
