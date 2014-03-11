@@ -57,7 +57,7 @@ def stanford_ner_tag(doc):
     """
     from ._stanford_ner import tag
     doc = fetch(doc)
-    tag(doc)
+    return tag(doc)
 
 
 @app.task
