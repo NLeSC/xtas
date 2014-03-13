@@ -61,7 +61,7 @@ def stanford_ner_tag(doc, format="tokens"):
     """
     from ._stanford_ner import tag
     doc = fetch(doc)
-    return tag(doc)
+    return tag(doc, format)
 
 
 @app.task

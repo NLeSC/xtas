@@ -21,8 +21,6 @@ def test_tokenize():
         assert_equal(obs, {"token": exp})
 
 
-# XXX this test fails, but it works from the interactive interpreter.
-@skip
 def test_stanford_ner():
     # From Wikipedia front page, 10 Feb 2014.
     phrase = ("Academy Award-winning actor Philip Seymour Hoffman"

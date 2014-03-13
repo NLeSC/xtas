@@ -5,7 +5,7 @@ import operator
 import os
 import os.path
 import signal
-from socket import socket
+import socket
 from subprocess import Popen, PIPE
 from tempfile import NamedTemporaryFile
 from time import sleep
@@ -65,6 +65,10 @@ def start_server(port=9155):
     if not 'done' in stderr:
         raise ValueError('cannot start Stanford NER')
 
+    # When Stanford NER reports ready to serve requests, it's not actually
+    # ready.
+    sleep(1)
+
     return server, port
 
 
@@ -73,13 +77,13 @@ ner_dir = download()
 server, port = start_server()
 
 
-def tag(doc, format="tokens"):
+def tag(doc, format):
     if format not in ["tokens", "names"]:
         raise ValueError("unknown format %r" % format)
 
     text = ' '.join(nltk.word_tokenize(doc))
 
-    s = socket()
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(('localhost', port))
     s.sendall(text)
     s.send('\n')
@@ -88,5 +92,6 @@ def tag(doc, format="tokens"):
     if format == "tokens":
         return tagged
     elif format == "names":
-        return [' '.join(token for token, _ in tokens)
-                for cls, tokens in groupby(tagged, operator.itemgetter(1))]
+        return [(' '.join(token for token, _ in tokens), cls)
+                for cls, tokens in groupby(tagged, operator.itemgetter(1))
+                if cls != 'O']
