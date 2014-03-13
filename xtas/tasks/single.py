@@ -64,6 +64,7 @@ def stanford_ner_tag(doc):
 def pos_tag(tokens, model):
     if model != 'nltk':
         raise ValueError("unknown POS tagger %r" % model)
+    nltk.download('maxent_treebank_pos_tagger')
     return nltk.pos_tag([t["token"] for t in tokens])
 
 
