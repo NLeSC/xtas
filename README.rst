@@ -58,6 +58,14 @@ This runs the Morphy morphological analyzer on the "body" field of "post" 1
 in ES index "blog". After some time, the results from Morphy are written to
 this document, but in a field called "xtas_results".
 
+You can now run the unittest suite using::
+
+    nosetests -s -v tests/
+
+in the source directory. Note that this requires a running worker process and
+Elasticsearch. Running the tests first is a good idea, because it will fetch
+some dependencies (e.g. NLTK models) that will otherwise be fetched on demand.
+
 
 Configuring
 -----------
