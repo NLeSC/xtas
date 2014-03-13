@@ -4,7 +4,6 @@ from itertools import groupby
 import operator
 import os
 import os.path
-import signal
 import socket
 from subprocess import Popen, PIPE
 from tempfile import NamedTemporaryFile
@@ -53,9 +52,10 @@ def start_server(port=9155):
                    stderr=PIPE)
 
     def kill(p):
-        p.send_signal(signal.SIGHUP)
+        p.terminate()
         sleep(2)
-        p.kill()
+        if p.is_alive():
+            p.kill()
         p.wait()
 
     atexit.register(kill, server)
