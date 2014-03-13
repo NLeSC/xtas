@@ -37,7 +37,7 @@ def _tokenize_if_needed(s):
 
 
 @app.task
-def stanford_ner_tag(doc):
+def stanford_ner_tag(doc, format="tokens"):
     """Named entity recognizer using Stanford NER.
 
     Currently only supports the model 'english.all.3class.distsim.crf.ser.gz'.
@@ -45,10 +45,14 @@ def stanford_ner_tag(doc):
     Parameters
     ----------
     doc : document
+        Tokenization will be done by Stanford NER using its own rules.
 
-    model : str, optional
-        Name of model file for Stanford NER tagger, relative to Stanford NER
-        installation directory.
+    format : string, optional
+        Output format. "tokens" gives a list of (token, nerclass) triples,
+        similar to the IO format but without the "I-". "names" returns a list
+        of (name, class pairs); since Stanford NER does not distinguish between
+        start and continuation of name spans, the reconstruction of full names
+        is heuristic.
 
     Returns
     -------

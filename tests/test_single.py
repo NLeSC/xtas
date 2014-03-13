@@ -25,8 +25,15 @@ def test_tokenize():
 @skip
 def test_stanford_ner():
     # From Wikipedia front page, 10 Feb 2014.
-    ne = stanford_ner_tag("Academy Award-winning actor Philip Seymour Hoffman"
-                          " dies at the age of 46.")
+    phrase = ("Academy Award-winning actor Philip Seymour Hoffman"
+              " dies at the age of 46.")
+
+    ne = stanford_ner_tag(phrase)
     for token, tag in ne:
         assert_true(isinstance(token, basestring))
         assert_true(tag in ["O", "PERSON"])
+
+    names = stanford_ner_tag(phrase, format="names")
+    # Stanford doesn't pick up "Academy Award". This is not our fault.
+    # (XXX divise a better test.)
+    assert_equal(names, [("Philip Seymour Hoffman", "PERSON")])

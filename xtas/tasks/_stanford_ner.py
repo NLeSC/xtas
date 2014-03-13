@@ -1,5 +1,7 @@
 from __future__ import absolute_import, print_function
 import atexit
+from itertools import groupby
+import operator
 import os
 import os.path
 import signal
@@ -71,11 +73,20 @@ ner_dir = download()
 server, port = start_server()
 
 
-def tag(doc):
+def tag(doc, format="tokens"):
+    if format not in ["tokens", "names"]:
+        raise ValueError("unknown format %r" % format)
+
     text = ' '.join(nltk.word_tokenize(doc))
 
     s = socket()
     s.connect(('localhost', port))
     s.sendall(text)
     s.send('\n')
-    return [token.rsplit('/', 1) for token in s.recv(10 * len(text)).split()]
+    tagged = [token.rsplit('/', 1) for token in s.recv(10 * len(text)).split()]
+
+    if format == "tokens":
+        return tagged
+    elif format == "names":
+        return [' '.join(token for token, _ in tokens)
+                for cls, tokens in groupby(tagged, operator.itemgetter(1))]
