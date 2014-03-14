@@ -17,3 +17,8 @@ CELERY = dict(
     # Uncomment the following to make Celery tasks run locally (for debugging).
     #CELERY_ALWAYS_EAGER=True,
 )
+
+ELASTICSEARCH = [
+    {"host": "localhost", "port": 9200},
+    # add more hosts here
+]

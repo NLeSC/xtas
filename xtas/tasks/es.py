@@ -8,7 +8,12 @@ from elasticsearch import Elasticsearch
 
 from ..celery import app
 
-_es = Elasticsearch()
+try:
+    from xtas_config import ELASTICSEARCH
+except ImportError:
+    from xtas.config import ELASTICSEARCH
+
+_es = Elasticsearch(hosts=ELASTICSEARCH)
 
 
 _ES_DOC_FIELDS = ('index', 'type', 'id', 'field')
