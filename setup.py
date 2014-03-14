@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 
 from distutils.core import setup
+import os.path
+
+# Get __version__ from xtas source
+dist_dir = os.path.dirname(os.path.abspath(__file__))
+execfile(os.path.join(dist_dir, '_version.py'))
 
 setup(
     name="xtas",
@@ -8,6 +13,7 @@ setup(
     author="Lars Buitinck",
     author_email="l.buitinck@esciencecenter.nl",
     packages=["xtas", "xtas.tasks", "xtas.webserver"],
+    version=__version__,
     classifiers=[
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: Apache Software License",
@@ -18,10 +24,8 @@ setup(
     install_requires=[
         "celery>=3.0.0",
         "flask>=0.10.1",
-        #"langid>=1.1.4dev",
         "nltk",
         "elasticsearch",
-        #"simplejson>=2.6.2",
     ],
     extras_requires={
         "clustering": "scikit-learn>=0.13",

@@ -11,6 +11,7 @@ import celery.result
 from flask import Flask, Response, abort
 from flask import __version__ as flask_version
 
+from .. import __version__
 from ..tasks import app as taskq
 from ..tasks import es_document, store_single
 
@@ -74,4 +75,5 @@ if __name__ == "__main__":
     logging.basicConfig(level=loglevel)
 
     app.debug = args.debug
+    print("xtas %s REST endpoint" % __version__)
     app.run(host=args.host, port=args.port)
