@@ -70,9 +70,9 @@ some dependencies (e.g. NLTK models) that will otherwise be fetched on demand.
 Configuring
 -----------
 To override the built-in Celery configuration (which assumes, a.o., that
-you're in the Amsterdam timezone), copy xtas/celeryconfig.py to a file
-called xtas_celeryconfig.py in your PYTHONPATH and modify it. Note: the
-file should not be in the xtas/ directory.
+you're in the Amsterdam timezone), copy xtas/config.py to a file called
+xtas_config.py in your PYTHONPATH and modify it. Note: the file should not be
+in the xtas/ directory.
 
 
 As a library

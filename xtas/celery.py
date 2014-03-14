@@ -8,11 +8,10 @@ logger = logging.getLogger(__name__)
 
 app = Celery('xtas', include=['xtas.tasks'])
 try:
-    app.config_from_object('xtas_celeryconfig')
-    app.conf    # force ImportError; http://stackoverflow.com/q/21092859/166749
+    app.config_from_object('xtas_config.CELERY', force=True)
 except ImportError:
     logger.warning('Cannot import celeryconfig, falling back to default')
-    app.config_from_object('xtas.celeryconfig')
+    app.config_from_object('xtas.config.CELERY', force=True)
 
 if __name__ == '__main__':
     app.start()

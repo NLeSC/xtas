@@ -35,7 +35,7 @@ nosetests.xml
 *.mo
 
 # Config files
-xtas_celeryconfig.py
+xtas_config.py
 
 # Mr Developer
 .mr.developer.cfg
