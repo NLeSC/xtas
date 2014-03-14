@@ -10,7 +10,7 @@ app = Celery('xtas', include=['xtas.tasks'])
 try:
     app.config_from_object('xtas_config.CELERY', force=True)
 except ImportError:
-    logger.warning('Cannot import celeryconfig, falling back to default')
+    logger.warning('Cannot import xtas_config, falling back to default')
     app.config_from_object('xtas.config.CELERY', force=True)
 
 if __name__ == '__main__':
