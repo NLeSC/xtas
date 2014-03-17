@@ -23,7 +23,12 @@ The option ``--system-site-packages`` makes sure system NumPy, SciPy and NLTK
 are used, if they are installed (recommended). Compiling these can take quite
 a long time.
 
-Use `pip <https://pypi.python.org/pypi/pip/1.1>`_ to install xtas from GitHub::
+Use `pip <https://pypi.python.org/pypi/pip/1.1>`_ to install xtas.
+To get the latest release::
+
+    pip install xtas
+
+To get the bleeding edge version from GitHub::
 
     pip install git+https://github.com/NLeSC/xtas.git
 
