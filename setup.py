@@ -5,7 +5,7 @@ import os.path
 
 # Get __version__ from xtas source
 dist_dir = os.path.dirname(os.path.abspath(__file__))
-execfile(os.path.join(dist_dir, '_version.py'))
+execfile(os.path.join(dist_dir, 'xtas/_version.py'))
 
 setup(
     name="xtas",
