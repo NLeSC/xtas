@@ -40,7 +40,12 @@ Usage
 Getting started
 ---------------
 
-You need to have RabbitMQ and Elasticsearch running. Then start a worker::
+You need to have RabbitMQ and Elasticsearch running. On Debian/Ubuntu,
+RabbitMQ can be installed with ``sudo apt-get install rabbitmq-server``.
+See the `Elasticsearch website <http://www.elasticsearch.org/>`_ for how to
+install that package if you don't already have it.
+
+Then start an xtas worker::
 
     celery -A xtas.tasks worker --loglevel=info
 
@@ -67,9 +72,10 @@ You can now run the unittest suite using::
 
     nosetests -s -v tests/
 
-in the source directory. Note that this requires a running worker process and
-Elasticsearch. Running the tests first is a good idea, because it will fetch
-some dependencies (e.g. NLTK models) that will otherwise be fetched on demand.
+in the source directory (``pip install nose`` if needed). This requires a
+running worker process and Elasticsearch. Running the tests first is a good
+idea, because it will fetch some dependencies (e.g. NLTK models) that will
+otherwise be fetched on demand.
 
 
 Configuring
@@ -120,3 +126,18 @@ By default, the webserver listens to port 5000 on localhost *only*. Use the
     python -m xtas.webserver --host 0.0.0.0 --port 5001
 
 to provide a public service to all the world (not recommended) on port 5001.
+
+
+Frequently anticipated questions
+--------------------------------
+
+* If xtas downloads optional dependencies at runtime, where will it put those?
+
+By default, in ``~/xtas_data``. You can override this by setting the
+``XTAS_DATA`` environment variable.
+
+* I can't run clustering/topic models/language models.
+
+Look for ``extras_requires`` in ``setup.py`` for the packages to install.
+If this says, e.g. ``gensim>=0.8``, do ``pip install -U gensim`` to install
+the required package. (We're looking into ways to automate this.)
