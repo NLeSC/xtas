@@ -3,13 +3,21 @@
 from distutils.core import setup
 import os.path
 
+
 # Get __version__ from xtas source
 dist_dir = os.path.dirname(os.path.abspath(__file__))
 execfile(os.path.join(dist_dir, 'xtas/_version.py'))
 
+
+def readme():
+    with open(os.path.join(dist_dir, 'README.rst')) as f:
+        return f.read()
+
+
 setup(
     name="xtas",
     description="Distributed text analysis suite",
+    long_description=readme(),
     author="Lars Buitinck",
     author_email="l.buitinck@esciencecenter.nl",
     packages=["xtas", "xtas.tasks", "xtas.webserver"],
