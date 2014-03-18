@@ -4,7 +4,8 @@ xtas
 Distributed text analysis suite based on Celery.
 
 Copyright University of Amsterdam, Netherlands eScience Center and
-contributors, distributed under the Apache License (see LICENSE.txt).
+contributors, distributed under the Apache License (see ``AUTHORS.txt``,
+``LICENSE.txt``).
 
 
 Installation

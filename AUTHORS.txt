@@ -1,0 +1,9 @@
+Maintainer:
+* Lars Buitinck (Netherlands eScience Center)
+
+Contributors:
+* Wouter van Atteveldt (VU University Amsterdam)
+* Isaac Sijaranamual
+
+Based on earlier work by:
+* Ork de Rooij (University of Amsterdam)
