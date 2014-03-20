@@ -59,12 +59,16 @@ def fetch_query_batch(idx, typ, query, field='body'):
 
 
 @app.task
-def store_single(data, taskname, idx, typ, id):
-    """Store the data in the xtas_results.taskname property of the document."""
+def store_single(data, taskname, idx, typ, id, return_data=True):
+    """Store the data in the xtas_results.taskname property of the document.
+
+    If return_data is true, also returns data (useful for debugging). Set this
+    to false to save bandwidth.
+    """
     now = datetime.now().isoformat()
     doc = {"xtas_results": {taskname: {'data': data, 'timestamp': now}}}
     _es.update(index=idx, doc_type=typ, id=id, body={"doc": doc})
-    return data
+    return data if return_data else None
 
 
 def get_all_results(idx, typ, id):

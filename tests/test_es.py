@@ -68,7 +68,9 @@ def test_store_get_result():
         assert_equal(get_single_result("task1", idx, typ, id), None)
         assert_equal(get_all_results(idx, typ, id), {})
 
-        store_single("task1_result", "task1", idx, typ, id)
+        r = store_single("task1_result", "task1", idx, typ, id,
+                         return_data=False)
+        assert_equal(r, None)
         client.indices.IndicesClient(es).flush()
         assert_equal(get_single_result("task1", idx, typ, id), "task1_result")
         assert_equal(get_all_results(idx, typ, id), {"task1": "task1_result"})
