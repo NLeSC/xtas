@@ -54,8 +54,7 @@ def start_server(port=9155):
     def kill(p):
         p.terminate()
         sleep(2)
-        if p.is_alive():
-            p.kill()
+        p.kill()
         p.wait()
 
     atexit.register(kill, server)
