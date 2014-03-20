@@ -139,3 +139,51 @@ remotely as well. We'll use Celery syntax to accomplish this::
 
 More details on creating chains can be found in the `Celery userguide
 <http://celery.readthedocs.org/en/latest/userguide/canvas.html#chains>`_.
+
+
+Storing results
+---------------
+
+We just saw how to run jobs remotely, fetching documents from an Elasticsearch
+index. What is even more interesting is that we can also store results back to
+ES, so we can use xtas as preprocessing for a semantic search engine.
+
+We can use the ``store_single`` task to run NER on a document from the index
+and store the result back, if we append it to our chain::
+
+    >>> from xtas.tasks.es import store_single
+    >>> doc = es_document('20news', 'post', 3430, 'text')
+    >>> ch = chain(stanford_ner_tag.s(doc, format="names"),
+    ...            store_single.s('ner', doc['index'], doc['type'], doc['id']))
+    >>> result = ch()
+    >>> pprint(result.get())
+    [[u'School of Computer Science', u'ORGANIZATION'],
+     [u'McGill University Lines', u'ORGANIZATION'],
+     [u'Sony', u'ORGANIZATION'],
+     [u'SONY', u'ORGANIZATION'],
+     [u'Invar Shadow Mask', u'ORGANIZATION'],
+     [u'NEC', u'ORGANIZATION'],
+     [u'NEC', u'ORGANIZATION'],
+     [u'Tony', u'PERSON'],
+     [u'McGill University', u'ORGANIZATION'],
+     [u'Floyd', u'PERSON']]
+
+
+``result.get()`` will now report the output from the NER tagger, but getting it
+locally is not what we're after. The ``store_single`` task has also stored the
+result back into the document, as you can verify with::
+
+    >>> pprint(es.get('20news', 3430)['_source']['xtas_results'])
+    {u'ner': {u'data': [[u'School of Computer Science', u'ORGANIZATION'],
+                        [u'McGill University Lines', u'ORGANIZATION'],
+                        [u'Sony', u'ORGANIZATION'],
+                        [u'SONY', u'ORGANIZATION'],
+                        [u'Invar Shadow Mask', u'ORGANIZATION'],
+                        [u'NEC', u'ORGANIZATION'],
+                        [u'NEC', u'ORGANIZATION'],
+                        [u'Tony', u'PERSON'],
+                        [u'McGill University', u'ORGANIZATION'],
+                        [u'Floyd', u'PERSON']],
+              u'timestamp': u'2014-03-20T16:23:07.457985'}}
+
+This result can now be used in ES queries.
