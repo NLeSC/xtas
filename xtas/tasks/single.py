@@ -79,10 +79,16 @@ def tokenize(doc):
 
 
 @app.task
-def semanticize(doc):
+def semanticize(doc, lang='en'):
+    """Run text through the UvA semanticizer.
+
+    Calls the UvA semanticizer webservice to perform entity linking and
+    returns the names/links it has found.
+
+    See http://semanticize.uva.nl/ for details.
+    """
     text = fetch(doc)
 
-    lang = 'nl'
     if not lang.isalpha():
         raise ValueError("not a valid language: %r" % lang)
     url = 'http://semanticize.uva.nl/api/%s?%s' % (lang,
