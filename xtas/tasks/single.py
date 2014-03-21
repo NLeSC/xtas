@@ -65,7 +65,13 @@ def stanford_ner_tag(doc, format="tokens"):
 
 
 @app.task
-def pos_tag(tokens, model):
+def pos_tag(tokens, model='nltk'):
+    """Perform part-of-speech (POS) tagging.
+
+    Currently only does English using the default model in NLTK.
+
+    Expects a list of tokens.
+    """
     if model != 'nltk':
         raise ValueError("unknown POS tagger %r" % model)
     nltk.download('maxent_treebank_pos_tagger')
@@ -74,6 +80,10 @@ def pos_tag(tokens, model):
 
 @app.task
 def tokenize(doc):
+    """Tokenize text.
+
+    Uses the NLTK function word_tokenize.
+    """
     text = fetch(doc)
     return [{"token": t} for t in nltk.word_tokenize(text)]
 
@@ -98,4 +108,9 @@ def semanticize(doc, lang='en'):
 
 @app.task
 def untokenize(tokens):
+    """Undo tokenization.
+
+    Simply concatenates the given tokens with spaces in between. Useful after
+    tokenization and filtering.
+    """
     return ' '.join(tokens)
