@@ -10,8 +10,11 @@ execfile(os.path.join(dist_dir, 'xtas/_version.py'))
 
 
 def readme():
-    with open(os.path.join(dist_dir, 'README.rst')) as f:
-        return f.read()
+    try:
+        with open(os.path.join(dist_dir, 'README.rst')) as f:
+            return f.read()
+    except IOError:
+        return ""
 
 
 setup(
