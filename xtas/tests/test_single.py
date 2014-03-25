@@ -1,7 +1,8 @@
-from nose.tools import assert_equal, assert_less, assert_true
+from nose.tools import assert_equal, assert_in, assert_less, assert_true
 from unittest import skip, SkipTest
 
-from xtas.tasks import movie_review_polarity, stanford_ner_tag, tokenize
+from xtas.tasks import (movie_review_polarity, stanford_ner_tag,
+                        sentiwords_tag, tokenize)
 
 
 def test_movie_review_polarity():
@@ -12,6 +13,19 @@ def test_movie_review_polarity():
 
     # <.5 == probably not positive.
     assert_less(movie_review_polarity("This movie sucks."), .5)
+
+
+def test_sentiwords():
+    bag = sentiwords_tag("I'd like a cold beer.")
+    assert_true(isinstance(bag, dict))
+    assert_in("like", bag)
+    assert_in("beer", bag)
+
+    tokens = sentiwords_tag("bla a fortiori the foo quuxes a priori the baz",
+                            output="tokens")
+    assert_equal(tokens,
+                 ['bla', ('a fortiori', 0.15793), 'the', 'foo',
+                  'quuxes', ('a priori', 0.02784), 'the', 'baz'])
 
 
 def test_tokenize():

@@ -79,6 +79,52 @@ def pos_tag(tokens, model='nltk'):
 
 
 @app.task
+def sentiwords_tag(doc, output="bag"):
+    """Tag doc with SentiWords polarity priors.
+
+    Performs left-to-right, longest-match annotation of token spans with
+    polarities from SentiWords.
+
+    Uses no part-of-speech information; when a span has multiple possible
+    taggings in SentiWords, the mean is returned.
+
+    Parameters
+    ----------
+    doc : document or list of strings
+
+    output : string, optional
+        Output format. Either "bag" for a histogram (dict) of annotated token
+        span frequencies, or "tokens" a mixed list of strings and (list of
+        strings, polarity) pairs.
+    """
+    from ._sentiwords import tag
+    doc = _tokenize_if_needed(fetch(doc))
+
+    tagged = tag(doc)
+    if output == "bag":
+        d = {}
+        for i, j, ngram, polarity in tagged:
+            if ngram in d:
+                d[ngram][1] += 1
+            else:
+                d[ngram] = [polarity, 1]
+        return d
+
+    elif output == "tokens":
+        out = []
+        i = 0
+        for j, k, ngram, polarity in tagged:
+            out.extend(doc[i:j])
+            out.append((ngram, polarity))
+            i = k - 1
+        out.extend(doc[i:])
+        return out
+
+    else:
+        raise ValueError("unknown output format %r" % output)
+
+
+@app.task
 def tokenize(doc):
     """Tokenize text.
 

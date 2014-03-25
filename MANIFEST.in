@@ -2,3 +2,5 @@ recursive-include doc *
 include AUTHORS.txt
 include LICENSE.txt
 include README.rst
+
+include xtas/tasks/sentiwords.txt

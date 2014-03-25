@@ -24,6 +24,7 @@ setup(
     author="Lars Buitinck",
     author_email="l.buitinck@esciencecenter.nl",
     packages=["xtas", "xtas.tasks", "xtas.webserver"],
+    package_data={"xtas.tasks": "*.txt"},
     version=__version__,
     classifiers=[
         "Intended Audience :: Science/Research",
