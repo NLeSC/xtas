@@ -1,8 +1,14 @@
 from nose.tools import assert_equal, assert_in, assert_less, assert_true
 from unittest import skip, SkipTest
 
-from xtas.tasks import (movie_review_polarity, stanford_ner_tag,
+from xtas.tasks import (morphy, movie_review_polarity, stanford_ner_tag,
                         sentiwords_tag, tokenize)
+
+
+def test_morphy():
+    s = "The cats sat on the mats."     # morphy doesn't catch sat
+    lemmata = morphy(s)
+    assert_equal(lemmata, "The cat sat on the mat .".split())
 
 
 def test_movie_review_polarity():
