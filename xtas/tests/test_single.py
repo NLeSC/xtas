@@ -51,7 +51,7 @@ def test_stanford_ner():
         assert_true(isinstance(token, basestring))
         assert_true(tag in ["O", "PERSON"])
 
-    names = stanford_ner_tag(phrase, format="names")
+    names = stanford_ner_tag(phrase, output="names")
     # Stanford doesn't pick up "Academy Award". This is not our fault.
     # (XXX divise a better test.)
     assert_equal(names, [("Philip Seymour Hoffman", "PERSON")])
