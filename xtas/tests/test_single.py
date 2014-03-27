@@ -1,5 +1,4 @@
 from nose.tools import assert_equal, assert_in, assert_less, assert_true
-from unittest import skip, SkipTest
 
 from xtas.tasks import (morphy, movie_review_polarity, stanford_ner_tag,
                         sentiwords_tag, tokenize)
@@ -12,11 +11,6 @@ def test_morphy():
 
 
 def test_movie_review_polarity():
-    try:
-        import sklearn
-    except ImportError:
-        raise SkipTest("movie review classifier requires scikit-learn")
-
     # <.5 == probably not positive.
     assert_less(movie_review_polarity("This movie sucks."), .5)
 

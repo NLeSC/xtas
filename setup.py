@@ -24,7 +24,8 @@ setup(
     author="Lars Buitinck",
     author_email="l.buitinck@esciencecenter.nl",
     packages=["xtas", "xtas.tasks", "xtas.webserver"],
-    package_data={"xtas.tasks": "*.txt"},
+    package_data={"xtas.tasks": ["*.txt"]},
+    url="https://github.com/NLeSC/xtas",
     version=__version__,
     classifiers=[
         "Intended Audience :: Science/Research",
@@ -35,14 +36,11 @@ setup(
     ],
     install_requires=[
         "celery>=3.0.0",
-        "flask>=0.10.1",
-        "nltk",
         "elasticsearch",
+        "flask>=0.10.1",
+        "gensim",
+        "librabbitmq",
+        "nltk",
+        "weighwords",
     ],
-    extras_requires={
-        "clustering": "scikit-learn>=0.13",
-        "fast": "librabbitmq",
-        "lda": "gensim",
-        "wordclouds": "weighwords",
-    },
 )
