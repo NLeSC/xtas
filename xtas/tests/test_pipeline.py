@@ -4,7 +4,7 @@ Test the pipelining and caching in xtas
 
 from contextlib import contextmanager
 
-from nose.tools import assert_equal, assert_not_equal
+from nose.tools import assert_equal
 
 from test_backend import clean_es, ES_TEST_INDEX
 ES_TEST_TYPE = "unittest_doc"
@@ -44,7 +44,7 @@ def test_pipeline_cache():
     "Does the cache work correctly?"
     import json
     import nltk
-    from xtas.tasks.single import tokenize, pos_tag
+    from xtas.tasks.single import tokenize
     from xtas.tasks.pipeline import pipeline
     from xtas.tasks.es import es_document
     text = "The cat is happy"

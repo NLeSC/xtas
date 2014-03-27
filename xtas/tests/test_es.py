@@ -1,4 +1,4 @@
-from nose.tools import assert_equal, assert_not_equal
+from nose.tools import assert_equal
 from unittest import SkipTest
 import logging
 from contextlib import contextmanager
@@ -47,12 +47,12 @@ def test_query_batch():
     "Test getting multiple documents in a batch"
     from xtas.tasks.es import fetch_query_batch
     with clean_es() as es:
-        d1 = es.index(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE,
-                      body={"text": "test", "test": "batch"})
-        d2 = es.index(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE,
-                      body={"text": "test2", "test": "batch"})
-        d3 = es.index(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE,
-                      body={"test": "batch"})
+        es.index(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE,
+                 body={"text": "test", "test": "batch"})
+        es.index(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE,
+                 body={"text": "test2", "test": "batch"})
+        es.index(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE,
+                 body={"test": "batch"})
         client.indices.IndicesClient(es).flush()
         b = fetch_query_batch(ES_TEST_INDEX, ES_TEST_TYPE,
                               query={"term": {"test": "batch"}}, field="text")
