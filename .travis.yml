@@ -1,0 +1,24 @@
+language: python
+python:
+  # Only 2.7 to prevent having to install NumPy and SciPy from source.
+  - "2.7"
+
+services:
+  - elasticsearch
+  - rabbitmq
+
+virtualenv:
+  system_site_packages: true
+
+install:
+  - sudo apt-get update
+  - sudo apt-get install python-numpy python-scipy
+  - pip install .
+  - pip install -r requirements.txt
+
+script:
+  - celery -A xtas.tasks worker --loglevel=info &
+  - nosetests --exe xtas
+  - testexit=$?
+  - killall celery
+  - (exit $testexit)

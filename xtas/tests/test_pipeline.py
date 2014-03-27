@@ -6,7 +6,8 @@ from contextlib import contextmanager
 
 from nose.tools import assert_equal
 
-from test_backend import clean_es, ES_TEST_INDEX
+from .test_es import clean_es, ES_TEST_INDEX
+
 ES_TEST_TYPE = "unittest_doc"
 
 
