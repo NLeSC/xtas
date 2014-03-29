@@ -103,7 +103,9 @@ def sentiwords_tag(doc, output="bag"):
     tagged = tag(doc)
     if output == "bag":
         d = {}
-        for i, j, ngram, polarity in tagged:
+        for ngram, polarity in tagged:
+            if polarity == 0:
+                continue
             if ngram in d:
                 d[ngram][1] += 1
             else:
@@ -111,14 +113,8 @@ def sentiwords_tag(doc, output="bag"):
         return d
 
     elif output == "tokens":
-        out = []
-        i = 0
-        for j, k, ngram, polarity in tagged:
-            out.extend(doc[i:j])
-            out.append((ngram, polarity))
-            i = k - 1
-        out.extend(doc[i:])
-        return out
+        return [ngram if polarity == 0 else (ngram, polarity)
+                for ngram, polarity in tagged]
 
     else:
         raise ValueError("unknown output format %r" % output)

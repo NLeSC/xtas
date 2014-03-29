@@ -37,7 +37,7 @@ load()
 def tag(words):
     def try_position(k):
         for j in xrange(_MAX_LEN, 0, -1):
-            ngram = ' '.join(words[i:j])
+            ngram = ' '.join(words[i:i+j])
             try:
                 return j, ngram, _TABLE[ngram]
             except KeyError:
@@ -47,7 +47,8 @@ def tag(words):
     while i < len(words):
         try:
             skip, ngram, polarity = try_position(i)
-            yield i, i + skip, ngram, polarity
+            yield ngram, polarity
             i += skip
         except TypeError:
+            yield words[i], 0
             i += 1
