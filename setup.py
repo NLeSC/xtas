@@ -17,6 +17,11 @@ def readme():
         return ""
 
 
+def requirements():
+    with open(os.path.join(dist_dir, "requirements.txt")) as f:
+        return f.readlines()
+
+
 setup(
     name="xtas",
     description="Distributed text analysis suite",
@@ -34,13 +39,5 @@ setup(
         "Topic :: Scientific/Engineering :: Information Analysis",
         "Topic :: Text Processing",
     ],
-    install_requires=[
-        "celery>=3.0.0",
-        "elasticsearch",
-        "flask>=0.10.1",
-        "gensim",
-        "librabbitmq",
-        "nltk",
-        "weighwords",
-    ],
+    install_requires=requirements(),
 )
