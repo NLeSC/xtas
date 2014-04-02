@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>xtas tutorial &mdash; xtas 2.99.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.99.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="xtas 2.99.3 documentation" href="index.html" />
+    <link rel="prev" title="xtas, the eXtensible Text Analysis Suite" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="index.html" title="xtas, the eXtensible Text Analysis Suite"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">xtas 2.99.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="xtas-tutorial">
+<h1>xtas tutorial<a class="headerlink" href="#xtas-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>Assuming you&#8217;ve properly configured and started xtas as described in the
+README, here&#8217;s how to do interesting work with it.</p>
+<p>First, you need a document collection. If you don&#8217;t have one already, download
+the 20newsgroups dataset:</p>
+<div class="highlight-python"><div class="highlight"><pre>curl http://qwone.com/~jason/20Newsgroups/20news-bydate.tar.gz | tar xzf -
+</pre></div>
+</div>
+<p>Store the documents in Elasticsearch:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">elasticsearch</span> <span class="kn">import</span> <span class="n">Elasticsearch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">es</span> <span class="o">=</span> <span class="n">Elasticsearch</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">files</span> <span class="o">=</span> <span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">fnames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="s">&#39;20news-bydate-train&#39;</span><span class="p">)</span>
+<span class="gp">... </span>         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">body</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s">&#39;ignore&#39;</span><span class="p">)}</span>
+<span class="gp">... </span>    <span class="n">es</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s">&#39;20news&#39;</span><span class="p">,</span> <span class="n">doc_type</span><span class="o">=</span><span class="s">&#39;post&#39;</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>Now, we can run named-entity recognition on the documents. Let&#8217;s try it on one
+document:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">xtas.tasks</span> <span class="kn">import</span> <span class="n">es_document</span><span class="p">,</span> <span class="n">stanford_ner_tag</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">es_document</span><span class="p">(</span><span class="s">&#39;20news&#39;</span><span class="p">,</span> <span class="s">&#39;post&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tagged</span> <span class="o">=</span> <span class="n">stanford_ner_tag</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">token</span> <span class="k">for</span> <span class="n">token</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tagged</span> <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s">&#39;PERSON&#39;</span><span class="p">]</span>
+<span class="go">[&#39;Dane&#39;, &#39;C.&#39;, &#39;Butzer&#39;, &#39;Dane&#39;]</span>
+</pre></div>
+</div>
+<p>We just fetched the document from ES to run Stanford NER locally. That&#8217;s not
+the best we can do, so let&#8217;s run it remotely. We can do so by running the
+<tt class="docutils literal"><span class="pre">stanford_ner_tag</span></tt> tasks asynchronously. First, observe that <tt class="docutils literal"><span class="pre">doc</span></tt> isn&#8217;t
+really the document: it&#8217;s only a handle on the ES index:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span>
+<span class="go">{&#39;index&#39;: &#39;20news&#39;, &#39;type&#39;: &#39;post&#39;, &#39;id&#39;: 1, &#39;field&#39;: &#39;text&#39;}</span>
+</pre></div>
+</div>
+<p>This handle can be sent over the wire to make Stanford NER run in the worker:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">stanford_ner_tag</span><span class="o">.</span><span class="n">apply_async</span><span class="p">([</span><span class="n">doc</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span>
+<span class="go">&lt;AsyncResult: 44128ea3-970c-427c-80cc-2af499426b33&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">token</span> <span class="k">for</span> <span class="n">token</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s">&#39;PERSON&#39;</span><span class="p">]</span>
+<span class="go">[u&#39;Dane&#39;, u&#39;C.&#39;, u&#39;Butzer&#39;, u&#39;Dane&#39;]</span>
+</pre></div>
+</div>
+<p>We have the same result, but now from a worker process. The <tt class="docutils literal"><span class="pre">result</span></tt> object
+is an <tt class="docutils literal"><span class="pre">AsyncResult</span></tt> returned by Celery; see
+<a class="reference external" href="http://docs.celeryproject.org/en/latest/">its documentation</a> for full
+details.</p>
+<div class="section" id="batch-tasks">
+<h2>Batch tasks<a class="headerlink" href="#batch-tasks" title="Permalink to this headline">¶</a></h2>
+<p>Some tasks require a batch of documents to work; an example is topic modeling.
+Such tasks are available in the <tt class="docutils literal"><span class="pre">xtas.tasks.cluster</span></tt> package,
+so named because most of the tasks can be considered a form of clustering.
+Batches of documents are addressed using Elasticsearch queries,
+which can be performed using xtas.
+For example, to search for the word &#8220;hello&#8221; in the 20news collection:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">xtas.tasks.es</span> <span class="kn">import</span> <span class="n">fetch_query_batch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hello</span> <span class="o">=</span> <span class="n">fetch_query_batch</span><span class="p">(</span><span class="s">&#39;20news&#39;</span><span class="p">,</span> <span class="s">&#39;post&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                          <span class="p">{</span><span class="s">&#39;term&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="s">&#39;hello&#39;</span><span class="p">}},</span> <span class="s">&#39;text&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">hello</span><span class="p">)</span>
+<span class="go">10</span>
+</pre></div>
+</div>
+<p>This fetches the <tt class="docutils literal"><span class="pre">'text'</span></tt> field of the documents that match the query.
+(<tt class="docutils literal"><span class="pre">'text'</span></tt> appears twice since you might want to match on the title,
+but retrieve the body text, etc.)</p>
+<p>Now we can fit a topic model to these document. (You need the gensim package
+for this, <tt class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gensim</span></tt>.) Try:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">xtas.tasks.cluster</span> <span class="kn">import</span> <span class="n">lda</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">lda</span><span class="p">(</span><span class="n">hello</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">lda</span><span class="p">(</span><span class="n">hello</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="go">[[(u&#39;and&#39;, 0.12790937338676811),</span>
+<span class="go">  (u&#39;am&#39;, 0.1152182699301362),</span>
+<span class="go">  (u&#39;any&#39;, 0.11363680997981712),</span>
+<span class="go">  (u&#39;application&#39;, 0.10684945575768415),</span>
+<span class="go">  (u&#39;algorithm&#39;, 0.10684176173416),</span>
+<span class="go">  (u&#39;advance&#39;, 0.096258764014596071),</span>
+<span class="go">  (u&#39;be&#39;, 0.089261082314667867),</span>
+<span class="go">  (u&#39;anyone&#39;, 0.088502698282068443),</span>
+<span class="go">  (u&#39;an&#39;, 0.087148958488685924),</span>
+<span class="go">  (u&#39;ac&#39;, 0.068372826111416152)],</span>
+<span class="go"> [(u&#39;and&#39;, 0.1150624380922104),</span>
+<span class="go">  (u&#39;application&#39;, 0.11312568874979338),</span>
+<span class="go">  (u&#39;anyone&#39;, 0.10728409178444523),</span>
+<span class="go">  (u&#39;advance&#39;, 0.10695761539379559),</span>
+<span class="go">  (u&#39;algorithm&#39;, 0.10218031622874352),</span>
+<span class="go">  (u&#39;be&#39;, 0.10193138214362385),</span>
+<span class="go">  (u&#39;any&#39;, 0.098412728034106681),</span>
+<span class="go">  (u&#39;am&#39;, 0.097021607665297285),</span>
+<span class="go">  (u&#39;an&#39;, 0.089350803758697001),</span>
+<span class="go">  (u&#39;ac&#39;, 0.06867332814928688)]]</span>
+</pre></div>
+</div>
+<p>Here, the <tt class="docutils literal"><span class="pre">lda</span></tt> task returns (term, weight) pairs for two topics.
+Admittedly, the topics aren&#8217;t very pretty on this small set.</p>
+<p>Of course, fetching the documents and running the topic model locally isn&#8217;t
+optimal use of xtas. Instead, let&#8217;s set up a <em>chain</em> of tasks that runs the
+query and fetches the results on a worker node, then runs the topic model
+remotely as well. We&#8217;ll use Celery syntax to accomplish this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">celery</span> <span class="kn">import</span> <span class="n">chain</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fetch</span> <span class="o">=</span> <span class="n">fetch_query_batch</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="s">&#39;20news&#39;</span><span class="p">,</span> <span class="s">&#39;post&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                            <span class="p">{</span><span class="s">&#39;term&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="s">&#39;hello&#39;</span><span class="p">}},</span> <span class="s">&#39;text&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fetch_lda</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="n">fetch</span><span class="p">,</span> <span class="n">lda</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>    <span class="c"># make a chain</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">fetch_lda</span><span class="p">()</span>                    <span class="c"># run the chain</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>                    <span class="c"># get results and display them</span>
+<span class="go">[[[u&#39;application&#39;, 0.11542413644453535],</span>
+<span class="go">  [u&#39;am&#39;, 0.11459672375838384],</span>
+<span class="go">  [u&#39;and&#39;, 0.11376035386021534],</span>
+<span class="go">  [u&#39;algorithm&#39;, 0.11359529150248926],</span>
+<span class="go">  [u&#39;advance&#39;, 0.10468087522675153],</span>
+<span class="go">  [u&#39;be&#39;, 0.10361386971376114],</span>
+<span class="go">  [u&#39;any&#39;, 0.10321250189311466],</span>
+<span class="go">  [u&#39;anyone&#39;, 0.08927608350583244],</span>
+<span class="go">  [u&#39;an&#39;, 0.08631073215334073],</span>
+<span class="go">  [u&#39;ac&#39;, 0.055529431941575814]],</span>
+<span class="go"> [[u&#39;and&#39;, 0.12924727078744289],</span>
+<span class="go">  [u&#39;any&#39;, 0.1088955461011441],</span>
+<span class="go">  [u&#39;anyone&#39;, 0.10640790208811389],</span>
+<span class="go">  [u&#39;application&#39;, 0.10453772359410955],</span>
+<span class="go">  [u&#39;advance&#39;, 0.09849716348992137],</span>
+<span class="go">  [u&#39;am&#39;, 0.09774308133723099],</span>
+<span class="go">  [u&#39;algorithm&#39;, 0.09546989905871668],</span>
+<span class="go">  [u&#39;an&#39;, 0.09017462431916073],</span>
+<span class="go">  [u&#39;be&#39;, 0.08754428312668586],</span>
+<span class="go">  [u&#39;ac&#39;, 0.0814825060974741]]]</span>
+</pre></div>
+</div>
+<p>More details on creating chains can be found in the <a class="reference external" href="http://celery.readthedocs.org/en/latest/userguide/canvas.html#chains">Celery userguide</a>.</p>
+</div>
+<div class="section" id="storing-results">
+<h2>Storing results<a class="headerlink" href="#storing-results" title="Permalink to this headline">¶</a></h2>
+<p>We just saw how to run jobs remotely, fetching documents from an Elasticsearch
+index. What is even more interesting is that we can also store results back to
+ES, so we can use xtas as preprocessing for a semantic search engine.</p>
+<p>We can use the <tt class="docutils literal"><span class="pre">store_single</span></tt> task to run NER on a document from the index
+and store the result back, if we append it to our chain:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">xtas.tasks.es</span> <span class="kn">import</span> <span class="n">store_single</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">es_document</span><span class="p">(</span><span class="s">&#39;20news&#39;</span><span class="p">,</span> <span class="s">&#39;post&#39;</span><span class="p">,</span> <span class="mi">3430</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ch</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="n">stanford_ner_tag</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&quot;names&quot;</span><span class="p">),</span>
+<span class="gp">... </span>           <span class="n">store_single</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="s">&#39;ner&#39;</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;index&#39;</span><span class="p">],</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">],</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">ch</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+<span class="go">[[u&#39;School of Computer Science&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go"> [u&#39;McGill University Lines&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go"> [u&#39;Sony&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go"> [u&#39;SONY&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go"> [u&#39;Invar Shadow Mask&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go"> [u&#39;NEC&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go"> [u&#39;NEC&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go"> [u&#39;Tony&#39;, u&#39;PERSON&#39;],</span>
+<span class="go"> [u&#39;McGill University&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go"> [u&#39;Floyd&#39;, u&#39;PERSON&#39;]]</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">result.get()</span></tt> will now report the output from the NER tagger, but getting it
+locally is not what we&#8217;re after. The <tt class="docutils literal"><span class="pre">store_single</span></tt> task has also stored the
+result back into the document, as you can verify with:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">es</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;20news&#39;</span><span class="p">,</span> <span class="mi">3430</span><span class="p">)[</span><span class="s">&#39;_source&#39;</span><span class="p">][</span><span class="s">&#39;xtas_results&#39;</span><span class="p">])</span>
+<span class="go">{u&#39;ner&#39;: {u&#39;data&#39;: [[u&#39;School of Computer Science&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go">                    [u&#39;McGill University Lines&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go">                    [u&#39;Sony&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go">                    [u&#39;SONY&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go">                    [u&#39;Invar Shadow Mask&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go">                    [u&#39;NEC&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go">                    [u&#39;NEC&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go">                    [u&#39;Tony&#39;, u&#39;PERSON&#39;],</span>
+<span class="go">                    [u&#39;McGill University&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go">                    [u&#39;Floyd&#39;, u&#39;PERSON&#39;]],</span>
+<span class="go">          u&#39;timestamp&#39;: u&#39;2014-03-20T16:23:07.457985&#39;}}</span>
+</pre></div>
+</div>
+<p>This result can now be used in ES queries.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">xtas tutorial</a><ul>
+<li><a class="reference internal" href="#batch-tasks">Batch tasks</a></li>
+<li><a class="reference internal" href="#storing-results">Storing results</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">xtas, the eXtensible Text Analysis Suite</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tutorial.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="index.html" title="xtas, the eXtensible Text Analysis Suite"
+             >previous</a> |</li>
+        <li><a href="index.html">xtas 2.99.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013–2014 Netherlands eScience Center, University of Amsterdam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
