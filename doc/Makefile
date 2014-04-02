@@ -23,6 +23,7 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "  gh-pages   to make HTML files and commit them to gh-pages"
 	@echo "  html       to make standalone HTML files"
 	@echo "  dirhtml    to make HTML files named index.html in directories"
 	@echo "  singlehtml to make a single large HTML file"
@@ -44,6 +45,10 @@ help:
 
 clean:
 	rm -rf $(BUILDDIR)/*
+
+gh-pages: html
+	touch $(BUILDDIR)/html/.nojekyll
+	./commit-to-gh-pages
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
