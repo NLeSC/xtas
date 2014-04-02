@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Setting up xtas &mdash; xtas 2.99.4 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.99.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="xtas 2.99.4 documentation" href="index.html" />
+    <link rel="next" title="xtas tutorial" href="tutorial.html" />
+    <link rel="prev" title="xtas, the eXtensible Text Analysis Suite" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tutorial.html" title="xtas tutorial"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="xtas, the eXtensible Text Analysis Suite"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">xtas 2.99.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="setting-up-xtas">
+<h1>Setting up xtas<a class="headerlink" href="#setting-up-xtas" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Make sure you have <a class="reference external" href="http://www.elasticsearch.org/">Elasticsearch</a> and
+<a class="reference external" href="http://www.rabbitmq.com/">RabbitMQ</a> running. Installation instructions for
+those can be found in various places. Make sure you have Python 2.6 or newer.
+Some tasks require a Java VM. xtas has been tested on Linux; it should work on
+OS X but this has not been tested.</p>
+<p>TL;DR: <tt class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">xtas</span></tt>.</p>
+<p>Long story: first set up a virtualenv for xtas:</p>
+<div class="highlight-python"><div class="highlight"><pre>virtualenv --system-site-packages /some/where
+. /some/where/bin/activate
+</pre></div>
+</div>
+<p>The option <tt class="docutils literal"><span class="pre">--system-site-packages</span></tt> makes sure system NumPy, SciPy and NLTK
+are used, if they are pre-installed on the machine (recommended). Compiling
+these can take quite a long time.</p>
+<p>Use <a class="reference external" href="https://pypi.python.org/pypi/pip/1.1">pip</a> to install xtas.
+To get the latest release:</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install xtas
+</pre></div>
+</div>
+<p>To get the bleeding edge version from GitHub:</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install git+https://github.com/NLeSC/xtas.git
+</pre></div>
+</div>
+</div>
+<div class="section" id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>You need to have RabbitMQ and Elasticsearch running. On Debian/Ubuntu,
+RabbitMQ can be installed with <tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">rabbitmq-server</span></tt>.
+See the <a class="reference external" href="http://www.elasticsearch.org/">Elasticsearch website</a> for how to
+install that package if you don&#8217;t already have it.</p>
+<p>Then start an xtas worker:</p>
+<div class="highlight-python"><div class="highlight"><pre>celery -A xtas.tasks worker --loglevel=info
+</pre></div>
+</div>
+<p>Start the web frontend:</p>
+<div class="highlight-python"><div class="highlight"><pre>python -m xtas.webserver
+</pre></div>
+</div>
+<p>Verify that it works by visiting:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost:5000/tasks
+</pre></div>
+</div>
+<p>You should see a list of supported tasks.</p>
+<p>Now to perform some actual work, make sure Elasticsearch is populated with
+documents, and visit a URL such as</p>
+<blockquote>
+<div><a class="reference external" href="http://localhost:5000/run_es/morphy/blog/post/1/body">http://localhost:5000/run_es/morphy/blog/post/1/body</a></div></blockquote>
+<p>This runs the Morphy morphological analyzer on the &#8220;body&#8221; field of &#8220;post&#8221; 1
+in ES index &#8220;blog&#8221;. After some time, the results from Morphy are written to
+this document, but in a field called &#8220;xtas_results&#8221;.</p>
+<p>You can now run the unittest suite using:</p>
+<div class="highlight-python"><div class="highlight"><pre>nosetests -s -v --exe xtas
+</pre></div>
+</div>
+<p>in the source directory (<tt class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nose</span></tt> if needed). This requires a
+running worker process and Elasticsearch. Running the tests first is a good
+idea, because it will fetch some dependencies (e.g. NLTK models) that will
+otherwise be fetched on demand.</p>
+</div>
+<div class="section" id="configuring">
+<h2>Configuring<a class="headerlink" href="#configuring" title="Permalink to this headline">¶</a></h2>
+<p>To override the built-in xtas configuration (which assumes that you&#8217;re in the
+Amsterdam timezone, have Elasticsearch at <tt class="docutils literal"><span class="pre">localhost:9200</span></tt>, etc.), copy
+<tt class="docutils literal"><span class="pre">xtas/config.py</span></tt> to a file called <tt class="docutils literal"><span class="pre">xtas_config.py</span></tt> in your <tt class="docutils literal"><span class="pre">PYTHONPATH</span></tt>
+and modify it. Note: the file should not be in the <tt class="docutils literal"><span class="pre">xtas/</span></tt> directory.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Setting up xtas</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#getting-started">Getting started</a></li>
+<li><a class="reference internal" href="#configuring">Configuring</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">xtas, the eXtensible Text Analysis Suite</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tutorial.html"
+                        title="next chapter">xtas tutorial</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/setup.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tutorial.html" title="xtas tutorial"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="xtas, the eXtensible Text Analysis Suite"
+             >previous</a> |</li>
+        <li><a href="index.html">xtas 2.99.4 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013–2014 Netherlands eScience Center, University of Amsterdam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
