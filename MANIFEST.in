@@ -1,4 +1,5 @@
-recursive-include doc *
+recursive-include doc *.rst Makefile conf.py
+
 include AUTHORS.txt
 include LICENSE.txt
 include README.rst
