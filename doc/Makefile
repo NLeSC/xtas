@@ -48,7 +48,7 @@ clean:
 
 gh-pages: html
 	touch $(BUILDDIR)/html/.nojekyll
-	./commit-to-gh-pages $(BUILDDIR)/html
+	./commit-to-gh-pages.sh $(BUILDDIR)/html
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
