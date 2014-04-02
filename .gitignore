@@ -55,5 +55,8 @@ stanford-ner*
 \#*\#
 .\#*
 
-# Tutorial cruft
+# Datasets
 20news*
+SentiWords-*.txt
+txt_sentoken/
+xtas_data/
