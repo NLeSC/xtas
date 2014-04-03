@@ -1,4 +1,7 @@
-"""Clustering and topic modelling tasks."""
+"""Clustering and topic modelling tasks.
+
+These tasks process batches of documents, denoted as lists of strings.
+"""
 
 from __future__ import absolute_import
 

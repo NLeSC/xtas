@@ -1,4 +1,10 @@
-"""Embarrasingly parallel (per-document) tasks."""
+"""Single-document tasks.
+
+These tasks process one document at a time. Usually, a document is passed as
+the first argument; it may either be a string or the result from
+``xtas.tasks.es.es_document``, which is a reference to a document in the
+Elasticsearch store.
+"""
 
 from __future__ import absolute_import
 
@@ -14,7 +20,15 @@ from ..celery import app
 
 @app.task
 def morphy(doc):
-    """Lemmatize tokens using morphy, WordNet's lemmatizer."""
+    """Lemmatize tokens using morphy, WordNet's lemmatizer.
+
+    No part-of-speech tagging is done.
+
+    Returns
+    -------
+    lemmas : list
+        List of lemmas.
+    """
     # XXX Results will be better if we do POS tagging first, but then we
     # need to map Penn Treebank tags to WordNet tags.
     nltk.download('wordnet', quiet=False)
@@ -24,7 +38,16 @@ def morphy(doc):
 
 @app.task
 def movie_review_polarity(doc):
-    """Returns the probability that the movie review doc is positive."""
+    """Movie review polarity classifier.
+
+    Runs a logistic regression model trained on a set of positive and negative
+    movie reviews (all in English).
+
+    Returns
+    -------
+    p : float
+        The probability that the movie review ``doc`` is positive.
+    """
     from ._polarity import classify
     return classify(doc)
 
@@ -137,7 +160,13 @@ def semanticize(doc, lang='en'):
     Calls the UvA semanticizer webservice to perform entity linking and
     returns the names/links it has found.
 
-    See http://semanticize.uva.nl/ for details.
+    See http://semanticize.uva.nl/doc/ for details.
+
+    References
+    ----------
+    M. Guerini, L. Gatti and M. Turchi (2013). "Sentiment analysis: How to
+    derive prior polarities from SentiWordNet". Proc. EMNLP, pp. 1259-1269.
+
     """
     text = fetch(doc)
 
@@ -154,5 +183,9 @@ def untokenize(tokens):
 
     Simply concatenates the given tokens with spaces in between. Useful after
     tokenization and filtering.
+
+    Returns
+    -------
+    doc : string
     """
     return ' '.join(tokens)

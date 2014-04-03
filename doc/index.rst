@@ -14,6 +14,7 @@ Contents:
 
    setup
    tutorial
+   api
    faq
 
 
