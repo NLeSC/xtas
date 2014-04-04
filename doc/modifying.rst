@@ -42,7 +42,6 @@ function asynchronously, e.g. in a Python shell::
 
     >>> from mytasks import reverse
     >>> result = reverse.apply_async(["Hello, world!"])
-    <AsyncResult: a6ad26d6-2109-46b4-ac97-abbed42c7ce1>
     >>> result.get()
     u'!dlrow ,olleH'
 
