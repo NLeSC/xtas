@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>xtas.tasks.single &mdash; xtas 2.99.5 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootswatch-3.1.0/yeti/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '2.99.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="xtas 2.99.5 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          xtas</a>
+        <span class="navbar-text navbar-version pull-left"><b>2.99</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Documentation <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup.html">Setting up xtas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">xtas tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modifying.html">Modifying xtas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently anticipated questions</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+  <h1>Source code for xtas.tasks.single</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Single-document tasks.</span>
+
+<span class="sd">These tasks process one document at a time. Usually, a document is passed as</span>
+<span class="sd">the first argument; it may either be a string or the result from</span>
+<span class="sd">``xtas.tasks.es.es_document``, which is a reference to a document in the</span>
+<span class="sd">Elasticsearch store.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">urlencode</span>
+<span class="kn">from</span> <span class="nn">urllib2</span> <span class="kn">import</span> <span class="n">urlopen</span>
+
+<span class="kn">import</span> <span class="nn">nltk</span>
+
+<span class="kn">from</span> <span class="nn">.es</span> <span class="kn">import</span> <span class="n">fetch</span>
+<span class="kn">from</span> <span class="nn">..celery</span> <span class="kn">import</span> <span class="n">app</span>
+
+
+<span class="nd">@app.task</span>
+<div class="viewcode-block" id="morphy"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.morphy">[docs]</a><span class="k">def</span> <span class="nf">morphy</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Lemmatize tokens using morphy, WordNet&#39;s lemmatizer.</span>
+
+<span class="sd">    No part-of-speech tagging is done.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    lemmas : list</span>
+<span class="sd">        List of lemmas.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># XXX Results will be better if we do POS tagging first, but then we</span>
+    <span class="c"># need to map Penn Treebank tags to WordNet tags.</span>
+    <span class="n">nltk</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s">&#39;wordnet&#39;</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="n">nltk</span><span class="o">.</span><span class="n">WordNetLemmatizer</span><span class="p">()</span><span class="o">.</span><span class="n">lemmatize</span><span class="p">,</span>
+               <span class="n">_tokenize_if_needed</span><span class="p">(</span><span class="n">fetch</span><span class="p">(</span><span class="n">doc</span><span class="p">)))</span>
+
+</div>
+<span class="nd">@app.task</span>
+<div class="viewcode-block" id="movie_review_polarity"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.movie_review_polarity">[docs]</a><span class="k">def</span> <span class="nf">movie_review_polarity</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Movie review polarity classifier.</span>
+
+<span class="sd">    Runs a logistic regression model trained on a set of positive and negative</span>
+<span class="sd">    movie reviews (all in English).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    p : float</span>
+<span class="sd">        The probability that the movie review ``doc`` is positive.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">._polarity</span> <span class="kn">import</span> <span class="n">classify</span>
+    <span class="k">return</span> <span class="n">classify</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_tokenize_if_needed</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="c"># XXX building token dictionaries is actually wasteful...</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">tok</span><span class="p">[</span><span class="s">&#39;token&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">tok</span> <span class="ow">in</span> <span class="n">tokenize</span><span class="p">(</span><span class="n">s</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+
+<span class="nd">@app.task</span>
+<div class="viewcode-block" id="stanford_ner_tag"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.stanford_ner_tag">[docs]</a><span class="k">def</span> <span class="nf">stanford_ner_tag</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&quot;tokens&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Named entity recognizer using Stanford NER.</span>
+
+<span class="sd">    Currently only supports the model &#39;english.all.3class.distsim.crf.ser.gz&#39;.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    doc : document</span>
+<span class="sd">        Tokenization will be done by Stanford NER using its own rules.</span>
+
+<span class="sd">    output : string, optional</span>
+<span class="sd">        Output format. &quot;tokens&quot; gives a list of (token, nerclass) triples,</span>
+<span class="sd">        similar to the IO format but without the &quot;I-&quot;. &quot;names&quot; returns a list</span>
+<span class="sd">        of (name, class pairs); since Stanford NER does not distinguish between</span>
+<span class="sd">        start and continuation of name spans, the reconstruction of full names</span>
+<span class="sd">        is heuristic.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tagged : list of list of pair of string</span>
+<span class="sd">        For each sentence, a list of (word, tag) pairs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">._stanford_ner</span> <span class="kn">import</span> <span class="n">tag</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tag</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+
+</div>
+<span class="nd">@app.task</span>
+<div class="viewcode-block" id="pos_tag"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.pos_tag">[docs]</a><span class="k">def</span> <span class="nf">pos_tag</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s">&#39;nltk&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Perform part-of-speech (POS) tagging.</span>
+
+<span class="sd">    Currently only does English using the default model in NLTK.</span>
+
+<span class="sd">    Expects a list of tokens.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="o">!=</span> <span class="s">&#39;nltk&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;unknown POS tagger </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="p">)</span>
+    <span class="n">nltk</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s">&#39;maxent_treebank_pos_tagger&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">nltk</span><span class="o">.</span><span class="n">pos_tag</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="s">&quot;token&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">])</span>
+
+</div>
+<span class="nd">@app.task</span>
+<div class="viewcode-block" id="sentiwords_tag"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.sentiwords_tag">[docs]</a><span class="k">def</span> <span class="nf">sentiwords_tag</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&quot;bag&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tag doc with SentiWords polarity priors.</span>
+
+<span class="sd">    Performs left-to-right, longest-match annotation of token spans with</span>
+<span class="sd">    polarities from SentiWords.</span>
+
+<span class="sd">    Uses no part-of-speech information; when a span has multiple possible</span>
+<span class="sd">    taggings in SentiWords, the mean is returned.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    doc : document or list of strings</span>
+
+<span class="sd">    output : string, optional</span>
+<span class="sd">        Output format. Either &quot;bag&quot; for a histogram (dict) of annotated token</span>
+<span class="sd">        span frequencies, or &quot;tokens&quot; a mixed list of strings and (list of</span>
+<span class="sd">        strings, polarity) pairs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">._sentiwords</span> <span class="kn">import</span> <span class="n">tag</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">_tokenize_if_needed</span><span class="p">(</span><span class="n">fetch</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span>
+
+    <span class="n">tagged</span> <span class="o">=</span> <span class="n">tag</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">output</span> <span class="o">==</span> <span class="s">&quot;bag&quot;</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">ngram</span><span class="p">,</span> <span class="n">polarity</span> <span class="ow">in</span> <span class="n">tagged</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">polarity</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">ngram</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">ngram</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">ngram</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">polarity</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+    <span class="k">elif</span> <span class="n">output</span> <span class="o">==</span> <span class="s">&quot;tokens&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ngram</span> <span class="k">if</span> <span class="n">polarity</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">(</span><span class="n">ngram</span><span class="p">,</span> <span class="n">polarity</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">ngram</span><span class="p">,</span> <span class="n">polarity</span> <span class="ow">in</span> <span class="n">tagged</span><span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;unknown output format </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">output</span><span class="p">)</span>
+
+</div>
+<span class="nd">@app.task</span>
+<div class="viewcode-block" id="tokenize"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.tokenize">[docs]</a><span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tokenize text.</span>
+
+<span class="sd">    Uses the NLTK function word_tokenize.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[{</span><span class="s">&quot;token&quot;</span><span class="p">:</span> <span class="n">t</span><span class="p">}</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)]</span>
+
+</div>
+<span class="nd">@app.task</span>
+<div class="viewcode-block" id="semanticize"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.semanticize">[docs]</a><span class="k">def</span> <span class="nf">semanticize</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s">&#39;en&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run text through the UvA semanticizer.</span>
+
+<span class="sd">    Calls the UvA semanticizer webservice to perform entity linking and</span>
+<span class="sd">    returns the names/links it has found.</span>
+
+<span class="sd">    See http://semanticize.uva.nl/doc/ for details.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    M. Guerini, L. Gatti and M. Turchi (2013). &quot;Sentiment analysis: How to</span>
+<span class="sd">    derive prior polarities from SentiWordNet&quot;. Proc. EMNLP, pp. 1259-1269.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">lang</span><span class="o">.</span><span class="n">isalpha</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;not a valid language: </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">lang</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">&#39;http://semanticize.uva.nl/api/</span><span class="si">%s</span><span class="s">?</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lang</span><span class="p">,</span>
+                                                   <span class="n">urlencode</span><span class="p">({</span><span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="n">text</span><span class="p">}))</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())[</span><span class="s">&#39;links&#39;</span><span class="p">]</span>
+
+</div>
+<span class="nd">@app.task</span>
+<div class="viewcode-block" id="untokenize"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.untokenize">[docs]</a><span class="k">def</span> <span class="nf">untokenize</span><span class="p">(</span><span class="n">tokens</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Undo tokenization.</span>
+
+<span class="sd">    Simply concatenates the given tokens with spaces in between. Useful after</span>
+<span class="sd">    tokenization and filtering.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    doc : string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2013–2014 Netherlands eScience Center, University of Amsterdam.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.2.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

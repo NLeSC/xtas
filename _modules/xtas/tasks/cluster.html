@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>xtas.tasks.cluster &mdash; xtas 2.99.5 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootswatch-3.1.0/yeti/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '2.99.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="xtas 2.99.5 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          xtas</a>
+        <span class="navbar-text navbar-version pull-left"><b>2.99</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Documentation <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup.html">Setting up xtas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">xtas tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modifying.html">Modifying xtas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently anticipated questions</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+  <h1>Source code for xtas.tasks.cluster</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Clustering and topic modelling tasks.</span>
+
+<span class="sd">These tasks process batches of documents, denoted as lists of strings.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">from</span> <span class="nn">.es</span> <span class="kn">import</span> <span class="n">fetch</span>
+<span class="kn">from</span> <span class="nn">..celery</span> <span class="kn">import</span> <span class="n">app</span>
+<span class="kn">from</span> <span class="nn">.._utils</span> <span class="kn">import</span> <span class="n">batches</span>
+
+
+<span class="k">def</span> <span class="nf">_vectorizer</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Construct a TfidfVectorizer with sane settings.&quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">TfidfVectorizer</span>
+
+    <span class="k">if</span> <span class="s">&#39;min_df&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;min_df&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="s">&#39;sublinear_tf&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;sublinear_tf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;input&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;content&#39;</span>
+
+    <span class="k">return</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="nd">@app.task</span>
+<div class="viewcode-block" id="kmeans"><a class="viewcode-back" href="../../../api.html#xtas.tasks.cluster.kmeans">[docs]</a><span class="k">def</span> <span class="nf">kmeans</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">lsa</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run k-means clustering on a vectorized set of documents.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    docs : list of strings</span>
+<span class="sd">        Untokenized documents.</span>
+<span class="sd">    k : integer</span>
+<span class="sd">        Number of clusters.</span>
+<span class="sd">    lsa : integer, optional</span>
+<span class="sd">        Whether to perform latent semantic analysis before k-means, and if so,</span>
+<span class="sd">        with how many components/topics.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    labels : list of integers</span>
+<span class="sd">        Cluster labels (integers in the range [0..k)) for all documents in X.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">MiniBatchKMeans</span>
+    <span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">TruncatedSVD</span>
+    <span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+    <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">Normalizer</span>
+
+    <span class="k">if</span> <span class="n">lsa</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">kmeans</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s">&#39;tfidf&#39;</span><span class="p">,</span> <span class="n">_vectorizer</span><span class="p">()),</span>
+                           <span class="p">(</span><span class="s">&#39;lsa&#39;</span><span class="p">,</span> <span class="n">TruncatedSVD</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">lsa</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s">&#39;l2norm&#39;</span><span class="p">,</span> <span class="n">Normalizer</span><span class="p">()),</span>
+                           <span class="p">(</span><span class="s">&#39;kmeans&#39;</span><span class="p">,</span> <span class="n">MiniBatchKMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">k</span><span class="p">))])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">kmeans</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s">&#39;tfidf&#39;</span><span class="p">,</span> <span class="n">_vectorizer</span><span class="p">()),</span>
+                           <span class="p">(</span><span class="s">&#39;kmeans&#39;</span><span class="p">,</span> <span class="n">MiniBatchKMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">k</span><span class="p">))])</span>
+
+    <span class="c"># XXX return friendlier output?</span>
+    <span class="k">return</span> <span class="n">kmeans</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">fetch</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">)</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">labels_</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+</div>
+<span class="nd">@app.task</span>
+<div class="viewcode-block" id="big_kmeans"><a class="viewcode-back" href="../../../api.html#xtas.tasks.cluster.big_kmeans">[docs]</a><span class="k">def</span> <span class="nf">big_kmeans</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">20</span><span class="p">),</span>
+               <span class="n">single_pass</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;k-means for very large sets of documents.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">MiniBatchKMeans</span>
+    <span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">HashingVectorizer</span>
+
+    <span class="n">v</span> <span class="o">=</span> <span class="n">HashingVectorizer</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="s">&quot;content&quot;</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="n">n_features</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s">&quot;l2&quot;</span><span class="p">)</span>
+    <span class="n">km</span> <span class="o">=</span> <span class="n">MiniBatchKMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">fetch</span><span class="p">,</span> <span class="n">docs</span><span class="p">)</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">km</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">single_pass</span><span class="p">:</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">single_pass</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+            <span class="n">batch</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">fetch</span><span class="p">,</span> <span class="n">docs</span><span class="p">)</span>
+            <span class="n">batch</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">km</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">labels</span>
+
+</div>
+<span class="nd">@app.task</span>
+<div class="viewcode-block" id="lsa"><a class="viewcode-back" href="../../../api.html#xtas.tasks.cluster.lsa">[docs]</a><span class="k">def</span> <span class="nf">lsa</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Latent semantic analysis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    docs : list of strings</span>
+<span class="sd">        Untokenized documents.</span>
+<span class="sd">    k : integer</span>
+<span class="sd">        Number of topics.</span>
+<span class="sd">    random_state : integer, optional</span>
+<span class="sd">        Random number seed, for reproducibility.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    model : list of list of (string, float)</span>
+<span class="sd">        The k components of the LSA model, represented as lists of</span>
+<span class="sd">        (term, weight) pairs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">TruncatedSVD</span>
+    <span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+
+    <span class="n">vect</span> <span class="o">=</span> <span class="n">_vectorizer</span><span class="p">()</span>
+    <span class="n">svd</span> <span class="o">=</span> <span class="n">TruncatedSVD</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">pipe</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s">&#39;tfidf&#39;</span><span class="p">,</span> <span class="n">vect</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;svd&#39;</span><span class="p">,</span> <span class="n">svd</span><span class="p">)])</span>
+    <span class="n">pipe</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+    <span class="n">vocab</span> <span class="o">=</span> <span class="n">vect</span><span class="o">.</span><span class="n">vocabulary_</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nb">zip</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span> <span class="n">comp</span><span class="p">)</span> <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">svd</span><span class="o">.</span><span class="n">components_</span><span class="p">]</span>
+
+</div>
+<span class="nd">@app.task</span>
+<div class="viewcode-block" id="lda"><a class="viewcode-back" href="../../../api.html#xtas.tasks.cluster.lda">[docs]</a><span class="k">def</span> <span class="nf">lda</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Latent Dirichlet allocation using Gensim.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    k : integer</span>
+<span class="sd">        Number of topics.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">gensim.matutils</span> <span class="kn">import</span> <span class="n">Sparse2Corpus</span>
+    <span class="kn">from</span> <span class="nn">gensim.models</span> <span class="kn">import</span> <span class="n">LdaModel</span>
+
+    <span class="c"># Use a scikit-learn vectorizer rather than Gensim&#39;s equivalent</span>
+    <span class="c"># for speed and consistency with LSA and k-means.</span>
+    <span class="n">vect</span> <span class="o">=</span> <span class="n">_vectorizer</span><span class="p">()</span>
+    <span class="n">corpus</span> <span class="o">=</span> <span class="n">vect</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">fetch</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">)</span>
+    <span class="n">corpus</span> <span class="o">=</span> <span class="n">Sparse2Corpus</span><span class="p">(</span><span class="n">corpus</span><span class="p">)</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">LdaModel</span><span class="p">(</span><span class="n">corpus</span><span class="o">=</span><span class="n">corpus</span><span class="p">,</span> <span class="n">num_topics</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+
+    <span class="n">topics</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">show_topics</span><span class="p">(</span><span class="n">formatted</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="n">vect</span><span class="o">.</span><span class="n">get_feature_names</span><span class="p">()</span>
+    <span class="c">#return [(vocab[int(idx)], w) for topic in topics for w, idx in topic]</span>
+    <span class="k">return</span> <span class="p">[[(</span><span class="n">vocab</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">idx</span><span class="p">)],</span> <span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">topic</span><span class="p">]</span> <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">topics</span><span class="p">]</span>
+
+</div>
+<span class="nd">@app.task</span>
+<div class="viewcode-block" id="parsimonious_wordcloud"><a class="viewcode-back" href="../../../api.html#xtas.tasks.cluster.parsimonious_wordcloud">[docs]</a><span class="k">def</span> <span class="nf">parsimonious_wordcloud</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">w</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">weighwords</span> <span class="kn">import</span> <span class="n">ParsimoniousLM</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">ParsimoniousLM</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">top</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">]</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2013–2014 Netherlands eScience Center, University of Amsterdam.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.2.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

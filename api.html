@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API reference &mdash; xtas 2.99.5 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.1.0/yeti/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.99.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="xtas 2.99.5 documentation" href="index.html" />
+    <link rel="next" title="Modifying xtas" href="modifying.html" />
+    <link rel="prev" title="xtas tutorial" href="tutorial.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          xtas</a>
+        <span class="navbar-text navbar-version pull-left"><b>2.99</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Documentation <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up xtas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">xtas tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modifying.html">Modifying xtas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently anticipated questions</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="tutorial.html" title="Previous Chapter: xtas tutorial"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm">&laquo; xtas tutorial</span>
+    </a>
+  </li>
+  <li>
+    <a href="modifying.html" title="Next Chapter: Modifying xtas"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm">Modifying xtas &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+  <div class="section" id="api-reference">
+<h1>API reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-xtas.tasks.single">
+<span id="xtas-tasks-single"></span><h2>xtas.tasks.single<a class="headerlink" href="#module-xtas.tasks.single" title="Permalink to this headline">¶</a></h2>
+<p>Single-document tasks.</p>
+<p>These tasks process one document at a time. Usually, a document is passed as
+the first argument; it may either be a string or the result from
+<tt class="docutils literal"><span class="pre">xtas.tasks.es.es_document</span></tt>, which is a reference to a document in the
+Elasticsearch store.</p>
+<dl class="task">
+<dt id="xtas.tasks.single.morphy">
+<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">morphy</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#morphy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.morphy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lemmatize tokens using morphy, WordNet&#8217;s lemmatizer.</p>
+<p>No part-of-speech tagging is done.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>lemmas</strong> : list</p>
+<blockquote class="last">
+<div><p>List of lemmas.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.single.movie_review_polarity">
+<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">movie_review_polarity</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#movie_review_polarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.movie_review_polarity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Movie review polarity classifier.</p>
+<p>Runs a logistic regression model trained on a set of positive and negative
+movie reviews (all in English).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>p</strong> : float</p>
+<blockquote class="last">
+<div><p>The probability that the movie review <tt class="docutils literal"><span class="pre">doc</span></tt> is positive.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.single.pos_tag">
+<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">pos_tag</tt><big>(</big><em>tokens</em>, <em>model='nltk'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#pos_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.pos_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform part-of-speech (POS) tagging.</p>
+<p>Currently only does English using the default model in NLTK.</p>
+<p>Expects a list of tokens.</p>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.single.stanford_ner_tag">
+<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">stanford_ner_tag</tt><big>(</big><em>doc</em>, <em>output='tokens'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#stanford_ner_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.stanford_ner_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Named entity recognizer using Stanford NER.</p>
+<p>Currently only supports the model &#8216;english.all.3class.distsim.crf.ser.gz&#8217;.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>doc</strong> : document</p>
+<blockquote>
+<div><p>Tokenization will be done by Stanford NER using its own rules.</p>
+</div></blockquote>
+<p><strong>output</strong> : string, optional</p>
+<blockquote>
+<div><p>Output format. &#8220;tokens&#8221; gives a list of (token, nerclass) triples,
+similar to the IO format but without the &#8220;I-&#8221;. &#8220;names&#8221; returns a list
+of (name, class pairs); since Stanford NER does not distinguish between
+start and continuation of name spans, the reconstruction of full names
+is heuristic.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>tagged</strong> : list of list of pair of string</p>
+<blockquote class="last">
+<div><p>For each sentence, a list of (word, tag) pairs.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.single.semanticize">
+<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">semanticize</tt><big>(</big><em>doc</em>, <em>lang='en'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#semanticize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.semanticize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run text through the UvA semanticizer.</p>
+<p>Calls the UvA semanticizer webservice to perform entity linking and
+returns the names/links it has found.</p>
+<p>See <a class="reference external" href="http://semanticize.uva.nl/doc/">http://semanticize.uva.nl/doc/</a> for details.</p>
+<p class="rubric">References</p>
+<p>M. Guerini, L. Gatti and M. Turchi (2013). &#8220;Sentiment analysis: How to
+derive prior polarities from SentiWordNet&#8221;. Proc. EMNLP, pp. 1259-1269.</p>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.single.sentiwords_tag">
+<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">sentiwords_tag</tt><big>(</big><em>doc</em>, <em>output='bag'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#sentiwords_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.sentiwords_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tag doc with SentiWords polarity priors.</p>
+<p>Performs left-to-right, longest-match annotation of token spans with
+polarities from SentiWords.</p>
+<p>Uses no part-of-speech information; when a span has multiple possible
+taggings in SentiWords, the mean is returned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>doc</strong> : document or list of strings</p>
+<p><strong>output</strong> : string, optional</p>
+<blockquote class="last">
+<div><p>Output format. Either &#8220;bag&#8221; for a histogram (dict) of annotated token
+span frequencies, or &#8220;tokens&#8221; a mixed list of strings and (list of
+strings, polarity) pairs.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.single.tokenize">
+<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">tokenize</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#tokenize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.tokenize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tokenize text.</p>
+<p>Uses the NLTK function word_tokenize.</p>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.single.untokenize">
+<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">untokenize</tt><big>(</big><em>tokens</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#untokenize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.untokenize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Undo tokenization.</p>
+<p>Simply concatenates the given tokens with spaces in between. Useful after
+tokenization and filtering.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>doc</strong> : string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-xtas.tasks.cluster">
+<span id="xtas-tasks-cluster"></span><h2>xtas.tasks.cluster<a class="headerlink" href="#module-xtas.tasks.cluster" title="Permalink to this headline">¶</a></h2>
+<p>Clustering and topic modelling tasks.</p>
+<p>These tasks process batches of documents, denoted as lists of strings.</p>
+<dl class="task">
+<dt id="xtas.tasks.cluster.big_kmeans">
+<em class="property">(task)</em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">big_kmeans</tt><big>(</big><em>docs</em>, <em>k</em>, <em>batch_size=1000</em>, <em>n_features=1048576</em>, <em>single_pass=True</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#big_kmeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.big_kmeans" title="Permalink to this definition">¶</a></dt>
+<dd><p>k-means for very large sets of documents.</p>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.cluster.kmeans">
+<em class="property">(task)</em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">kmeans</tt><big>(</big><em>docs</em>, <em>k</em>, <em>lsa=None</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#kmeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.kmeans" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run k-means clustering on a vectorized set of documents.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>docs</strong> : list of strings</p>
+<blockquote>
+<div><p>Untokenized documents.</p>
+</div></blockquote>
+<p><strong>k</strong> : integer</p>
+<blockquote>
+<div><p>Number of clusters.</p>
+</div></blockquote>
+<p><strong>lsa</strong> : integer, optional</p>
+<blockquote>
+<div><p>Whether to perform latent semantic analysis before k-means, and if so,
+with how many components/topics.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>labels</strong> : list of integers</p>
+<blockquote class="last">
+<div><p>Cluster labels (integers in the range [0..k)) for all documents in X.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.cluster.lda">
+<em class="property">(task)</em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">lda</tt><big>(</big><em>docs</em>, <em>k</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#lda"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.lda" title="Permalink to this definition">¶</a></dt>
+<dd><p>Latent Dirichlet allocation using Gensim.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>k</strong> : integer</p>
+<blockquote class="last">
+<div><p>Number of topics.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.cluster.lsa">
+<em class="property">(task)</em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">lsa</tt><big>(</big><em>docs</em>, <em>k</em>, <em>random_state=None</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#lsa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.lsa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Latent semantic analysis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>docs</strong> : list of strings</p>
+<blockquote>
+<div><p>Untokenized documents.</p>
+</div></blockquote>
+<p><strong>k</strong> : integer</p>
+<blockquote>
+<div><p>Number of topics.</p>
+</div></blockquote>
+<p><strong>random_state</strong> : integer, optional</p>
+<blockquote>
+<div><p>Random number seed, for reproducibility.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>model</strong> : list of list of (string, float)</p>
+<blockquote class="last">
+<div><p>The k components of the LSA model, represented as lists of
+(term, weight) pairs.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.cluster.parsimonious_wordcloud">
+<em class="property">(task)</em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">parsimonious_wordcloud</tt><big>(</big><em>docs</em>, <em>w=0.5</em>, <em>k=10</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#parsimonious_wordcloud"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.parsimonious_wordcloud" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a proxy to an object that has not yet been evaulated.</p>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Proxy</span></tt> will evaluate the object each time, while the
+promise will only evaluate it once.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="_sources/api.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013–2014 Netherlands eScience Center, University of Amsterdam.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.2.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

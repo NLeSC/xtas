@@ -1,20 +1,21 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Setting up xtas &mdash; xtas 2.99.4 documentation</title>
+    <title>Setting up xtas &mdash; xtas 2.99.5 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.1.0/yeti/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2.99.4',
+        VERSION:     '2.99.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,39 +25,102 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="xtas 2.99.4 documentation" href="index.html" />
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="xtas 2.99.5 documentation" href="index.html" />
     <link rel="next" title="xtas tutorial" href="tutorial.html" />
-    <link rel="prev" title="xtas, the eXtensible Text Analysis Suite" href="index.html" /> 
+    <link rel="prev" title="xtas, the eXtensible Text Analysis Suite" href="index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
   </head>
   <body>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="tutorial.html" title="xtas tutorial"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="index.html" title="xtas, the eXtensible Text Analysis Suite"
-             accesskey="P">previous</a> |</li>
-        <li><a href="index.html">xtas 2.99.4 documentation</a> &raquo;</li> 
-      </ul>
-    </div>  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body">
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          xtas</a>
+        <span class="navbar-text navbar-version pull-left"><b>2.99</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
             
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Documentation <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Setting up xtas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">xtas tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modifying.html">Modifying xtas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently anticipated questions</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="index.html" title="Previous Chapter: xtas, the eXtensible Text Analysis Suite"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm">&laquo; xtas, the eXtens...</span>
+    </a>
+  </li>
+  <li>
+    <a href="tutorial.html" title="Next Chapter: xtas tutorial"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm">xtas tutorial &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
   <div class="section" id="setting-up-xtas">
 <h1>Setting up xtas<a class="headerlink" href="#setting-up-xtas" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Make sure you have <a class="reference external" href="http://www.elasticsearch.org/">Elasticsearch</a> and
 <a class="reference external" href="http://www.rabbitmq.com/">RabbitMQ</a> running. Installation instructions for
-those can be found in various places. Make sure you have Python 2.6 or newer.
+those can be found in various places. Make sure you have Python 2.7 or newer.
 Some tasks require a Java VM. xtas has been tested on Linux; it should work on
 OS X but this has not been tested.</p>
 <p>TL;DR: <tt class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">xtas</span></tt>.</p>
@@ -116,74 +180,39 @@ otherwise be fetched on demand.</p>
 <div class="section" id="configuring">
 <h2>Configuring<a class="headerlink" href="#configuring" title="Permalink to this headline">¶</a></h2>
 <p>To override the built-in xtas configuration (which assumes that you&#8217;re in the
-Amsterdam timezone, have Elasticsearch at <tt class="docutils literal"><span class="pre">localhost:9200</span></tt>, etc.), copy
-<tt class="docutils literal"><span class="pre">xtas/config.py</span></tt> to a file called <tt class="docutils literal"><span class="pre">xtas_config.py</span></tt> in your <tt class="docutils literal"><span class="pre">PYTHONPATH</span></tt>
-and modify it. Note: the file should not be in the <tt class="docutils literal"><span class="pre">xtas/</span></tt> directory.</p>
+Amsterdam timezone, have Elasticsearch at <tt class="docutils literal"><span class="pre">localhost:9200</span></tt>, etc.), run:</p>
+<div class="highlight-python"><div class="highlight"><pre>python -m xtas.config
+</pre></div>
+</div>
+<p>to generate a file called <tt class="docutils literal"><span class="pre">xtas_config.py</span></tt> in the current directory. Change
+this file as needed, make sure it is in the <tt class="docutils literal"><span class="pre">PYTHONPATH</span></tt> (<em>not</em> in the
+<tt class="docutils literal"><span class="pre">xtas/</span></tt> directory) and re-start the worker and webserver.</p>
 </div>
 </div>
 
 
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Setting up xtas</a><ul>
-<li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#getting-started">Getting started</a></li>
-<li><a class="reference internal" href="#configuring">Configuring</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">xtas, the eXtensible Text Analysis Suite</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="tutorial.html"
-                        title="next chapter">xtas tutorial</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/setup.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="_sources/setup.txt"
+     rel="nofollow">Source</a>
+</div>
+      
     </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="tutorial.html" title="xtas tutorial"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="index.html" title="xtas, the eXtensible Text Analysis Suite"
-             >previous</a> |</li>
-        <li><a href="index.html">xtas 2.99.4 documentation</a> &raquo;</li> 
-      </ul>
-    </div>
-    <div class="footer">
-        &copy; Copyright 2013–2014 Netherlands eScience Center, University of Amsterdam.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
-    </div>
+    <p>
+        &copy; Copyright 2013–2014 Netherlands eScience Center, University of Amsterdam.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.2.<br/>
+    </p>
+  </div>
+</footer>
   </body>
 </html>
