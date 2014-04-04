@@ -4,6 +4,7 @@ set -e -v
 
 ${VISUAL} xtas/_version.py
 ${VISUAL} doc/conf.py
+git add xtas/_version.py doc/conf.py
 git commit
 
 git tag -a v$(python -c 'execfile("xtas/_version.py"); print(__version__)')

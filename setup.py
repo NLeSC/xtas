@@ -28,7 +28,7 @@ setup(
     long_description=readme(),
     author="Lars Buitinck",
     author_email="l.buitinck@esciencecenter.nl",
-    packages=["xtas", "xtas.tasks", "xtas.webserver"],
+    packages=["xtas", "xtas.make_config", "xtas.tasks", "xtas.webserver"],
     package_data={"xtas.tasks": ["*.txt"]},
     url="https://github.com/NLeSC/xtas",
     version=__version__,
