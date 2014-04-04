@@ -95,7 +95,7 @@ To tie docstrings into the HTML documentation, edit the ``api.rst`` file
 in the directory ``doc``. To generate HTML, make sure you have Sphinx,
 numpydoc and Celery 3.1.10 or later::
 
-    pip install -U sphinx numpydoc celery
+    pip install -U sphinx numpydoc celery sphinx_bootstrap_theme
 
 then type ``make html`` inside the ``doc`` directory. HTML will be generated
 in ``doc/_build/html``.

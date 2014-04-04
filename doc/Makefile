@@ -48,6 +48,7 @@ clean:
 
 gh-pages: html
 	touch $(BUILDDIR)/html/.nojekyll
+	echo xtas.net > $(BUILDDIR)/html/CNAME
 	./commit-to-gh-pages.sh $(BUILDDIR)/html
 
 html:
