@@ -7,7 +7,7 @@ Installation
 
 Make sure you have `Elasticsearch <http://www.elasticsearch.org/>`_ and
 `RabbitMQ <http://www.rabbitmq.com/>`_ running. Installation instructions for
-those can be found in various places. Make sure you have Python 2.6 or newer.
+those can be found in various places. Make sure you have Python 2.7 or newer.
 Some tasks require a Java VM. xtas has been tested on Linux; it should work on
 OS X but this has not been tested.
 
