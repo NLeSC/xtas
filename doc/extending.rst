@@ -1,7 +1,7 @@
-Modifying xtas
+Extending xtas
 ==============
 
-This is a short guide to modifying xtas to suit specific needs
+This is a short guide to extending xtas to suit specific needs
 and (optionally) contributing code back.
 It describes how to write now tasks and tie them in with the package.
 

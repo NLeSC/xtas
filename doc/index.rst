@@ -26,7 +26,7 @@ Contents
    setup
    tutorial
    api
-   modifying
+   extending
    faq
 
 
