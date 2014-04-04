@@ -19,6 +19,31 @@ from ..celery import app
 
 
 @app.task
+def guess_language(doc, output="best"):
+    """Guess the language of a document.
+
+    Uses the langid library.
+
+    Parameters
+    ----------
+    doc : document
+
+    output : string
+        Either "best" to get a pair (code, prob) giving the two-letter code
+        of the most probable language and its probability, or "rank" for a
+        list of such pairs for all languages in the model.
+    """
+    from langid import classify, rank
+
+    try:
+        func = {"best": classify, "rank": rank}[output]
+    except KeyError:
+        raise ValueError("invalid parameter value output=%r" % output)
+
+    return func(fetch(doc))
+
+
+@app.task
 def morphy(doc):
     """Lemmatize tokens using morphy, WordNet's lemmatizer.
 

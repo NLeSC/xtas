@@ -1,7 +1,20 @@
+# coding: utf-8
+
 from nose.tools import assert_equal, assert_in, assert_less, assert_true
 
-from xtas.tasks import (morphy, movie_review_polarity, stanford_ner_tag,
-                        sentiwords_tag, tokenize)
+from xtas.tasks import (guess_language, morphy, movie_review_polarity,
+                        stanford_ner_tag, sentiwords_tag, tokenize)
+
+
+def test_langid():
+    # langid thinks "Hello, world!" is Dutch, hence the Joyce.
+    lang, prob = guess_language("Three quarks for muster Mark")
+    assert_equal(lang, "en")
+    assert_true(isinstance(prob, float))
+
+    lang, prob = guess_language(u"Καλημέρα κόσμε", output="rank")[0]
+    assert_equal(lang, "el")
+    assert_true(isinstance(prob, float))
 
 
 def test_morphy():

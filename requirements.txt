@@ -2,6 +2,7 @@ celery>=3.0.0
 elasticsearch
 flask>=0.10.1
 gensim
+langid
 librabbitmq
 nltk
 scikit-learn>=0.13
