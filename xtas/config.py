@@ -22,3 +22,7 @@ ELASTICSEARCH = [
     {"host": "localhost", "port": 9200},
     # add more hosts here
 ]
+
+# Additional modules to load in the worker and webserver.
+EXTRA_MODULES = [
+]

@@ -35,11 +35,14 @@ def home():
 def run_task_on_es(task, index, type, id, field):
     """Run task on single document given by (index, type, id, field).
 
-    Only works for tasks in xtas.tasks.single.
+    Only works for tasks in xtas.tasks.single and custom tasks, not clustering
+    tasks.
     """
+    # XXX custom tasks could be batch tasks, but we don't check for that.
     try:
-        taskname = 'xtas.tasks.single.%s' % task
-        task = taskq.tasks[taskname]
+        if '.' in task:
+            task = 'xtas.tasks.single.%s' % task
+        task = taskq.tasks[task]
     except KeyError:
         abort(404)
 
@@ -55,9 +58,10 @@ def result(jobid):
 
 @app.route('/tasks')
 def show_tasks():
-    tasknames = sorted(t.split('.', 3)[-1]
+    tasknames = sorted(t.split('.', 3)[-1] if t.startswith('xtas.tasks')
+                                           else t
                        for t in taskq.tasks
-                       if t.startswith('xtas.tasks'))
+                       if not t.startswith('celery.'))
     return json.dumps(tasknames)
 
 
