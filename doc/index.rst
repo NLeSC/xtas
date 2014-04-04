@@ -15,6 +15,7 @@ Contents:
    setup
    tutorial
    api
+   modifying
    faq
 
 
