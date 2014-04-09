@@ -15,7 +15,7 @@ from urllib2 import urlopen
 import nltk
 
 from .es import fetch
-from ..celery import app
+from ..core import app
 from .._utils import nltk_download
 
 

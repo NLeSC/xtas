@@ -6,14 +6,11 @@ from datetime import datetime
 
 from elasticsearch import Elasticsearch
 
-from ..celery import app
+from ..core import app, _config
 
-try:
-    from xtas_config import ELASTICSEARCH
-except ImportError:
-    from xtas.config import ELASTICSEARCH
 
-_es = Elasticsearch(hosts=ELASTICSEARCH)
+def _es():
+    return Elasticsearch(hosts=_config['ELASTICSEARCH'])
 
 
 _ES_DOC_FIELDS = ('index', 'type', 'id', 'field')
@@ -39,7 +36,7 @@ def fetch(doc):
     """
     if isinstance(doc, dict) and set(doc.keys()) == set(_ES_DOC_FIELDS):
         idx, typ, id, field = [doc[k] for k in _ES_DOC_FIELDS]
-        return _es.get_source(index=idx, doc_type=typ, id=id)[field]
+        return _es().get_source(index=idx, doc_type=typ, id=id)[field]
     else:
         # Assume simple string
         return doc
@@ -52,7 +49,7 @@ def fetch_query_batch(idx, typ, query, field='body'):
     Returns a list of field contents, with documents that don't have the
     required field silently filtered out.
     """
-    r = _es.search(index=idx, doc_type=typ, body={'query': query},
+    r = _es().search(index=idx, doc_type=typ, body={'query': query},
                    _source=[field])
     r = (hit['_source'].get(field, None) for hit in r['hits']['hits'])
     return [hit for hit in r if hit is not None]
@@ -67,7 +64,7 @@ def store_single(data, taskname, idx, typ, id, return_data=True):
     """
     now = datetime.now().isoformat()
     doc = {"xtas_results": {taskname: {'data': data, 'timestamp': now}}}
-    _es.update(index=idx, doc_type=typ, id=id, body={"doc": doc})
+    _es().update(index=idx, doc_type=typ, id=id, body={"doc": doc})
     return data if return_data else None
 
 
@@ -76,7 +73,7 @@ def get_all_results(idx, typ, id):
     Get all xtas results for the document
     Returns a (possibly empty) {taskname : data} dict
     """
-    r = _es.get(index=idx, doc_type=typ, id=id, _source=['xtas_results'])
+    r = _es().get(index=idx, doc_type=typ, id=id, _source=['xtas_results'])
     if 'xtas_results' in r['_source']:
         return {k: v['data']
                 for (k, v) in r['_source']['xtas_results'].iteritems()}

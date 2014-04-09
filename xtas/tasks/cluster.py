@@ -6,7 +6,7 @@ These tasks process batches of documents, denoted as lists of strings.
 from __future__ import absolute_import
 
 from .es import fetch
-from ..celery import app
+from ..core import app
 from .._utils import batches
 
 

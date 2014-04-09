@@ -5,7 +5,7 @@ Pipelining with partial caching
 import celery
 
 from xtas.tasks.es import _ES_DOC_FIELDS, get_all_results, store_single, fetch
-from xtas.celery import app
+from xtas.core import app
 
 
 def pipeline(doc, pipeline, store_final=True, store_intermediate=False,

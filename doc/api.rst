@@ -1,6 +1,12 @@
 API reference
 =============
 
+xtas.core
+---------
+
+.. automodule:: xtas.core
+
+
 xtas.tasks.single
 -----------------
 
