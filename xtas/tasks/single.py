@@ -215,3 +215,27 @@ def untokenize(tokens):
     doc : string
     """
     return ' '.join(tokens)
+
+
+@app.task
+def frog(doc, output='raw'):
+    """
+    Run a document through the frog server at localhost:9887
+    If output is 'raw', returns the raw output lines.
+    If output is 'tokens', returns dictionaries for the tokens
+    If output is 'saf', returns a SAF dictionary
+    """
+    from ._frog import call_frog, parse_frog, frog_to_saf
+    if output not in ('raw', 'tokens', 'saf'):
+        raise ValueError("Uknown output: {output}, "
+                         "please choose either raw, tokens, or saf"
+                         .format(**locals()))
+    text = fetch(doc)
+    result = call_frog(text)
+    if output == 'raw':
+        return list(result)
+    if output in ('tokens', 'saf'):
+        result = parse_frog(result)
+        if output == 'tokens':
+            return list(result)
+        return frog_to_saf(result)
