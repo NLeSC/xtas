@@ -16,6 +16,7 @@ import nltk
 
 from .es import fetch
 from ..celery import app
+from .._utils import nltk_download
 
 
 @app.task
@@ -56,7 +57,7 @@ def morphy(doc):
     """
     # XXX Results will be better if we do POS tagging first, but then we
     # need to map Penn Treebank tags to WordNet tags.
-    nltk.download('wordnet', quiet=False)
+    nltk_download('wordnet')
     return map(nltk.WordNetLemmatizer().lemmatize,
                _tokenize_if_needed(fetch(doc)))
 
@@ -122,7 +123,7 @@ def pos_tag(tokens, model='nltk'):
     """
     if model != 'nltk':
         raise ValueError("unknown POS tagger %r" % model)
-    nltk.download('maxent_treebank_pos_tagger')
+    nltk_download('maxent_treebank_pos_tagger')
     return nltk.pos_tag([t["token"] for t in tokens])
 
 
