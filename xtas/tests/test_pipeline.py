@@ -6,10 +6,10 @@ from contextlib import contextmanager
 
 from nose.tools import assert_equal
 
-from .test_es import clean_es, ES_TEST_INDEX
+from test_es import clean_es, ES_TEST_INDEX
 
 ES_TEST_TYPE = "unittest_doc"
-
+import json
 
 @contextmanager
 def eager_celery():
@@ -20,6 +20,39 @@ def eager_celery():
         yield
     finally:
         app.conf['CELERY_ALWAYS_EAGER'] = old_value
+
+def _makedoc(es, text, id=None):
+    from xtas.tasks.es import es_document
+    idx, typ = ES_TEST_INDEX, ES_TEST_TYPE
+    id = es.index(index=idx, doc_type=typ, body={"text": text}, id=id)['_id']
+    return es_document(idx, typ, id, "text")
+
+def test_pipeline_cache_multiple():
+    from xtas.tasks.single import tokenize, pos_tag
+    from xtas.tasks.pipeline import pipeline_multiple, pipeline
+    pipe = [{"module": tokenize},
+            {"module": pos_tag, "arguments": {"model": "nltk"}}]
+
+    texts =["cats are furry", "cats are cute", "some cats are fat"]
+    expected = [[['cats', 'NNS'], ['are', 'VBP'], ['furry', 'JJ']],
+                [['cats', 'NNS'], ['are', 'VBP'], ['cute', 'JJ']],
+                [['my', 'PRP$'], ['cat', 'NN'], ['is', 'VBZ'], ['stupid', 'JJ']],
+                [['some', 'DT'], ['cats', 'NNS'], ['are', 'VBP'], ['fat', 'JJ']]]
+
+    with eager_celery(), clean_es() as es:
+        docs = [_makedoc(es, text, i) for i, text in enumerate(texts)]
+        docs.append("my cat is stupid")
+
+        # add some docs to cache: fully cache first doc, partially cache second
+        pipeline(docs[0], pipe)
+        pipeline(docs[1], pipe[:1])
+
+        results = pipeline_multiple(docs, pipe, store_intermediate=True)
+
+        results = json.loads(json.dumps(results))
+        expected = json.loads(json.dumps(expected))
+
+        assert_equal(sorted(results), sorted(expected))
 
 
 def test_pipeline():
@@ -47,23 +80,17 @@ def test_pipeline_cache():
     import nltk
     from xtas.tasks.single import tokenize
     from xtas.tasks.pipeline import pipeline
-    from xtas.tasks.es import es_document
     text = "The cat is happy"
     expected_tokens = [{u'token': u'The'}, {u'token': u'cat'},
                        {u'token': u'is'}, {u'token': u'happy'}]
     expected_pos = [[u'The', u'DT'], [u'cat', u'NN'],
                     [u'is', u'VBZ'], [u'happy', u'JJ']]
     with eager_celery(), clean_es() as es:
-        idx, typ = ES_TEST_INDEX, ES_TEST_TYPE
-        id = es.index(index=idx, doc_type=typ, body={"text": text})['_id']
-        doc = es_document(idx, typ, id, "text")
+        doc = _makedoc(es, text)
+
         # test a single task 'pipeline'
         pipe = [{"module": tokenize}]
         r = pipeline(doc, pipe, store_intermediate=True)
-        assert_equal(r, expected_tokens)
-        # second time result should come from cache.
-        # Test with block=False which returns async object if not cached
-        r = pipeline(doc, pipe, store_intermediate=True, block=False)
         assert_equal(r, expected_tokens)
         # add pos_tag to pipeline. Check that tokenize is not called
         # (anyone has a more elegant way to check that?)
@@ -78,6 +105,3 @@ def test_pipeline_cache():
             assert_equal(json.dumps(r), json.dumps(expected_pos))
         finally:
             nltk.word_tokenize = OLD_TOKENIZE
-        # whole pipeline should now be skipped
-        r = pipeline(doc, pipe, store_intermediate=True, block=False)
-        assert_equal(json.dumps(r), json.dumps(expected_pos))
