@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import argparse
 import json
 import logging
+from pprint import pprint
 import sys
 
 from celery import chain
@@ -11,9 +12,9 @@ import celery.result
 from flask import Flask, Response, abort
 from flask import __version__ as flask_version
 
-from .. import __version__
-from ..tasks import app as taskq
-from ..tasks import es_document, store_single
+from xtas import __version__
+from xtas.tasks import app as taskq
+from xtas.tasks import es_document, store_single
 
 app = Flask(__name__)
 
@@ -31,20 +32,26 @@ def home():
     return Response(text, mimetype="text/plain")
 
 
-@app.route("/run_es/<task>/<index>/<type>/<id>/<field>")
-def run_task_on_es(task, index, type, id, field):
-    """Run task on single document given by (index, type, id, field).
+@app.route("/run_es/<taskname>/<index>/<type>/<id>/<field>")
+def run_task_on_es(taskname, index, type, id, field):
+    """Run named task on single document given by (index, type, id, field).
+
+    taskname must be the fully qualified name of a function, except for
+    built-in xtas.tasks.single tasks, which are addressed by their short name.
 
     Only works for tasks in xtas.tasks.single and custom tasks, not clustering
     tasks.
     """
     # XXX custom tasks could be batch tasks, but we don't check for that.
     try:
-        if '.' in task:
-            task = 'xtas.tasks.single.%s' % task
-        task = taskq.tasks[task]
+        if '.' not in taskname:
+            taskname = 'xtas.tasks.single.%s' % taskname
+        task = taskq.tasks[taskname]
     except KeyError:
-        abort(404)
+        if app.debug:
+            raise
+        else:
+            abort(404)
 
     return chain(task.s(es_document(index, type, id, field))
                  | store_single.s(taskname, index, type, id)
@@ -80,4 +87,7 @@ if __name__ == "__main__":
 
     app.debug = args.debug
     print("xtas %s REST endpoint" % __version__)
+    if app.debug:
+        print("Serving tasks:")
+        pprint(list(taskq.tasks.keys()))
     app.run(host=args.host, port=args.port)
