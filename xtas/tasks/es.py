@@ -19,9 +19,10 @@ _ES_DOC_FIELDS = ('index', 'type', 'id', 'field')
 def es_document(idx, typ, id, field):
     """Returns a handle on a document living in the ES store.
 
-    Returns a dict instead of a custom object to ensure JSON serialization
-    works.
+    This does not fetch the document, or even check that it exists.
     """
+    # Returns a dict instead of a custom object to ensure JSON serialization
+    # works.
     return {'index': idx, 'type': typ, 'id': id, 'field': field}
 
 
