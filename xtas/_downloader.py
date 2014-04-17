@@ -23,5 +23,5 @@ def _make_data_home(subdir=None):
 
 
 def _progress(i, blocksize, totalsize):
-    if i % 100 == 0:
+    if i % 1000 == 0:
         print("{:>7.2%}".format(min(i * blocksize, totalsize) / totalsize))
