@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Extending xtas &mdash; xtas 2.99.6 documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.1.0/yeti/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.99.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="xtas 2.99.6 documentation" href="index.html" />
+    <link rel="next" title="Frequently anticipated questions" href="faq.html" />
+    <link rel="prev" title="API reference" href="api.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          xtas</a>
+        <span class="navbar-text navbar-version pull-left"><b>2.99</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Documentation <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up xtas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">xtas tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Extending xtas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently anticipated questions</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="api.html" title="Previous Chapter: API reference"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm">&laquo; API reference</span>
+    </a>
+  </li>
+  <li>
+    <a href="faq.html" title="Next Chapter: Frequently anticipated questions"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm">Frequently antic... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+  <div class="section" id="extending-xtas">
+<h1>Extending xtas<a class="headerlink" href="#extending-xtas" title="Permalink to this headline">¶</a></h1>
+<p>This is a short guide to extending xtas to suit specific needs
+and (optionally) contributing code back.
+It describes how to write now tasks and tie them in with the package.</p>
+<div class="section" id="writing-new-tasks">
+<h2>Writing new tasks<a class="headerlink" href="#writing-new-tasks" title="Permalink to this headline">¶</a></h2>
+<p>If you have a custom task that you want xtas to perform, then you can add it
+as follows. Let&#8217;s start with an example task that reverses a document,
+character-by-character. Put the following in a file <tt class="docutils literal"><span class="pre">mytasks.py</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">xtas.celery</span> <span class="kn">import</span> <span class="n">app</span>
+
+<span class="nd">@app.task</span>
+<span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">doc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Make sure this file can be imported:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python
+&gt;&gt;&gt; from mytasks import reverse
+</pre></div>
+</div>
+<p>If the above gave an error, adjust your <tt class="docutils literal"><span class="pre">PYTHONPATH</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre>export PYTHONPATH=.:$PYTHONPATH
+</pre></div>
+</div>
+<p>Now adjust the xtas configuration. Run <tt class="docutils literal"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">xtas.make_config</span></tt> to get
+a configuration file <tt class="docutils literal"><span class="pre">xtas_config.py</span></tt> in the current directory. At the bottom
+of the file is an empty list called <tt class="docutils literal"><span class="pre">EXTRA_MODULES</span></tt>. Put your module in it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">EXTRA_MODULES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">&#39;mytasks&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Now restart the worker. It should report <tt class="docutils literal"><span class="pre">mytasks.reverse</span></tt> as its first
+task, followed by all the built-in tasks. You can now run your <tt class="docutils literal"><span class="pre">reverse</span></tt>
+function asynchronously, e.g. in a Python shell:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mytasks</span> <span class="kn">import</span> <span class="n">reverse</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">reverse</span><span class="o">.</span><span class="n">apply_async</span><span class="p">([</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">u&#39;!dlrow ,olleH&#39;</span>
+</pre></div>
+</div>
+<p>If you also restart the webserver, you should see the new task in the list of
+single-document tasks:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ curl -s http://localhost:5000/tasks | python -m json.tool | grep mytasks
+    &quot;mytasks.reverse&quot;,
+</pre></div>
+</div>
+<p>To use the custom task from the REST API, e.g. with <tt class="docutils literal"><span class="pre">/run_es</span></tt>, give its
+fully qualified name (<tt class="docutils literal"><span class="pre">mytasks.reverse</span></tt>). Only built-in tasks have their
+name abbreviated to not include the module name.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The webserver will currently assume your tasks is a single-document one,
+rather than a batch task. This is a known defect.</p>
+</div>
+</div>
+<div class="section" id="contributing-code">
+<h2>Contributing code<a class="headerlink" href="#contributing-code" title="Permalink to this headline">¶</a></h2>
+<p>If you have code that is reusable for others, and you want and are legally
+capable of distributing it, then we&#8217;re happy to consider it for inclusion in
+xtas. Make sure you have copyright to the code you write or your employer
+gives you permission to contribute under the terms of the Apache License
+(<tt class="docutils literal"><span class="pre">LICENSE.txt</span></tt> in the main source directory).</p>
+<p>Fork the main repository on GitHub. Commit your changes to a separate branch.
+Push this branch to GitHub and do a pull request. Your code will be reviewed
+before pulling.</p>
+<p>In the case of new tasks, put them in either <tt class="docutils literal"><span class="pre">xtas/tasks/single.py</span></tt> or
+<tt class="docutils literal"><span class="pre">xtas/tasks/cluster.py</span></tt>, depending on the type of task. Follow the
+conventions laid out in the docstrings of the modules. All xtas code should
+conform to <a class="reference external" href="http://legacy.python.org/dev/peps/pep-0008/">PEP 8</a>, the style
+guide for the Python standard library. Use the <a class="reference external" href="http://pep8.readthedocs.org/en/latest/">pep8</a> and <a class="reference external" href="https://pypi.python.org/pypi/pyflakes">pyflakes</a> tools to check code for compliance.
+Also, be sure to use names starting with an underscore for private helper
+functions.</p>
+</div>
+<div class="section" id="writing-documentation">
+<h2>Writing documentation<a class="headerlink" href="#writing-documentation" title="Permalink to this headline">¶</a></h2>
+<p>Make sure to document your tasks.  Documentation is primarily written in the
+form of docstrings, and we tend to follow the <a class="reference external" href="https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt">NumPy docstring conventions</a>.</p>
+<p>To tie docstrings into the HTML documentation, edit the <tt class="docutils literal"><span class="pre">api.rst</span></tt> file
+in the directory <tt class="docutils literal"><span class="pre">doc</span></tt>. To generate HTML, make sure you have Sphinx,
+numpydoc and Celery 3.1.10 or later:</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install -U sphinx numpydoc celery sphinx_bootstrap_theme
+</pre></div>
+</div>
+<p>then type <tt class="docutils literal"><span class="pre">make</span> <span class="pre">html</span></tt> inside the <tt class="docutils literal"><span class="pre">doc</span></tt> directory. HTML will be generated
+in <tt class="docutils literal"><span class="pre">doc/_build/html</span></tt>.</p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="_sources/extending.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2013–2014 Netherlands eScience Center, University of Amsterdam.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.2.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
