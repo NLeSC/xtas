@@ -35,8 +35,9 @@ def configure(config, import_error="raise", unknown_key="raise"):
         ``config.CELERY`` will be passed to Celery's ``config_from_object``
         with the flag ``force=True``.
 
-        ``ELASTICSEARCH`` should be a list of dicts with keys 'host' and
-        'port'.
+        ``ELASTICSEARCH`` should be a list of dicts with at least the key
+        'host'. These are passed to the Elasticsearch constructor (from the
+        official client) unchanged.
 
         ``EXTRA_MODULES`` should be a list of module names to load.
 
