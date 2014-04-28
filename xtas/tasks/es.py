@@ -17,7 +17,7 @@ _ES_DOC_FIELDS = ('index', 'type', 'id', 'field')
 
 
 def es_document(idx, typ, id, field):
-    """Returns a handle on a document living in the ES store.
+    """Returns a handle on a field in a document living in the ES store.
 
     This does not fetch the document, or even check that it exists.
     """
@@ -34,6 +34,11 @@ def fetch(doc):
     doc : {dict, string}
         A dictionary representing a handle returned by es_document, or a plain
         string.
+
+    Returns
+    -------
+    content : string
+        Document contents.
     """
     if isinstance(doc, dict) and set(doc.keys()) == set(_ES_DOC_FIELDS):
         idx, typ, id, field = [doc[k] for k in _ES_DOC_FIELDS]
