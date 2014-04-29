@@ -79,7 +79,9 @@ Then, in the xtas source directory, issue::
 
     pip install .
 
-When you make changes, reissue this command to update the virtualenv.
+When you make changes, issue this command to update the virtualenv::
+
+    pip install --upgrade --no-deps .
 
 To contribute code back, commit your changes to a separate branch.
 Push this branch to GitHub and do a pull request. Your code will be reviewed
