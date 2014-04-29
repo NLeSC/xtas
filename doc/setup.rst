@@ -79,7 +79,7 @@ Configuring
 To override the built-in xtas configuration (which assumes that you're in the
 Amsterdam timezone, have Elasticsearch at ``localhost:9200``, etc.), run::
 
-    python -m xtas.config
+    python -m xtas.make_config
 
 to generate a file called ``xtas_config.py`` in the current directory. Change
 this file as needed, make sure it is in the ``PYTHONPATH`` (*not* in the
