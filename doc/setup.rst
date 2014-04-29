@@ -20,7 +20,10 @@ Long story: first set up a virtualenv for xtas::
 
 The option ``--system-site-packages`` makes sure system NumPy, SciPy and NLTK
 are used, if they are pre-installed on the machine (recommended). Compiling
-these can take quite a long time.
+these can take quite a long time. If you don't use this option, do make sure
+you ``pip install numpy`` before trying anything else. If you don't have
+all of the dependencies, you may need C and C++ compilers. If you don't have
+SciPy preinstalled, you'll need a Fortran compiler and a lot of patience.
 
 Use `pip <https://pypi.python.org/pypi/pip/1.1>`_ to install xtas.
 To get the latest release::
