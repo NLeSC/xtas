@@ -69,7 +69,19 @@ xtas. Make sure you have copyright to the code you write or your employer
 gives you permission to contribute under the terms of the Apache License
 (``LICENSE.txt`` in the main source directory).
 
-Fork the main repository on GitHub. Commit your changes to a separate branch.
+Fork the main repository on GitHub, then install this instead of the released
+version. First make a new virtualenv::
+
+    virtualenv --system-site-packages /some/where/xtas-work
+    . /some/where/xtas-work/bin/activate
+
+Then, in the xtas source directory, issue::
+
+    pip install .
+
+When you make changes, reissue this command to update the virtualenv.
+
+To contribute code back, commit your changes to a separate branch.
 Push this branch to GitHub and do a pull request. Your code will be reviewed
 before pulling.
 
