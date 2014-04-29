@@ -26,7 +26,10 @@ def _vectorizer(**kwargs):
 
 @app.task
 def kmeans(docs, k, lsa=None):
-    """Run k-means clustering on a vectorized set of documents.
+    """Run k-means clustering on a set of documents.
+
+    Uses scikit-learn to tokenize documents, compute tf-idf weights, perform
+    (optional) LSA transformation, and cluster.
 
     Parameters
     ----------
@@ -66,6 +69,14 @@ def big_kmeans(docs, k, batch_size=1000, n_features=(2 ** 20),
                single_pass=True):
     """k-means for very large sets of documents.
 
+    See kmeans for documentation. Differs from that function in that it does
+    not computer tf-idf or LSA, and fetches the documents in a streaming
+    fashion, so they don't need to be held in memory. It does not do random
+    restarts.
+
+    If the option single_pass is set to False, the documents are visited
+    twice: once to fit a k-means model, once to determine their label in
+    this model.
     """
     from sklearn.cluster import MiniBatchKMeans
     from sklearn.feature_extraction.text import HashingVectorizer
@@ -101,7 +112,7 @@ def lsa(docs, k, random_state=None):
     k : integer
         Number of topics.
     random_state : integer, optional
-        Random number seed, for reproducibility.
+        Random number seed, for reproducibility of results.
 
     Returns
     -------
@@ -123,7 +134,10 @@ def lsa(docs, k, random_state=None):
 
 @app.task
 def lda(docs, k):
-    """Latent Dirichlet allocation using Gensim.
+    """Latent Dirichlet allocation topic model.
+
+    Uses Gensim's LdaModel after tokenizing using scikit-learn's
+    TfidfVectorizer.
 
     Parameters
     ----------
@@ -149,6 +163,7 @@ def lda(docs, k):
 
 @app.task
 def parsimonious_wordcloud(docs, w=.5, k=10):
+    """Fit a parsimonious language model to terms in docs."""
     from weighwords import ParsimoniousLM
 
     model = ParsimoniousLM(docs, w=w)
