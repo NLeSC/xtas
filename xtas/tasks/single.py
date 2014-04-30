@@ -219,11 +219,28 @@ def untokenize(tokens):
 
 @app.task
 def frog(doc, output='raw'):
-    """
-    Run a document through the frog server at localhost:9887
-    If output is 'raw', returns the raw output lines.
-    If output is 'tokens', returns dictionaries for the tokens
-    If output is 'saf', returns a SAF dictionary
+    """Wrapper around the Frog lemmatizer/POS tagger.
+
+    Expects Frog to be running in server mode at localhost:9887. It is *not*
+    started for you.
+
+    Currently, the module is only tested with all frog modules active except
+    for the NER and parser.
+
+    The following line starts Frog in the correct way:
+
+    frog --skip=pm -S 9887
+
+    Parameters
+    ----------
+    output : string
+        If 'raw', returns the raw output lines from Frog itself.
+        If 'tokens', returns dictionaries for the tokens.
+        If 'saf', returns a SAF dictionary.
+
+    References
+    ----------
+    `Frog homepage <http://ilk.uvt.nl/frog/>`_
     """
     from ._frog import call_frog, parse_frog, frog_to_saf
     if output not in ('raw', 'tokens', 'saf'):
