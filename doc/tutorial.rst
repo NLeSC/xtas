@@ -153,7 +153,7 @@ and store the result back, if we append it to our chain::
 
     >>> from xtas.tasks.es import store_single
     >>> doc = es_document('20news', 'post', 3430, 'text')
-    >>> ch = chain(stanford_ner_tag.s(doc, format="names"),
+    >>> ch = chain(stanford_ner_tag.s(doc, output="names"),
     ...            store_single.s('ner', doc['index'], doc['type'], doc['id']))
     >>> result = ch()
     >>> pprint(result.get())

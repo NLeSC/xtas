@@ -219,6 +219,47 @@ def untokenize(tokens):
 
 
 @app.task
+def frog(doc, output='raw'):
+    """Wrapper around the Frog lemmatizer/POS tagger.
+
+    Expects Frog to be running in server mode at localhost:9887. It is *not*
+    started for you.
+
+    Currently, the module is only tested with all frog modules active except
+    for the NER and parser.
+
+    The following line starts Frog in the correct way:
+
+    frog --skip=pm -S 9887
+
+    Parameters
+    ----------
+    output : string
+        If 'raw', returns the raw output lines from Frog itself.
+        If 'tokens', returns dictionaries for the tokens.
+        If 'saf', returns a SAF dictionary.
+
+    References
+    ----------
+    `Frog homepage <http://ilk.uvt.nl/frog/>`_
+    """
+    from ._frog import call_frog, parse_frog, frog_to_saf
+    if output not in ('raw', 'tokens', 'saf'):
+        raise ValueError("Uknown output: {output}, "
+                         "please choose either raw, tokens, or saf"
+                         .format(**locals()))
+    text = fetch(doc)
+    result = call_frog(text)
+    if output == 'raw':
+        return list(result)
+    if output in ('tokens', 'saf'):
+        result = parse_frog(result)
+        if output == 'tokens':
+            return list(result)
+        return frog_to_saf(result)
+
+
+@app.task
 def dbpedia_spotlight(doc, lang='en', conf=0.5, supp=0, api_url=None):
     """Run text through a DBpedia Spotlight instance.
 

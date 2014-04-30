@@ -13,7 +13,7 @@ If you have a custom task that you want xtas to perform, then you can add it
 as follows. Let's start with an example task that reverses a document,
 character-by-character. Put the following in a file ``mytasks.py``::
 
-    from xtas.celery import app
+    from xtas.core import app
 
     @app.task
     def reverse(doc):

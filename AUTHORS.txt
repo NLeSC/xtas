@@ -3,7 +3,10 @@ Maintainer:
 
 Contributors:
 * Wouter van Atteveldt (VU University Amsterdam)
+* Arjan Nusselder (UvA)
+* Daan Odijk (UvA)
 * Isaac Sijaranamual
 
 Based on earlier work by:
-* Ork de Rooij (University of Amsterdam)
+* Tom Kenter (UvA)
+* Ork de Rooij (UvA)
