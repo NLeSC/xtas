@@ -8,22 +8,33 @@ Installation
 Make sure you have `Elasticsearch <http://www.elasticsearch.org/>`_ and
 `RabbitMQ <http://www.rabbitmq.com/>`_ running. Installation instructions for
 those can be found in various places. Make sure you have Python 2.7 or newer.
-Some tasks require a Java VM. xtas has been tested on Linux; it should work on
-OS X but this has not been tested.
+Some tasks require a Java VM. xtas is primarily developed on Linux; OS X
+support is not regularly tested, but issues/patches are welcome. Windows is
+not supported.
 
 TL;DR: ``pip install xtas``.
 
-Long story: first set up a virtualenv for xtas::
+Long story: get the install dependencies, Python, pip, NumPy, Java (JRE).
+On a Debian/Ubuntu/Linux Mint system, these can be installed with the package
+manager, in which case it's a good idea to install other dependencies too
+(so ``pip`` has to do less work)::
+
+    sudo apt-get install rabbitmq-server python-scipy openjdk-7-jre \
+        python-virtualenv python-nltk build-essential python-pip
+
+For other systems, including Macs, getting SciPy through a Python distro
+such as `Anaconda <http://continuum.io/downloads>`_ saves you the trouble
+of setting up C, C++ and Fortran compilers.
+
+Next, set up a virtualenv for xtas::
 
     virtualenv --system-site-packages /some/where
     . /some/where/bin/activate
 
-The option ``--system-site-packages`` makes sure system NumPy, SciPy and NLTK
-are used, if they are pre-installed on the machine (recommended). Compiling
-these can take quite a long time. If you don't use this option, do make sure
-you ``pip install numpy`` before trying anything else. If you don't have
-all of the dependencies, you may need C and C++ compilers. If you don't have
-SciPy preinstalled, you'll need a Fortran compiler and a lot of patience.
+The option ``--system-site-packages`` makes sure the system-wide NumPy, SciPy,
+scikit-learn and NLTK are used, if they are pre-installed on the machine.
+If you don't use this option, do make sure you ``pip install numpy``
+before trying anything else.
 
 Use `pip <https://pypi.python.org/pypi/pip/1.1>`_ to install xtas.
 To get the latest release::
@@ -33,6 +44,8 @@ To get the latest release::
 To get the bleeding edge version from GitHub::
 
     pip install git+https://github.com/NLeSC/xtas.git
+
+For installing from local source, see :doc:`extending`.
 
 
 Getting started
