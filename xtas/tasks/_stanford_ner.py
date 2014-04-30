@@ -80,7 +80,17 @@ def tag(doc, format):
     if format not in ["tokens", "names"]:
         raise ValueError("unknown format %r" % format)
 
-    text = ' '.join(nltk.word_tokenize(doc))
+    # If the doc contains unicode characters, a UnicodeEncodeError was thrown
+    # in s.sendall(text). E.g. presumably the euro-sign:
+    # UnicodeEncodeError: 'ascii' codec can't encode character u'\u20ac' in
+    # position 460: ordinal not in range(128)
+
+    # nltk.word_tokenize(doc) returns a list [u'xyz', ..]. Using ' '.join()
+    # results in the above error. Encoding each list item first fixes the
+    # problem.
+
+    toks = nltk.word_tokenize(doc)
+    text = ' '.join(t.encode('utf-8') for t in toks)
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(('localhost', port))
