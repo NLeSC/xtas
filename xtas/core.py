@@ -68,8 +68,9 @@ def configure(config, import_error="raise", unknown_key="raise"):
                 logger.warn(msg)
 
     app.config_from_object(config.get('CELERY', 'xtas._defaultconfig.CELERY'))
-    _config['ELASTICSEARCH'] = config.get('ELASTICSEARCH',
-                                          _defaultconfig.ELASTICSEARCH)
+    es = config.get('ELASTICSEARCH', _defaultconfig.ELASTICSEARCH)
+    _config['ELASTICSEARCH'] = es
+    logger.info('Using Elasticsearch at %s' % es)
 
     for m in config.get('EXTRA_MODULES', []):
         try:
