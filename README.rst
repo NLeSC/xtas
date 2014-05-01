@@ -17,7 +17,7 @@ Install::
 
 Start worker::
 
-    celery -A xtas.tasks worker --loglevel=info
+    python -m xtas.worker --loglevel=info
 
 Start web frontend::
 

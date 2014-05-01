@@ -17,8 +17,8 @@ install:
   - pip install -r requirements.txt
 
 script:
-  - celery -A xtas.tasks worker --loglevel=info &
+  - python -m xtas.worker --loglevel=info --pidfile=worker.pid &
   - nosetests --exe xtas
   - testexit=$?
-  - killall celery
+  - kill $(cat worker.pid)
   - (exit $testexit)

@@ -89,7 +89,3 @@ try:
 except ImportError:
     logger.info('Cannot import xtas_config, falling back to default')
     configure({})
-
-
-if __name__ == '__main__':
-    app.start()

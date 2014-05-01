@@ -58,7 +58,7 @@ install that package if you don't already have it.
 
 Then start an xtas worker::
 
-    celery -A xtas.tasks worker --loglevel=info
+    python -m xtas.worker --loglevel=info
 
 Start the web frontend::
 
