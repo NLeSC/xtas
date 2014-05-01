@@ -285,10 +285,6 @@ def dbpedia_spotlight(doc, lang='en', conf=0.5, supp=0, api_url=None):
         'tr': "http://spotlight.sztaki.hu:2235/rest"
     }
 
-    no_coref_filter = {
-        'coreferenceResolution': False
-    }
-
     if lang not in endpoints_by_language and not api_url:
         raise ValueError("Not a valid language code: %r" % lang)
 
@@ -302,8 +298,7 @@ def dbpedia_spotlight(doc, lang='en', conf=0.5, supp=0, api_url=None):
             api_url, text,
             confidence=conf,
             support=supp,
-            spotter='Default',
-            filters=no_coref_filter
+            spotter='Default'
         )
     except (spotlight.SpotlightException, TypeError) as e:
         return {'error': e.message}
