@@ -1,9 +1,10 @@
 # coding: utf-8
 
-from nose.tools import assert_equal, assert_in, assert_less, assert_true
+from nose.tools import assert_equal, assert_in, assert_less, assert_true, assert_greater
 
 from xtas.tasks import (guess_language, morphy, movie_review_polarity,
-                        stanford_ner_tag, sentiwords_tag, tokenize)
+                        stanford_ner_tag, sentiwords_tag, tokenize,
+                        dbpedia_spotlight)
 
 
 def test_langid():
@@ -62,3 +63,32 @@ def test_stanford_ner():
     # Stanford doesn't pick up "Academy Award". This is not our fault.
     # (XXX divise a better test.)
     assert_equal(names, [("Philip Seymour Hoffman", "PERSON")])
+
+
+def test_dbpedia_spotlight():
+    en_text = u"Will the efforts of artists like Moby help to preserve the Arctic?"
+    nl_text = u"Ik kan me iets herrinneren over de burgemeester van Amstelveen \
+               en het achterwerk van M\xe1xima. Verder was Koningsdag een zwart gat."
+
+    en_annotations = dbpedia_spotlight(en_text, lang='en')
+    nl_annotations = dbpedia_spotlight(nl_text, lang='nl')
+
+    # Expect `Arctic` and `Moby` to be found in en_text
+    assert_equal(len(en_annotations), 2)
+    for ann in en_annotations:
+        assert_in(ann['name'], {'Arctic', 'Moby'})
+        # The disambiguation candidates should be of type list
+        assert_true(isinstance(ann['resource'], list))
+        # In this case, the top candidate's uri == the name
+        assert_equal(ann['name'], ann['resource'][0]['uri'])
+
+    # Expect {"burgemeester", "Amstelveen", u"M\xe1xima",
+    # "Koningsdag", "zwart gat"} to be found in nl_text
+    assert_equal(len(nl_annotations), 5)
+    sf_set = set([ann['name'] for ann in nl_annotations])
+    assert_equal(sf_set, {u"burgemeester", u"Amstelveen", u"M\xe1xima", u"Koningsdag", u"zwart gat"})
+    for ann in en_annotations:
+        # The disambiguation candidates should be of type list
+        assert_true(isinstance(ann['resource'], list))
+        # There should be at least one candidate
+        assert_greater(ann['resource'], 0)

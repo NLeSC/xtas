@@ -13,6 +13,7 @@ from urllib import urlencode
 from urllib2 import urlopen
 
 import nltk
+import spotlight
 
 from .es import fetch
 from ..core import app
@@ -256,3 +257,60 @@ def frog(doc, output='raw'):
         if output == 'tokens':
             return list(result)
         return frog_to_saf(result)
+
+
+@app.task
+def dbpedia_spotlight(doc, lang='en', conf=0.5, supp=0, api_url=None):
+    """Run text through a DBpedia Spotlight instance.
+
+    Calls the DBpedia Spotlight instance to perform entity linking and
+    returns the names/links it has found.
+
+    See http://spotlight.dbpedia.org/ for details.
+    This task uses a Python client for DBp Spotlight:
+    https://github.com/aolieman/pyspotlight
+    """
+    text = fetch(doc)
+
+    endpoints_by_language = {
+        'en': "http://spotlight.sztaki.hu:2222/rest",
+        'de': "http://spotlight.sztaki.hu:2226/rest",
+        'nl': "http://spotlight.sztaki.hu:2232/rest",
+        'fr': "http://spotlight.sztaki.hu:2225/rest",
+        'it': "http://spotlight.sztaki.hu:2230/rest",
+        'ru': "http://spotlight.sztaki.hu:2227/rest",
+        'es': "http://spotlight.sztaki.hu:2231/rest",
+        'pt': "http://spotlight.sztaki.hu:2228/rest",
+        'hu': "http://spotlight.sztaki.hu:2229/rest",
+        'tr': "http://spotlight.sztaki.hu:2235/rest"
+    }
+
+    if lang not in endpoints_by_language and not api_url:
+        raise ValueError("Not a valid language code: %r" % lang)
+
+    if not api_url:
+        api_url = endpoints_by_language[lang]
+
+    api_url += "/candidates"
+
+    try:
+        spotlight_resp = spotlight.candidates(
+            api_url, text,
+            confidence=conf,
+            support=supp,
+            spotter='Default'
+        )
+    except (spotlight.SpotlightException, TypeError) as e:
+        return {'error': e.message}
+
+    # Return a list of annotation dictionaries
+    annotations = []
+    for annotation in spotlight_resp:
+        # Ignore annotations without disambiguation candidates
+        if u'resource' in annotation:
+            # Always return a list of resources, also for single candidates
+            if isinstance(annotation[u'resource'], dict):
+                annotation[u'resource'] = [annotation[u'resource']]
+            annotations.append(annotation)
+
+    return annotations
