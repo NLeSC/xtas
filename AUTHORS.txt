@@ -5,6 +5,7 @@ Contributors:
 * Wouter van Atteveldt (VU University Amsterdam)
 * Arjan Nusselder (UvA)
 * Daan Odijk (UvA)
+* Alex Olieman
 * Isaac Sijaranamual
 
 Based on earlier work by:
