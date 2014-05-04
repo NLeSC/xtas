@@ -1,6 +1,7 @@
 from __future__ import absolute_import, print_function
 import atexit
 from itertools import groupby
+import logging
 import operator
 import os
 import os.path
@@ -16,6 +17,9 @@ import nltk
 from .._downloader import _make_data_home, _progress
 
 
+logger = logging.getLogger(__name__)
+
+
 STANFORD_NER = (
     '''http://nlp.stanford.edu/software/stanford-ner-2014-01-04.zip'''
 )
@@ -27,6 +31,7 @@ def download():
 
     if not os.path.exists(ner_dir):
         with NamedTemporaryFile() as temp:
+            logger.info('Downloading %s' % STANFORD_NER)
             urlretrieve(STANFORD_NER, temp.name, reporthook=_progress)
             with ZipFile(temp.name) as z:
                 z.extractall(path=home)
