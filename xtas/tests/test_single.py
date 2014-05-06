@@ -3,8 +3,7 @@
 from nose.tools import assert_equal, assert_in, assert_less, assert_true, assert_greater
 
 from xtas.tasks import (guess_language, morphy, movie_review_polarity,
-                        stanford_ner_tag, sentiwords_tag, tokenize,
-                        dbpedia_spotlight)
+                        sentiwords_tag, tokenize, dbpedia_spotlight)
 
 
 def test_langid():
@@ -47,22 +46,6 @@ def test_tokenize():
     expected = "My hovercraft is full of eels .".split()
     for obs, exp in zip(tokens, expected):
         assert_equal(obs, {"token": exp})
-
-
-def test_stanford_ner():
-    # From Wikipedia front page, 10 Feb 2014.
-    phrase = ("Academy Award-winning actor Philip Seymour Hoffman"
-              " dies at the age of 46.")
-
-    ne = stanford_ner_tag(phrase)
-    for token, tag in ne:
-        assert_true(isinstance(token, basestring))
-        assert_true(tag in ["O", "PERSON"])
-
-    names = stanford_ner_tag(phrase, output="names")
-    # Stanford doesn't pick up "Academy Award". This is not our fault.
-    # (XXX divise a better test.)
-    assert_equal(names, [("Philip Seymour Hoffman", "PERSON")])
 
 
 def test_dbpedia_spotlight():
