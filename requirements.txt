@@ -1,4 +1,5 @@
 celery>=3.0.0
+chardet
 elasticsearch
 flask>=0.10.1
 gensim
