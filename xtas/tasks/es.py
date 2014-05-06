@@ -52,6 +52,9 @@ def fetch(doc):
     elif isinstance(doc, str):
         enc = chardetect(doc)['encoding']
         return doc.decode(enc, errors="replace")
+    else:
+        raise TypeError("fetch expected es_document or string, got %s"
+                        % type(doc))
 
 
 @app.task
