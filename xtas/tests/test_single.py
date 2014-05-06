@@ -1,10 +1,10 @@
 # coding: utf-8
 
-from nose.tools import assert_equal, assert_in, assert_less, assert_true, assert_greater
+from nose.tools import (assert_equal, assert_greater, assert_in, assert_less,
+                        assert_true)
 
 from xtas.tasks import (guess_language, morphy, movie_review_polarity,
-                        stanford_ner_tag, sentiwords_tag, tokenize,
-                        dbpedia_spotlight)
+                        sentiwords_tag, tokenize, dbpedia_spotlight)
 
 
 def test_langid():
@@ -49,26 +49,12 @@ def test_tokenize():
         assert_equal(obs, {"token": exp})
 
 
-def test_stanford_ner():
-    # From Wikipedia front page, 10 Feb 2014.
-    phrase = ("Academy Award-winning actor Philip Seymour Hoffman"
-              " dies at the age of 46.")
-
-    ne = stanford_ner_tag(phrase)
-    for token, tag in ne:
-        assert_true(isinstance(token, basestring))
-        assert_true(tag in ["O", "PERSON"])
-
-    names = stanford_ner_tag(phrase, output="names")
-    # Stanford doesn't pick up "Academy Award". This is not our fault.
-    # (XXX divise a better test.)
-    assert_equal(names, [("Philip Seymour Hoffman", "PERSON")])
-
-
 def test_dbpedia_spotlight():
-    en_text = u"Will the efforts of artists like Moby help to preserve the Arctic?"
-    nl_text = u"Ik kan me iets herrinneren over de burgemeester van Amstelveen \
-               en het achterwerk van M\xe1xima. Verder was Koningsdag een zwart gat."
+    en_text = (u"Will the efforts of artists like Moby"
+               u" help to preserve the Arctic?")
+    nl_text = (u"Ik kan me iets herrinneren over de burgemeester van"
+               u" Amstelveen en het achterwerk van M\xe1xima."
+               u" Verder was Koningsdag een zwart gat.")
 
     en_annotations = dbpedia_spotlight(en_text, lang='en')
     nl_annotations = dbpedia_spotlight(nl_text, lang='nl')
@@ -86,7 +72,8 @@ def test_dbpedia_spotlight():
     # "Koningsdag", "zwart gat"} to be found in nl_text
     assert_equal(len(nl_annotations), 5)
     sf_set = set([ann['name'] for ann in nl_annotations])
-    assert_equal(sf_set, {u"burgemeester", u"Amstelveen", u"M\xe1xima", u"Koningsdag", u"zwart gat"})
+    assert_equal(sf_set, {u"burgemeester", u"Amstelveen", u"M\xe1xima",
+                          u"Koningsdag", u"zwart gat"})
     for ann in en_annotations:
         # The disambiguation candidates should be of type list
         assert_true(isinstance(ann['resource'], list))
