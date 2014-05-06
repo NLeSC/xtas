@@ -18,7 +18,7 @@ install:
 
 script:
   - python -m xtas.worker --loglevel=info --pidfile=worker.pid &
-  - nosetests --exe xtas
+  - nosetests -s -v --exe xtas
   - testexit=$?
   - kill $(cat worker.pid)
   - (exit $testexit)
