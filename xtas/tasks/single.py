@@ -314,3 +314,33 @@ def dbpedia_spotlight(doc, lang='en', conf=0.5, supp=0, api_url=None):
             annotations.append(annotation)
 
     return annotations
+
+
+@app.task
+def alpino(doc, output):
+    """Wrapper around the Alpino (dependency) parser.
+
+    Expects an environment variable ALPINO_HOME to point at
+    the Alpino installation dir.
+
+    The script uses the 'dependencies' end_hook to generate lemmata and
+    the dependency structure.
+
+    Parameters
+    ----------
+    output : string
+        If 'raw', returns the raw output from Alpino itself.
+        If 'saf', returns a SAF dictionary.
+
+    References
+    ----------
+    `Alpino homepage <http://www.let.rug.nl/vannoord/alp/Alpino/>`_
+    """
+    from ._alpino import tokenize, parse_raw, interpret_parse
+    text = fetch(doc)
+    tokens = tokenize(text)
+    parse = parse_raw(tokens)
+    if output == 'raw':
+        return parse
+    elif output == 'saf':
+        return interpret_parse(parse)
