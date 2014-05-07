@@ -65,3 +65,24 @@ def test_alpino_task():
     assert_equal(alpino(_SENT, output='raw').strip(), _PARSE)
     saf = alpino(_SENT, output='saf')
     assert_equal(set(saf.keys()), {'header', 'tokens', 'dependencies'})
+
+
+def test_alpino_unicode():
+    "Test what happens with non-ascii characters in input"
+    _check_alpino()
+    text = u"Bjarnfre\xf0arson leeft"
+    # tokenize should convery to utf-8 and only add final line break
+    assert_equal(tokenize(text).decode("utf-8"), text + "\n")
+    saf = alpino(text, output='saf')
+    assert_equal({t['lemma'] for t in saf['tokens']},
+                 {u"Bjarnfre\xf0arson", u"leef"})
+
+    text = u"\u738b\u6bc5 ook"
+    saf = alpino(text, output='saf')
+    assert_equal({t['lemma'] for t in saf['tokens']},
+                 {u"\u738b\u6bc5", u"ook"})
+
+    text = u"E\xe9n test nog"
+    saf = alpino(text, output='saf')
+    assert_equal({t['lemma'] for t in saf['tokens']},
+                 {u"\xe9\xe9n" ,"test", "nog"})

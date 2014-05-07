@@ -1,3 +1,17 @@
+"""
+Wrapper around the RUG Alpino Dependency parser
+
+The module expects ALPINO_HOME to point at the alpino installation dir
+
+The module needs the dependencies end_hook, which seems to be missing in the
+'sicstus' builds. The download link below works as of 2014-05-07:
+
+http://www.let.rug.nl/vannoord/alp/Alpino/binary/versions/Alpino-x86_64-linux-glibc2.5-20214.tar.gz
+
+See: http://www.let.rug.nl/vannoord/alp/Alpino
+"""
+
+
 import subprocess
 import logging
 import os
@@ -27,8 +41,12 @@ def tokenize(text):
         text = text.encode("utf-8")
 
     p = subprocess.Popen(CMD_TOKENIZE, shell=False, stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE, cwd=alpino_home)
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                         cwd=alpino_home)
     tokens, err = p.communicate(text)
+    if 'error' in err or not tokens:
+        raise Exception("Tokenization problem. Output was {tokens!r}, "
+                        "error messages: {err!r}".format(**locals()))
     tokens = tokens.replace("|", "")  # alpino uses | for  'sid | line'
     return tokens
 
@@ -37,8 +55,12 @@ def parse_raw(tokens):
     alpino_home = os.environ['ALPINO_HOME']
     p = subprocess.Popen(CMD_PARSE, shell=False,
                          stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE,
                          cwd=alpino_home, env={'ALPINO_HOME': alpino_home})
     parse, err = p.communicate(tokens)
+    if not parse:
+        raise Exception("Parse problem. Output was {parse!r}, "
+                        "error messages: {err!r}".format(**locals()))
     return parse
 
 
@@ -70,7 +92,7 @@ def interpret_parse(parse):
         func, rel = line[7].split("/")
         return dict(child=child['id'], parent=parent['id'], relation=rel)
 
-    dependencies = [get_dep(line.strip().split("|"))
+    dependencies = [get_dep(line.decode("utf-8").strip().split("|"))
                     for line in parse.split("\n") if line.strip()]
 
     return dict(header=header, dependencies=dependencies,
