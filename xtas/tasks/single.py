@@ -14,6 +14,7 @@ from urllib2 import urlopen
 
 import nltk
 import spotlight
+from toolz import identity, pipe
 
 from .es import fetch
 from ..core import app
@@ -317,8 +318,8 @@ def dbpedia_spotlight(doc, lang='en', conf=0.5, supp=0, api_url=None):
 
 
 @app.task
-def alpino(doc, output):
-    """Wrapper around the Alpino (dependency) parser.
+def alpino(doc, output="raw"):
+    """Wrapper around the Alpino (dependency) parser for Dutch.
 
     Expects an environment variable ALPINO_HOME to point at
     the Alpino installation dir.
@@ -337,10 +338,10 @@ def alpino(doc, output):
     `Alpino homepage <http://www.let.rug.nl/vannoord/alp/Alpino/>`_
     """
     from ._alpino import tokenize, parse_raw, interpret_parse
-    text = fetch(doc)
-    tokens = tokenize(text)
-    parse = parse_raw(tokens)
-    if output == 'raw':
-        return parse
-    elif output == 'saf':
-        return interpret_parse(parse)
+
+    try:
+        transf = {"raw": identity, "saf": interpret_parse}[output]
+    except KeyError:
+        raise ValueError("Unknown output format %r" % output)
+
+    return pipe(doc, fetch, tokenize, parse_raw, transf)
