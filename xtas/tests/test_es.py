@@ -19,6 +19,11 @@ def clean_es():
     indexclient = client.indices.IndicesClient(es)
     if not es.ping():
         raise SkipTest("ElasticSearch host not found, skipping elastic tests")
+    # check version number
+    status, response = es.transport.perform_request("GET", "/")
+    if status != 200 or not response['version']['number'].startswith("1.0"):
+        raise SkipTest("Wrong version number or response: {status} / {response}"
+                       .format(**locals()))
     logging.info("deleting and recreating index {ES_TEST_INDEX}"
                  " at {ES_TEST_HOST}")
     if indexclient.exists(ES_TEST_INDEX):
