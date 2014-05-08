@@ -5,9 +5,14 @@ These tasks process batches of documents, denoted as lists of strings.
 
 from __future__ import absolute_import
 
+import operator
+
+from six import itervalues
+import toolz
+
 from .es import fetch
 from ..core import app
-from .._utils import batches
+from .._utils import batches, tosequence
 
 
 def _vectorizer(**kwargs):
@@ -22,6 +27,13 @@ def _vectorizer(**kwargs):
     kwargs['input'] = 'content'
 
     return TfidfVectorizer(**kwargs)
+
+
+def group_clusters(docs, labels):
+    """Group docs by their cluster labels."""
+    return [zip(*cluster)[1]
+            for cluster in itervalues(toolz.groupby(operator.itemgetter(0),
+                                                    zip(labels, docs)))]
 
 
 @app.task
@@ -43,13 +55,16 @@ def kmeans(docs, k, lsa=None):
 
     Returns
     -------
-    labels : list of integers
-        Cluster labels (integers in the range [0..k)) for all documents in X.
+    clusters : sequence of sequence of documents
+        The input documents, grouped by cluster. The order of clusters and
+        the order of documents within clusters is unspecified.
     """
     from sklearn.cluster import MiniBatchKMeans
     from sklearn.decomposition import TruncatedSVD
     from sklearn.pipeline import Pipeline
     from sklearn.preprocessing import Normalizer
+
+    docs = tosequence(docs)
 
     if lsa is not None:
         kmeans = Pipeline([('tfidf', _vectorizer()),
@@ -60,8 +75,8 @@ def kmeans(docs, k, lsa=None):
         kmeans = Pipeline([('tfidf', _vectorizer()),
                            ('kmeans', MiniBatchKMeans(n_clusters=k))])
 
-    # XXX return friendlier output?
-    return kmeans.fit(fetch(d) for d in docs).steps[-1][1].labels_.tolist()
+    labels = kmeans.fit(fetch(d) for d in docs).steps[-1][1].labels_
+    return group_clusters(docs, labels)
 
 
 @app.task
@@ -81,6 +96,8 @@ def big_kmeans(docs, k, batch_size=1000, n_features=(2 ** 20),
     from sklearn.cluster import MiniBatchKMeans
     from sklearn.feature_extraction.text import HashingVectorizer
 
+    docs = tosequence(docs)
+
     v = HashingVectorizer(input="content", n_features=n_features, norm="l2")
     km = MiniBatchKMeans(n_clusters=k)
 
@@ -98,7 +115,7 @@ def big_kmeans(docs, k, batch_size=1000, n_features=(2 ** 20),
             batch = v.transform(batch)
             labels.extend(km.predict(batch).tolist())
 
-    return labels
+    return group_clusters(docs, labels)
 
 
 @app.task
