@@ -1,7 +1,7 @@
 """
 Test the Semafor semantic parser
-All tests require semafor to be listening to SEMAFOR_HOST:SEMAFOR_PORT
-(default localhost:9888).
+Requires SEMAFOR_HOME and MALT_MODEL_DIR to point to the locations of
+semafor and its Malt model, respectively
 The to_conll and add_frames also require CORENLP_HOME to point to a
 CoreNLP installation dir.
 """
@@ -19,16 +19,10 @@ def _check_corenlp_home():
 
 
 def _check_semafor():
-    host = os.environ.get("SEMAFOR_HOST", "localhost")
-    port = int(os.environ.get("SEMAFOR_PORT", 9888))
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        result = s.connect_ex((host, port))
-        if(result != 0):
-            raise SkipTest("Semafor web service not listening to {host}:{port}"
-                           .format(**locals()))
-    finally:
-        s.close()
+    if not os.environ.get("SEMAFOR_HOME"):
+        raise SkipTest("Cannot find SEMAFOR_HOME")
+    if not os.environ.get("MALT_MODEL_DIR"):
+        raise SkipTest("Cannot find CORENLP_HOME")
 
 
 def test_to_conll():
@@ -51,10 +45,9 @@ def test_semafor():
     conll = "\n".join(TEST_CONLL)
     frames = call_semafor(conll)
     # 1 frame in 1 sentence
-    assert_equal(len(frames), 1)
-    assert_equal(len(frames[0]['frames']), 1)
+    assert_equal(len(frames['frames']), 1)
     # about love!
-    f = frames[0]['frames'][0]
+    f = frames['frames'][0]
     assert_equal(f['target']['name'], 'Experiencer_focus')
     assert_equal(f['target']['spans'][0]['text'], 'loves')
 
