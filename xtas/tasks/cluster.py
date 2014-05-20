@@ -12,7 +12,7 @@ import toolz
 
 from .es import fetch
 from ..core import app
-from .._utils import batches, tosequence
+from .._utils import tosequence
 
 
 def _vectorizer(**kwargs):
@@ -102,7 +102,7 @@ def big_kmeans(docs, k, batch_size=1000, n_features=(2 ** 20),
     km = MiniBatchKMeans(n_clusters=k)
 
     labels = []
-    for batch in batches(docs, batch_size):
+    for batch in toolz.partition_all(batch_size, docs):
         batch = map(fetch, docs)
         batch = v.transform(batch)
         y = km.fit_predict(batch)
@@ -110,7 +110,7 @@ def big_kmeans(docs, k, batch_size=1000, n_features=(2 ** 20),
             labels.extend(y.tolist())
 
     if not single_pass:
-        for batch in batches(docs, batch_size):
+        for batch in toolz.partition_all(batch_size, docs):
             batch = map(fetch, docs)
             batch = v.transform(batch)
             labels.extend(km.predict(batch).tolist())
