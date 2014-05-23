@@ -362,12 +362,13 @@ def corenlp(doc, output='raw'):
     http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip
     """
     from ._corenlp import parse, stanford_to_saf
-    text = fetch(doc)
-    raw = parse(text)
-    if output == 'raw':
-        return raw
-    elif output == 'saf':
-        return stanford_to_saf(raw)
+
+    try:
+        transf = {"raw": identity, "saf": stanford_to_saf}[output]
+    except KeyError:
+        raise ValueError("Unknown output format %r" % output)
+
+    return pipe(doc, fetch, parse, transf)
 
 
 @app.task
@@ -387,9 +388,10 @@ def corenlp_lemmatize(doc, output='raw'):
     http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip
     """
     from ._corenlp import parse, stanford_to_saf
-    text = fetch(doc)
-    raw = parse(text, annotators=["tokenize", "ssplit", "pos", "lemma"])
-    if output == 'raw':
-        return raw
-    elif output == 'saf':
-        return stanford_to_saf(raw)
+
+    try:
+        transf = {"raw": identity, "saf": stanford_to_saf}[output]
+    except KeyError:
+        raise ValueError("Unknown output format %r" % output)
+
+    return pipe(doc, fetch, parse, transf)
