@@ -96,7 +96,9 @@ def stanford_ner_tag(doc, output="tokens"):
     Parameters
     ----------
     doc : document
-        Tokenization will be done by Stanford NER using its own rules.
+        Either a single string or a handle on a document in the ES store.
+        Tokenization and sentence splitting will be done by Stanford NER using
+        its own rules.
 
     output : string, optional
         Output format. "tokens" gives a list of (token, nerclass) triples,
