@@ -47,7 +47,10 @@ def _get_task(taskname):
 
 @app.route('/run/<taskname>', methods=['POST'])
 def run_task(taskname):
-    # Wants Content-type: text/plain
+    """Run named task on a document fed as POST data.
+
+    The POST data should have Content-type text/plain.
+    """
     task = _get_task(taskname)
     data = request.data
     if not isinstance(data, basestring):
