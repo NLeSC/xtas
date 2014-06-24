@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>xtas.tasks.single &mdash; xtas 2.99.6 documentation</title>
+    <title>xtas.tasks.single &mdash; xtas 2.99.7 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '2.99.6',
+        VERSION:     '2.99.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -29,7 +29,7 @@
     <script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../../_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="xtas 2.99.6 documentation" href="../../../index.html" />
+    <link rel="top" title="xtas 2.99.7 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -121,6 +121,8 @@
 <span class="kn">from</span> <span class="nn">urllib2</span> <span class="kn">import</span> <span class="n">urlopen</span>
 
 <span class="kn">import</span> <span class="nn">nltk</span>
+<span class="kn">import</span> <span class="nn">spotlight</span>
+<span class="kn">from</span> <span class="nn">toolz</span> <span class="kn">import</span> <span class="n">identity</span><span class="p">,</span> <span class="n">pipe</span>
 
 <span class="kn">from</span> <span class="nn">.es</span> <span class="kn">import</span> <span class="n">fetch</span>
 <span class="kn">from</span> <span class="nn">..core</span> <span class="kn">import</span> <span class="n">app</span>
@@ -187,10 +189,7 @@
 
 </div>
 <span class="k">def</span> <span class="nf">_tokenize_if_needed</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
-        <span class="c"># XXX building token dictionaries is actually wasteful...</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">tok</span><span class="p">[</span><span class="s">&#39;token&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">tok</span> <span class="ow">in</span> <span class="n">tokenize</span><span class="p">(</span><span class="n">s</span><span class="p">)]</span>
-    <span class="k">return</span> <span class="n">s</span>
+    <span class="k">return</span> <span class="n">tokenize</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">)</span> <span class="k">else</span> <span class="n">s</span>
 
 
 <span class="nd">@app.task</span>
@@ -202,7 +201,9 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    doc : document</span>
-<span class="sd">        Tokenization will be done by Stanford NER using its own rules.</span>
+<span class="sd">        Either a single string or a handle on a document in the ES store.</span>
+<span class="sd">        Tokenization and sentence splitting will be done by Stanford NER using</span>
+<span class="sd">        its own rules.</span>
 
 <span class="sd">    output : string, optional</span>
 <span class="sd">        Output format. &quot;tokens&quot; gives a list of (token, nerclass) triples,</span>
@@ -232,7 +233,7 @@
     <span class="k">if</span> <span class="n">model</span> <span class="o">!=</span> <span class="s">&#39;nltk&#39;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;unknown POS tagger </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">model</span><span class="p">)</span>
     <span class="n">nltk_download</span><span class="p">(</span><span class="s">&#39;maxent_treebank_pos_tagger&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">nltk</span><span class="o">.</span><span class="n">pos_tag</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="s">&quot;token&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">nltk</span><span class="o">.</span><span class="n">pos_tag</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
 
 </div>
 <span class="nd">@app.task</span>
@@ -284,7 +285,7 @@
 <span class="sd">    Uses the NLTK function word_tokenize.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">[{</span><span class="s">&quot;token&quot;</span><span class="p">:</span> <span class="n">t</span><span class="p">}</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
 </div>
 <span class="nd">@app.task</span>
@@ -322,7 +323,185 @@
 <span class="sd">    -------</span>
 <span class="sd">    doc : string</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+
+</div>
+<span class="nd">@app.task</span>
+<span class="k">def</span> <span class="nf">frog</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&#39;raw&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper around the Frog lemmatizer/POS tagger.</span>
+
+<span class="sd">    Expects Frog to be running in server mode at localhost:9887. It is *not*</span>
+<span class="sd">    started for you.</span>
+
+<span class="sd">    Currently, the module is only tested with all frog modules active except</span>
+<span class="sd">    for the NER and parser.</span>
+
+<span class="sd">    The following line starts Frog in the correct way:</span>
+
+<span class="sd">    frog --skip=pm -S 9887</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    output : string</span>
+<span class="sd">        If &#39;raw&#39;, returns the raw output lines from Frog itself.</span>
+<span class="sd">        If &#39;tokens&#39;, returns dictionaries for the tokens.</span>
+<span class="sd">        If &#39;saf&#39;, returns a SAF dictionary.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    `Frog homepage &lt;http://ilk.uvt.nl/frog/&gt;`_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">._frog</span> <span class="kn">import</span> <span class="n">call_frog</span><span class="p">,</span> <span class="n">parse_frog</span><span class="p">,</span> <span class="n">frog_to_saf</span>
+    <span class="k">if</span> <span class="n">output</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;raw&#39;</span><span class="p">,</span> <span class="s">&#39;tokens&#39;</span><span class="p">,</span> <span class="s">&#39;saf&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Uknown output: {output}, &quot;</span>
+                         <span class="s">&quot;please choose either raw, tokens, or saf&quot;</span>
+                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="nb">locals</span><span class="p">()))</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">call_frog</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">output</span> <span class="o">==</span> <span class="s">&#39;raw&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">output</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;tokens&#39;</span><span class="p">,</span> <span class="s">&#39;saf&#39;</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">parse_frog</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">output</span> <span class="o">==</span> <span class="s">&#39;tokens&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">frog_to_saf</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+
+<span class="nd">@app.task</span>
+<span class="k">def</span> <span class="nf">dbpedia_spotlight</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s">&#39;en&#39;</span><span class="p">,</span> <span class="n">conf</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">supp</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">api_url</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run text through a DBpedia Spotlight instance.</span>
+
+<span class="sd">    Calls the DBpedia Spotlight instance to perform entity linking and</span>
+<span class="sd">    returns the names/links it has found.</span>
+
+<span class="sd">    See http://spotlight.dbpedia.org/ for details.</span>
+<span class="sd">    This task uses a Python client for DBp Spotlight:</span>
+<span class="sd">    https://github.com/aolieman/pyspotlight</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+
+    <span class="n">endpoints_by_language</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;en&#39;</span><span class="p">:</span> <span class="s">&quot;http://spotlight.sztaki.hu:2222/rest&quot;</span><span class="p">,</span>
+        <span class="s">&#39;de&#39;</span><span class="p">:</span> <span class="s">&quot;http://spotlight.sztaki.hu:2226/rest&quot;</span><span class="p">,</span>
+        <span class="s">&#39;nl&#39;</span><span class="p">:</span> <span class="s">&quot;http://spotlight.sztaki.hu:2232/rest&quot;</span><span class="p">,</span>
+        <span class="s">&#39;fr&#39;</span><span class="p">:</span> <span class="s">&quot;http://spotlight.sztaki.hu:2225/rest&quot;</span><span class="p">,</span>
+        <span class="s">&#39;it&#39;</span><span class="p">:</span> <span class="s">&quot;http://spotlight.sztaki.hu:2230/rest&quot;</span><span class="p">,</span>
+        <span class="s">&#39;ru&#39;</span><span class="p">:</span> <span class="s">&quot;http://spotlight.sztaki.hu:2227/rest&quot;</span><span class="p">,</span>
+        <span class="s">&#39;es&#39;</span><span class="p">:</span> <span class="s">&quot;http://spotlight.sztaki.hu:2231/rest&quot;</span><span class="p">,</span>
+        <span class="s">&#39;pt&#39;</span><span class="p">:</span> <span class="s">&quot;http://spotlight.sztaki.hu:2228/rest&quot;</span><span class="p">,</span>
+        <span class="s">&#39;hu&#39;</span><span class="p">:</span> <span class="s">&quot;http://spotlight.sztaki.hu:2229/rest&quot;</span><span class="p">,</span>
+        <span class="s">&#39;tr&#39;</span><span class="p">:</span> <span class="s">&quot;http://spotlight.sztaki.hu:2235/rest&quot;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">lang</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">endpoints_by_language</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">api_url</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Not a valid language code: </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">lang</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">api_url</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">api_url</span> <span class="o">=</span> <span class="n">endpoints_by_language</span><span class="p">[</span><span class="n">lang</span><span class="p">]</span>
+
+    <span class="n">api_url</span> <span class="o">+=</span> <span class="s">&quot;/candidates&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">spotlight_resp</span> <span class="o">=</span> <span class="n">spotlight</span><span class="o">.</span><span class="n">candidates</span><span class="p">(</span>
+            <span class="n">api_url</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span>
+            <span class="n">confidence</span><span class="o">=</span><span class="n">conf</span><span class="p">,</span>
+            <span class="n">support</span><span class="o">=</span><span class="n">supp</span><span class="p">,</span>
+            <span class="n">spotter</span><span class="o">=</span><span class="s">&#39;Default&#39;</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">spotlight</span><span class="o">.</span><span class="n">SpotlightException</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;error&#39;</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">}</span>
+
+    <span class="c"># Return a list of annotation dictionaries</span>
+    <span class="n">annotations</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="n">spotlight_resp</span><span class="p">:</span>
+        <span class="c"># Ignore annotations without disambiguation candidates</span>
+        <span class="k">if</span> <span class="s">u&#39;resource&#39;</span> <span class="ow">in</span> <span class="n">annotation</span><span class="p">:</span>
+            <span class="c"># Always return a list of resources, also for single candidates</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">annotation</span><span class="p">[</span><span class="s">u&#39;resource&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">annotation</span><span class="p">[</span><span class="s">u&#39;resource&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">annotation</span><span class="p">[</span><span class="s">u&#39;resource&#39;</span><span class="p">]]</span>
+            <span class="n">annotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">annotation</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">annotations</span>
+
+
+<span class="nd">@app.task</span>
+<span class="k">def</span> <span class="nf">alpino</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&quot;raw&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper around the Alpino (dependency) parser for Dutch.</span>
+
+<span class="sd">    Expects an environment variable ALPINO_HOME to point at</span>
+<span class="sd">    the Alpino installation dir.</span>
+
+<span class="sd">    The script uses the &#39;dependencies&#39; end_hook to generate lemmata and</span>
+<span class="sd">    the dependency structure.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    output : string</span>
+<span class="sd">        If &#39;raw&#39;, returns the raw output from Alpino itself.</span>
+<span class="sd">        If &#39;saf&#39;, returns a SAF dictionary.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    `Alpino homepage &lt;http://www.let.rug.nl/vannoord/alp/Alpino/&gt;`_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">._alpino</span> <span class="kn">import</span> <span class="n">tokenize</span><span class="p">,</span> <span class="n">parse_raw</span><span class="p">,</span> <span class="n">interpret_parse</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">transf</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;raw&quot;</span><span class="p">:</span> <span class="n">identity</span><span class="p">,</span> <span class="s">&quot;saf&quot;</span><span class="p">:</span> <span class="n">interpret_parse</span><span class="p">}[</span><span class="n">output</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Unknown output format </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">output</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pipe</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">fetch</span><span class="p">,</span> <span class="n">tokenize</span><span class="p">,</span> <span class="n">parse_raw</span><span class="p">,</span> <span class="n">transf</span><span class="p">)</span>
+
+
+<span class="nd">@app.task</span>
+<span class="k">def</span> <span class="nf">corenlp</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&#39;raw&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper around the CoreNLP parser.</span>
+
+<span class="sd">    Expects CORENLP_HOME to point to the CoreNLP installation dir.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    output : string</span>
+<span class="sd">        If &#39;raw&#39;, returns the raw output lines from CoreNLP.</span>
+<span class="sd">        If &#39;saf&#39;, returns a SAF dictionary.</span>
+
+<span class="sd">    Tested with</span>
+<span class="sd">    http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">._corenlp</span> <span class="kn">import</span> <span class="n">parse</span><span class="p">,</span> <span class="n">stanford_to_saf</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">transf</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;raw&quot;</span><span class="p">:</span> <span class="n">identity</span><span class="p">,</span> <span class="s">&quot;saf&quot;</span><span class="p">:</span> <span class="n">stanford_to_saf</span><span class="p">}[</span><span class="n">output</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Unknown output format </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">output</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pipe</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">fetch</span><span class="p">,</span> <span class="n">parse</span><span class="p">,</span> <span class="n">transf</span><span class="p">)</span>
+
+
+<span class="nd">@app.task</span>
+<span class="k">def</span> <span class="nf">corenlp_lemmatize</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&#39;raw&#39;</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapper around the CoreNLP lemmatizer</span>
+<span class="sd">    The module expects CORENLP_HOME to point to the CoreNLP installation dir.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    output : string</span>
+<span class="sd">        If &#39;raw&#39;, returns the raw output lines from CoreNLP.</span>
+<span class="sd">        If &#39;saf&#39;, returns a SAF dictionary.</span>
+
+<span class="sd">    Tested with</span>
+<span class="sd">    http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">._corenlp</span> <span class="kn">import</span> <span class="n">parse</span><span class="p">,</span> <span class="n">stanford_to_saf</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">transf</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;raw&quot;</span><span class="p">:</span> <span class="n">identity</span><span class="p">,</span> <span class="s">&quot;saf&quot;</span><span class="p">:</span> <span class="n">stanford_to_saf</span><span class="p">}[</span><span class="n">output</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Unknown output format </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">output</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pipe</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">fetch</span><span class="p">,</span> <span class="n">parse</span><span class="p">,</span> <span class="n">transf</span><span class="p">)</span>
 </pre></div>
 
     </div>

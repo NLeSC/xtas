@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Setting up xtas &mdash; xtas 2.99.6 documentation</title>
+    <title>Setting up xtas &mdash; xtas 2.99.7 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2.99.6',
+        VERSION:     '2.99.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -29,7 +29,7 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="xtas 2.99.6 documentation" href="index.html" />
+    <link rel="top" title="xtas 2.99.7 documentation" href="index.html" />
     <link rel="next" title="xtas tutorial" href="tutorial.html" />
     <link rel="prev" title="xtas, the eXtensible Text Analysis Suite" href="index.html" />
 <meta charset='utf-8'>
@@ -121,17 +121,31 @@
 <p>Make sure you have <a class="reference external" href="http://www.elasticsearch.org/">Elasticsearch</a> and
 <a class="reference external" href="http://www.rabbitmq.com/">RabbitMQ</a> running. Installation instructions for
 those can be found in various places. Make sure you have Python 2.7 or newer.
-Some tasks require a Java VM. xtas has been tested on Linux; it should work on
-OS X but this has not been tested.</p>
+Some tasks require a Java VM. xtas is primarily developed on Linux; OS X
+support is not regularly tested, but issues/patches are welcome. Windows is
+not supported.</p>
 <p>TL;DR: <tt class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">xtas</span></tt>.</p>
-<p>Long story: first set up a virtualenv for xtas:</p>
+<p>Long story: get the install dependencies, Python, pip, NumPy, Java (JRE).
+On a Debian/Ubuntu/Linux Mint system, these can be installed with the package
+manager, in which case it&#8217;s a good idea to install other dependencies too
+(so <tt class="docutils literal"><span class="pre">pip</span></tt> has to do less work):</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install rabbitmq-server python-scipy openjdk-7-jre \
+    python-virtualenv python-nltk build-essential python-pip \
+    python-six
+</pre></div>
+</div>
+<p>For other systems, including Macs, getting SciPy through a Python distro
+such as <a class="reference external" href="http://continuum.io/downloads">Anaconda</a> saves you the trouble
+of setting up C, C++ and Fortran compilers.</p>
+<p>Next, set up a virtualenv for xtas:</p>
 <div class="highlight-python"><div class="highlight"><pre>virtualenv --system-site-packages /some/where
 . /some/where/bin/activate
 </pre></div>
 </div>
-<p>The option <tt class="docutils literal"><span class="pre">--system-site-packages</span></tt> makes sure system NumPy, SciPy and NLTK
-are used, if they are pre-installed on the machine (recommended). Compiling
-these can take quite a long time.</p>
+<p>The option <tt class="docutils literal"><span class="pre">--system-site-packages</span></tt> makes sure the system-wide NumPy, SciPy,
+scikit-learn and NLTK are used, if they are pre-installed on the machine.
+If you don&#8217;t use this option, do make sure you <tt class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">numpy</span></tt>
+before trying anything else.</p>
 <p>Use <a class="reference external" href="https://pypi.python.org/pypi/pip/1.1">pip</a> to install xtas.
 To get the latest release:</p>
 <div class="highlight-python"><div class="highlight"><pre>pip install xtas
@@ -141,6 +155,7 @@ To get the latest release:</p>
 <div class="highlight-python"><div class="highlight"><pre>pip install git+https://github.com/NLeSC/xtas.git
 </pre></div>
 </div>
+<p>For installing from local source, see <a class="reference internal" href="extending.html"><em>Extending xtas</em></a>.</p>
 </div>
 <div class="section" id="getting-started">
 <h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
@@ -149,7 +164,7 @@ RabbitMQ can be installed with <tt class="docutils literal"><span class="pre">su
 See the <a class="reference external" href="http://www.elasticsearch.org/">Elasticsearch website</a> for how to
 install that package if you don&#8217;t already have it.</p>
 <p>Then start an xtas worker:</p>
-<div class="highlight-python"><div class="highlight"><pre>celery -A xtas.tasks worker --loglevel=info
+<div class="highlight-python"><div class="highlight"><pre>python -m xtas.worker --loglevel=info
 </pre></div>
 </div>
 <p>Start the web frontend:</p>
@@ -181,7 +196,7 @@ otherwise be fetched on demand.</p>
 <h2>Configuring<a class="headerlink" href="#configuring" title="Permalink to this headline">¶</a></h2>
 <p>To override the built-in xtas configuration (which assumes that you&#8217;re in the
 Amsterdam timezone, have Elasticsearch at <tt class="docutils literal"><span class="pre">localhost:9200</span></tt>, etc.), run:</p>
-<div class="highlight-python"><div class="highlight"><pre>python -m xtas.config
+<div class="highlight-python"><div class="highlight"><pre>python -m xtas.make_config
 </pre></div>
 </div>
 <p>to generate a file called <tt class="docutils literal"><span class="pre">xtas_config.py</span></tt> in the current directory. Change

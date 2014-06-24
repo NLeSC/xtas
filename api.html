@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API reference &mdash; xtas 2.99.6 documentation</title>
+    <title>API reference &mdash; xtas 2.99.7 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2.99.6',
+        VERSION:     '2.99.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -29,7 +29,7 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="xtas 2.99.6 documentation" href="index.html" />
+    <link rel="top" title="xtas 2.99.7 documentation" href="index.html" />
     <link rel="next" title="Extending xtas" href="extending.html" />
     <link rel="prev" title="xtas tutorial" href="tutorial.html" />
 <meta charset='utf-8'>
@@ -130,7 +130,7 @@ the first argument; it may either be a string or the result from
 Elasticsearch store.</p>
 <dl class="task">
 <dt id="xtas.tasks.single.morphy">
-<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">morphy</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#morphy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.morphy" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">morphy</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#morphy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.morphy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lemmatize tokens using morphy, WordNet&#8217;s lemmatizer.</p>
 <p>No part-of-speech tagging is done.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -149,7 +149,7 @@ Elasticsearch store.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.movie_review_polarity">
-<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">movie_review_polarity</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#movie_review_polarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.movie_review_polarity" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">movie_review_polarity</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#movie_review_polarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.movie_review_polarity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Movie review polarity classifier.</p>
 <p>Runs a logistic regression model trained on a set of positive and negative
 movie reviews (all in English).</p>
@@ -169,7 +169,7 @@ movie reviews (all in English).</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.pos_tag">
-<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">pos_tag</tt><big>(</big><em>tokens</em>, <em>model='nltk'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#pos_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.pos_tag" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">pos_tag</tt><big>(</big><em>tokens</em>, <em>model='nltk'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#pos_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.pos_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform part-of-speech (POS) tagging.</p>
 <p>Currently only does English using the default model in NLTK.</p>
 <p>Expects a list of tokens.</p>
@@ -177,7 +177,7 @@ movie reviews (all in English).</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.stanford_ner_tag">
-<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">stanford_ner_tag</tt><big>(</big><em>doc</em>, <em>output='tokens'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#stanford_ner_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.stanford_ner_tag" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">stanford_ner_tag</tt><big>(</big><em>doc</em>, <em>output='tokens'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#stanford_ner_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.stanford_ner_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Named entity recognizer using Stanford NER.</p>
 <p>Currently only supports the model &#8216;english.all.3class.distsim.crf.ser.gz&#8217;.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -186,7 +186,9 @@ movie reviews (all in English).</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>doc</strong> : document</p>
 <blockquote>
-<div><p>Tokenization will be done by Stanford NER using its own rules.</p>
+<div><p>Either a single string or a handle on a document in the ES store.
+Tokenization and sentence splitting will be done by Stanford NER using
+its own rules.</p>
 </div></blockquote>
 <p><strong>output</strong> : string, optional</p>
 <blockquote>
@@ -210,7 +212,7 @@ is heuristic.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.semanticize">
-<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">semanticize</tt><big>(</big><em>doc</em>, <em>lang='en'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#semanticize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.semanticize" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">semanticize</tt><big>(</big><em>doc</em>, <em>lang='en'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#semanticize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.semanticize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run text through the UvA semanticizer.</p>
 <p>Calls the UvA semanticizer webservice to perform entity linking and
 returns the names/links it has found.</p>
@@ -222,7 +224,7 @@ derive prior polarities from SentiWordNet&#8221;. Proc. EMNLP, pp. 1259-1269.</p
 
 <dl class="task">
 <dt id="xtas.tasks.single.sentiwords_tag">
-<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">sentiwords_tag</tt><big>(</big><em>doc</em>, <em>output='bag'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#sentiwords_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.sentiwords_tag" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">sentiwords_tag</tt><big>(</big><em>doc</em>, <em>output='bag'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#sentiwords_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.sentiwords_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tag doc with SentiWords polarity priors.</p>
 <p>Performs left-to-right, longest-match annotation of token spans with
 polarities from SentiWords.</p>
@@ -247,14 +249,14 @@ strings, polarity) pairs.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.tokenize">
-<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">tokenize</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#tokenize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.tokenize" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">tokenize</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#tokenize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.tokenize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tokenize text.</p>
 <p>Uses the NLTK function word_tokenize.</p>
 </dd></dl>
 
 <dl class="task">
 <dt id="xtas.tasks.single.untokenize">
-<em class="property">(task)</em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">untokenize</tt><big>(</big><em>tokens</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#untokenize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.untokenize" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">untokenize</tt><big>(</big><em>tokens</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#untokenize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.untokenize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Undo tokenization.</p>
 <p>Simply concatenates the given tokens with spaces in between. Useful after
 tokenization and filtering.</p>
@@ -275,14 +277,23 @@ tokenization and filtering.</p>
 <p>These tasks process batches of documents, denoted as lists of strings.</p>
 <dl class="task">
 <dt id="xtas.tasks.cluster.big_kmeans">
-<em class="property">(task)</em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">big_kmeans</tt><big>(</big><em>docs</em>, <em>k</em>, <em>batch_size=1000</em>, <em>n_features=1048576</em>, <em>single_pass=True</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#big_kmeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.big_kmeans" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">big_kmeans</tt><big>(</big><em>docs</em>, <em>k</em>, <em>batch_size=1000</em>, <em>n_features=1048576</em>, <em>single_pass=True</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#big_kmeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.big_kmeans" title="Permalink to this definition">¶</a></dt>
 <dd><p>k-means for very large sets of documents.</p>
+<p>See kmeans for documentation. Differs from that function in that it does
+not computer tf-idf or LSA, and fetches the documents in a streaming
+fashion, so they don&#8217;t need to be held in memory. It does not do random
+restarts.</p>
+<p>If the option single_pass is set to False, the documents are visited
+twice: once to fit a k-means model, once to determine their label in
+this model.</p>
 </dd></dl>
 
 <dl class="task">
 <dt id="xtas.tasks.cluster.kmeans">
-<em class="property">(task)</em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">kmeans</tt><big>(</big><em>docs</em>, <em>k</em>, <em>lsa=None</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#kmeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.kmeans" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run k-means clustering on a vectorized set of documents.</p>
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">kmeans</tt><big>(</big><em>docs</em>, <em>k</em>, <em>lsa=None</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#kmeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.kmeans" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run k-means clustering on a set of documents.</p>
+<p>Uses scikit-learn to tokenize documents, compute tf-idf weights, perform
+(optional) LSA transformation, and cluster.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -302,9 +313,10 @@ with how many components/topics.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>labels</strong> : list of integers</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>clusters</strong> : sequence of sequence of documents</p>
 <blockquote class="last">
-<div><p>Cluster labels (integers in the range [0..k)) for all documents in X.</p>
+<div><p>The input documents, grouped by cluster. The order of clusters and
+the order of documents within clusters is unspecified.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -314,8 +326,10 @@ with how many components/topics.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.cluster.lda">
-<em class="property">(task)</em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">lda</tt><big>(</big><em>docs</em>, <em>k</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#lda"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.lda" title="Permalink to this definition">¶</a></dt>
-<dd><p>Latent Dirichlet allocation using Gensim.</p>
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">lda</tt><big>(</big><em>docs</em>, <em>k</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#lda"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.lda" title="Permalink to this definition">¶</a></dt>
+<dd><p>Latent Dirichlet allocation topic model.</p>
+<p>Uses Gensim&#8217;s LdaModel after tokenizing using scikit-learn&#8217;s
+TfidfVectorizer.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -332,7 +346,7 @@ with how many components/topics.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.cluster.lsa">
-<em class="property">(task)</em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">lsa</tt><big>(</big><em>docs</em>, <em>k</em>, <em>random_state=None</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#lsa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.lsa" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">lsa</tt><big>(</big><em>docs</em>, <em>k</em>, <em>random_state=None</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#lsa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.lsa" title="Permalink to this definition">¶</a></dt>
 <dd><p>Latent semantic analysis.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -348,7 +362,7 @@ with how many components/topics.</p>
 </div></blockquote>
 <p><strong>random_state</strong> : integer, optional</p>
 <blockquote>
-<div><p>Random number seed, for reproducibility.</p>
+<div><p>Random number seed, for reproducibility of results.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -365,10 +379,8 @@ with how many components/topics.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.cluster.parsimonious_wordcloud">
-<em class="property">(task)</em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">parsimonious_wordcloud</tt><big>(</big><em>docs</em>, <em>w=0.5</em>, <em>k=10</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#parsimonious_wordcloud"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.parsimonious_wordcloud" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a proxy to an object that has not yet been evaulated.</p>
-<p><tt class="xref py py-class docutils literal"><span class="pre">Proxy</span></tt> will evaluate the object each time, while the
-promise will only evaluate it once.</p>
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">parsimonious_wordcloud</tt><big>(</big><em>docs</em>, <em>w=0.5</em>, <em>k=10</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#parsimonious_wordcloud"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.parsimonious_wordcloud" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit a parsimonious language model to terms in docs.</p>
 </dd></dl>
 
 </div>

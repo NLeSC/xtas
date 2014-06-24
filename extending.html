@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Extending xtas &mdash; xtas 2.99.6 documentation</title>
+    <title>Extending xtas &mdash; xtas 2.99.7 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2.99.6',
+        VERSION:     '2.99.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -29,7 +29,7 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="xtas 2.99.6 documentation" href="index.html" />
+    <link rel="top" title="xtas 2.99.7 documentation" href="index.html" />
     <link rel="next" title="Frequently anticipated questions" href="faq.html" />
     <link rel="prev" title="API reference" href="api.html" />
 <meta charset='utf-8'>
@@ -124,7 +124,7 @@ It describes how to write now tasks and tie them in with the package.</p>
 <p>If you have a custom task that you want xtas to perform, then you can add it
 as follows. Let&#8217;s start with an example task that reverses a document,
 character-by-character. Put the following in a file <tt class="docutils literal"><span class="pre">mytasks.py</span></tt>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">xtas.celery</span> <span class="kn">import</span> <span class="n">app</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">xtas.core</span> <span class="kn">import</span> <span class="n">app</span>
 
 <span class="nd">@app.task</span>
 <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
@@ -179,7 +179,21 @@ capable of distributing it, then we&#8217;re happy to consider it for inclusion 
 xtas. Make sure you have copyright to the code you write or your employer
 gives you permission to contribute under the terms of the Apache License
 (<tt class="docutils literal"><span class="pre">LICENSE.txt</span></tt> in the main source directory).</p>
-<p>Fork the main repository on GitHub. Commit your changes to a separate branch.
+<p>Fork the main repository on GitHub, then install this instead of the released
+version. First make a new virtualenv:</p>
+<div class="highlight-python"><div class="highlight"><pre>virtualenv --system-site-packages /some/where/xtas-work
+. /some/where/xtas-work/bin/activate
+</pre></div>
+</div>
+<p>Then, in the xtas source directory, issue:</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install .
+</pre></div>
+</div>
+<p>When you make changes, issue this command to update the virtualenv:</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install --upgrade --no-deps .
+</pre></div>
+</div>
+<p>To contribute code back, commit your changes to a separate branch.
 Push this branch to GitHub and do a pull request. Your code will be reviewed
 before pulling.</p>
 <p>In the case of new tasks, put them in either <tt class="docutils literal"><span class="pre">xtas/tasks/single.py</span></tt> or

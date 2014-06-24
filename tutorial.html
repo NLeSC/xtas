@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>xtas tutorial &mdash; xtas 2.99.6 documentation</title>
+    <title>xtas tutorial &mdash; xtas 2.99.7 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2.99.6',
+        VERSION:     '2.99.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -29,7 +29,7 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="xtas 2.99.6 documentation" href="index.html" />
+    <link rel="top" title="xtas 2.99.7 documentation" href="index.html" />
     <link rel="next" title="API reference" href="api.html" />
     <link rel="prev" title="Setting up xtas" href="setup.html" />
 <meta charset='utf-8'>
@@ -257,7 +257,7 @@ ES, so we can use xtas as preprocessing for a semantic search engine.</p>
 and store the result back, if we append it to our chain:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">xtas.tasks.es</span> <span class="kn">import</span> <span class="n">store_single</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">es_document</span><span class="p">(</span><span class="s">&#39;20news&#39;</span><span class="p">,</span> <span class="s">&#39;post&#39;</span><span class="p">,</span> <span class="mi">3430</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ch</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="n">stanford_ner_tag</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&quot;names&quot;</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ch</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="n">stanford_ner_tag</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&quot;names&quot;</span><span class="p">),</span>
 <span class="gp">... </span>           <span class="n">store_single</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="s">&#39;ner&#39;</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;index&#39;</span><span class="p">],</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">],</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">ch</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
