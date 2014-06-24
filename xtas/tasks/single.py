@@ -81,10 +81,7 @@ def movie_review_polarity(doc):
 
 
 def _tokenize_if_needed(s):
-    if isinstance(s, basestring):
-        # XXX building token dictionaries is actually wasteful...
-        return [tok['token'] for tok in tokenize(s)]
-    return s
+    return tokenize(s) if isinstance(s, basestring) else s
 
 
 @app.task
@@ -128,7 +125,7 @@ def pos_tag(tokens, model='nltk'):
     if model != 'nltk':
         raise ValueError("unknown POS tagger %r" % model)
     nltk_download('maxent_treebank_pos_tagger')
-    return nltk.pos_tag([t["token"] for t in tokens])
+    return nltk.pos_tag(tokens)
 
 
 @app.task
@@ -180,7 +177,7 @@ def tokenize(doc):
     Uses the NLTK function word_tokenize.
     """
     text = fetch(doc)
-    return [{"token": t} for t in nltk.word_tokenize(text)]
+    return nltk.word_tokenize(text)
 
 
 @app.task
