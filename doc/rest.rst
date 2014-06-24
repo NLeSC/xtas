@@ -18,4 +18,10 @@ again to get the results from the tokenization::
     $ curl http://127.0.0.1:5000/result/11d0f158-abdb-4a0a-860d-b365456122f4
     ["Hello", ",", "world", "!"]
 
+Passing arguments to the task is also possible. To do so, you have to send the
+API request as JSON, as follows::
+
+    $ curl -H "Content-type: application/json" -X POST -d \
+        '{"data": "Hello, world!", "arguments": {"output": "rank"}}'
+
 The REST API, and this documentation, are very much in development.

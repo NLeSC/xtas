@@ -53,10 +53,17 @@ def run_task(taskname):
     """
     task = _get_task(taskname)
     data = request.data
-    if not isinstance(data, basestring):
-        raise TypeError("data must be string, got %r;"
-                        " Content-type must be text/plain" % type(data))
-    return task.delay(request.data).id + "\n"
+
+    content_type = request.headers['Content-Type']
+    if content_type == 'text/plain':
+        return task.delay(request.data).id + "\n"
+
+    elif content_type == 'application/json':
+        data = request.json['data']
+        kwargs = request.json.get('arguments', {})
+        return task.delay(data, **kwargs).id + "\n"
+
+    abort(404)  # XXX this is not the right error code
 
 
 @app.route("/run_es/<taskname>/<index>/<type>/<id>/<field>")
