@@ -56,7 +56,7 @@ def run_task(taskname):
     if not isinstance(data, basestring):
         raise TypeError("data must be string, got %r;"
                         " Content-type must be text/plain" % type(data))
-    return task.delay(request.data).id
+    return task.delay(request.data).id + "\n"
 
 
 @app.route("/run_es/<taskname>/<index>/<type>/<id>/<field>")
@@ -73,12 +73,12 @@ def run_task_on_es(taskname, index, type, id, field):
     task = _get_task(taskname)
     return chain(task.s(es_document(index, type, id, field))
                  | store_single.s(taskname, index, type, id)
-                 ).delay().id
+                 ).delay().id + "\n"
 
 
 @app.route('/result/<jobid>')
 def result(jobid):
-    return json.dumps(celery.result.AsyncResult(jobid).get())
+    return json.dumps(celery.result.AsyncResult(jobid).get()) + "\n"
 
 
 @app.route('/tasks')
