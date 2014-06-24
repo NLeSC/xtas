@@ -130,7 +130,7 @@
 
 
 <span class="nd">@app.task</span>
-<span class="k">def</span> <span class="nf">guess_language</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&quot;best&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="guess_language"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.guess_language">[docs]</a><span class="k">def</span> <span class="nf">guess_language</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&quot;best&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Guess the language of a document.</span>
 
 <span class="sd">    Uses the langid library.</span>
@@ -153,7 +153,7 @@
 
     <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="n">fetch</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span>
 
-
+</div>
 <span class="nd">@app.task</span>
 <div class="viewcode-block" id="morphy"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.morphy">[docs]</a><span class="k">def</span> <span class="nf">morphy</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Lemmatize tokens using morphy, WordNet&#39;s lemmatizer.</span>
@@ -327,7 +327,7 @@
 
 </div>
 <span class="nd">@app.task</span>
-<span class="k">def</span> <span class="nf">frog</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&#39;raw&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="frog"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.frog">[docs]</a><span class="k">def</span> <span class="nf">frog</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&#39;raw&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Wrapper around the Frog lemmatizer/POS tagger.</span>
 
 <span class="sd">    Expects Frog to be running in server mode at localhost:9887. It is *not*</span>
@@ -366,9 +366,9 @@
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">frog_to_saf</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
-
+</div>
 <span class="nd">@app.task</span>
-<span class="k">def</span> <span class="nf">dbpedia_spotlight</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s">&#39;en&#39;</span><span class="p">,</span> <span class="n">conf</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">supp</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">api_url</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="dbpedia_spotlight"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.dbpedia_spotlight">[docs]</a><span class="k">def</span> <span class="nf">dbpedia_spotlight</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s">&#39;en&#39;</span><span class="p">,</span> <span class="n">conf</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">supp</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">api_url</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Run text through a DBpedia Spotlight instance.</span>
 
 <span class="sd">    Calls the DBpedia Spotlight instance to perform entity linking and</span>
@@ -423,9 +423,9 @@
 
     <span class="k">return</span> <span class="n">annotations</span>
 
-
+</div>
 <span class="nd">@app.task</span>
-<span class="k">def</span> <span class="nf">alpino</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&quot;raw&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="alpino"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.alpino">[docs]</a><span class="k">def</span> <span class="nf">alpino</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&quot;raw&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Wrapper around the Alpino (dependency) parser for Dutch.</span>
 
 <span class="sd">    Expects an environment variable ALPINO_HOME to point at</span>
@@ -453,9 +453,9 @@
 
     <span class="k">return</span> <span class="n">pipe</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">fetch</span><span class="p">,</span> <span class="n">tokenize</span><span class="p">,</span> <span class="n">parse_raw</span><span class="p">,</span> <span class="n">transf</span><span class="p">)</span>
 
-
+</div>
 <span class="nd">@app.task</span>
-<span class="k">def</span> <span class="nf">corenlp</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&#39;raw&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="corenlp"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.corenlp">[docs]</a><span class="k">def</span> <span class="nf">corenlp</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&#39;raw&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Wrapper around the CoreNLP parser.</span>
 
 <span class="sd">    Expects CORENLP_HOME to point to the CoreNLP installation dir.</span>
@@ -477,9 +477,9 @@
 
     <span class="k">return</span> <span class="n">pipe</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">fetch</span><span class="p">,</span> <span class="n">parse</span><span class="p">,</span> <span class="n">transf</span><span class="p">)</span>
 
-
+</div>
 <span class="nd">@app.task</span>
-<span class="k">def</span> <span class="nf">corenlp_lemmatize</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&#39;raw&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="corenlp_lemmatize"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.corenlp_lemmatize">[docs]</a><span class="k">def</span> <span class="nf">corenlp_lemmatize</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&#39;raw&#39;</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper around the CoreNLP lemmatizer</span>
@@ -501,7 +501,7 @@
     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Unknown output format </span><span class="si">%r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">output</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">pipe</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">fetch</span><span class="p">,</span> <span class="n">parse</span><span class="p">,</span> <span class="n">transf</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pipe</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">fetch</span><span class="p">,</span> <span class="n">parse</span><span class="p">,</span> <span class="n">transf</span><span class="p">)</span></div>
 </pre></div>
 
     </div>

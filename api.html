@@ -129,6 +129,129 @@ the first argument; it may either be a string or the result from
 <tt class="docutils literal"><span class="pre">xtas.tasks.es.es_document</span></tt>, which is a reference to a document in the
 Elasticsearch store.</p>
 <dl class="task">
+<dt id="xtas.tasks.single.alpino">
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">alpino</tt><big>(</big><em>doc</em>, <em>output='raw'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#alpino"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.alpino" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper around the Alpino (dependency) parser for Dutch.</p>
+<p>Expects an environment variable ALPINO_HOME to point at
+the Alpino installation dir.</p>
+<p>The script uses the &#8216;dependencies&#8217; end_hook to generate lemmata and
+the dependency structure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>output</strong> : string</p>
+<blockquote class="last">
+<div><p>If &#8216;raw&#8217;, returns the raw output from Alpino itself.
+If &#8216;saf&#8217;, returns a SAF dictionary.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<p><a class="reference external" href="http://www.let.rug.nl/vannoord/alp/Alpino/">Alpino homepage</a></p>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.single.corenlp">
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">corenlp</tt><big>(</big><em>doc</em>, <em>output='raw'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#corenlp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.corenlp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper around the CoreNLP parser.</p>
+<p>Expects CORENLP_HOME to point to the CoreNLP installation dir.
+Parameters
+&#8212;&#8212;&#8212;-
+output : string</p>
+<blockquote>
+<div>If &#8216;raw&#8217;, returns the raw output lines from CoreNLP.
+If &#8216;saf&#8217;, returns a SAF dictionary.</div></blockquote>
+<p>Tested with
+<a class="reference external" href="http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip">http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip</a></p>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.single.corenlp_lemmatize">
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">corenlp_lemmatize</tt><big>(</big><em>doc</em>, <em>output='raw'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#corenlp_lemmatize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.corenlp_lemmatize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper around the CoreNLP lemmatizer
+The module expects CORENLP_HOME to point to the CoreNLP installation dir.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>output</strong> : string</p>
+<blockquote>
+<div><p>If &#8216;raw&#8217;, returns the raw output lines from CoreNLP.
+If &#8216;saf&#8217;, returns a SAF dictionary.</p>
+</div></blockquote>
+<p><strong>Tested with</strong> :</p>
+<p class="last"><strong>http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.single.dbpedia_spotlight">
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">dbpedia_spotlight</tt><big>(</big><em>doc</em>, <em>lang='en'</em>, <em>conf=0.5</em>, <em>supp=0</em>, <em>api_url=None</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#dbpedia_spotlight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.dbpedia_spotlight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run text through a DBpedia Spotlight instance.</p>
+<p>Calls the DBpedia Spotlight instance to perform entity linking and
+returns the names/links it has found.</p>
+<p>See <a class="reference external" href="http://spotlight.dbpedia.org/">http://spotlight.dbpedia.org/</a> for details.
+This task uses a Python client for DBp Spotlight:
+<a class="reference external" href="https://github.com/aolieman/pyspotlight">https://github.com/aolieman/pyspotlight</a></p>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.single.frog">
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">frog</tt><big>(</big><em>doc</em>, <em>output='raw'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#frog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.frog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper around the Frog lemmatizer/POS tagger.</p>
+<p>Expects Frog to be running in server mode at localhost:9887. It is <em>not</em>
+started for you.</p>
+<p>Currently, the module is only tested with all frog modules active except
+for the NER and parser.</p>
+<p>The following line starts Frog in the correct way:</p>
+<p>frog &#8211;skip=pm -S 9887</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>output</strong> : string</p>
+<blockquote class="last">
+<div><p>If &#8216;raw&#8217;, returns the raw output lines from Frog itself.
+If &#8216;tokens&#8217;, returns dictionaries for the tokens.
+If &#8216;saf&#8217;, returns a SAF dictionary.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<p><a class="reference external" href="http://ilk.uvt.nl/frog/">Frog homepage</a></p>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.single.guess_language">
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">guess_language</tt><big>(</big><em>doc</em>, <em>output='best'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#guess_language"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.guess_language" title="Permalink to this definition">¶</a></dt>
+<dd><p>Guess the language of a document.</p>
+<p>Uses the langid library.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>doc</strong> : document</p>
+<p><strong>output</strong> : string</p>
+<blockquote class="last">
+<div><p>Either &#8220;best&#8221; to get a pair (code, prob) giving the two-letter code
+of the most probable language and its probability, or &#8220;rank&#8221; for a
+list of such pairs for all languages in the model.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="task">
 <dt id="xtas.tasks.single.morphy">
 <em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">morphy</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#morphy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.morphy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lemmatize tokens using morphy, WordNet&#8217;s lemmatizer.</p>
@@ -176,41 +299,6 @@ movie reviews (all in English).</p>
 </dd></dl>
 
 <dl class="task">
-<dt id="xtas.tasks.single.stanford_ner_tag">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">stanford_ner_tag</tt><big>(</big><em>doc</em>, <em>output='tokens'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#stanford_ner_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.stanford_ner_tag" title="Permalink to this definition">¶</a></dt>
-<dd><p>Named entity recognizer using Stanford NER.</p>
-<p>Currently only supports the model &#8216;english.all.3class.distsim.crf.ser.gz&#8217;.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>doc</strong> : document</p>
-<blockquote>
-<div><p>Either a single string or a handle on a document in the ES store.
-Tokenization and sentence splitting will be done by Stanford NER using
-its own rules.</p>
-</div></blockquote>
-<p><strong>output</strong> : string, optional</p>
-<blockquote>
-<div><p>Output format. &#8220;tokens&#8221; gives a list of (token, nerclass) triples,
-similar to the IO format but without the &#8220;I-&#8221;. &#8220;names&#8221; returns a list
-of (name, class pairs); since Stanford NER does not distinguish between
-start and continuation of name spans, the reconstruction of full names
-is heuristic.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>tagged</strong> : list of list of pair of string</p>
-<blockquote class="last">
-<div><p>For each sentence, a list of (word, tag) pairs.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="task">
 <dt id="xtas.tasks.single.semanticize">
 <em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">semanticize</tt><big>(</big><em>doc</em>, <em>lang='en'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#semanticize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.semanticize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run text through the UvA semanticizer.</p>
@@ -240,6 +328,41 @@ taggings in SentiWords, the mean is returned.</p>
 <div><p>Output format. Either &#8220;bag&#8221; for a histogram (dict) of annotated token
 span frequencies, or &#8220;tokens&#8221; a mixed list of strings and (list of
 strings, polarity) pairs.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.single.stanford_ner_tag">
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">stanford_ner_tag</tt><big>(</big><em>doc</em>, <em>output='tokens'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#stanford_ner_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.stanford_ner_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Named entity recognizer using Stanford NER.</p>
+<p>Currently only supports the model &#8216;english.all.3class.distsim.crf.ser.gz&#8217;.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>doc</strong> : document</p>
+<blockquote>
+<div><p>Either a single string or a handle on a document in the ES store.
+Tokenization and sentence splitting will be done by Stanford NER using
+its own rules.</p>
+</div></blockquote>
+<p><strong>output</strong> : string, optional</p>
+<blockquote>
+<div><p>Output format. &#8220;tokens&#8221; gives a list of (token, nerclass) triples,
+similar to the IO format but without the &#8220;I-&#8221;. &#8220;names&#8221; returns a list
+of (name, class pairs); since Stanford NER does not distinguish between
+start and continuation of name spans, the reconstruction of full names
+is heuristic.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>tagged</strong> : list of list of pair of string</p>
+<blockquote class="last">
+<div><p>For each sentence, a list of (word, tag) pairs.</p>
 </div></blockquote>
 </td>
 </tr>
