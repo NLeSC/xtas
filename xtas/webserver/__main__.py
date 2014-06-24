@@ -9,7 +9,7 @@ import sys
 from celery import chain
 from celery import __version__ as celery_version
 import celery.result
-from flask import Flask, Response, abort
+from flask import Flask, Response, abort, request
 from flask import __version__ as flask_version
 
 from xtas import __version__
@@ -32,6 +32,31 @@ def home():
     return Response(text, mimetype="text/plain")
 
 
+def _get_task(taskname):
+    # XXX custom tasks could be batch tasks, but we don't check for that.
+    try:
+        if '.' not in taskname:
+            taskname = 'xtas.tasks.single.%s' % taskname
+        return taskq.tasks[taskname]
+    except KeyError:
+        if app.debug:
+            raise
+        else:
+            abort(404)
+
+
+@app.route('/run/<taskname>', methods=['POST'])
+def run_task(taskname):
+    # Wants Content-type: text/plain
+    task = _get_task(taskname)
+    data = request.data
+    if not isinstance(data, basestring):
+        raise TypeError("data must be string, got %r;"
+                        " Content-type must be text/plain" % type(data))
+    return task.s(request.data)
+    return "taskname(%r, %r)" % (request.json, request.data)
+
+
 @app.route("/run_es/<taskname>/<index>/<type>/<id>/<field>")
 def run_task_on_es(taskname, index, type, id, field):
     """Run named task on single document given by (index, type, id, field).
@@ -43,16 +68,7 @@ def run_task_on_es(taskname, index, type, id, field):
     tasks.
     """
     # XXX custom tasks could be batch tasks, but we don't check for that.
-    try:
-        if '.' not in taskname:
-            taskname = 'xtas.tasks.single.%s' % taskname
-        task = taskq.tasks[taskname]
-    except KeyError:
-        if app.debug:
-            raise
-        else:
-            abort(404)
-
+    task = _get_task(taskname)
     return chain(task.s(es_document(index, type, id, field))
                  | store_single.s(taskname, index, type, id)
                  ).delay().id
