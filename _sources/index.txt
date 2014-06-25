@@ -26,6 +26,7 @@ Contents
    setup
    tutorial
    api
+   rest
    extending
    faq
 

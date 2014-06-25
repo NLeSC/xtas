@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 
@@ -6,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Index &mdash; xtas 3.0.0 documentation</title>
+    <title>REST API &mdash; xtas 3.0.0 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -31,6 +30,8 @@
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="xtas 3.0.0 documentation" href="index.html" />
+    <link rel="next" title="Extending xtas" href="extending.html" />
+    <link rel="prev" title="API reference" href="api.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -66,11 +67,11 @@
      href="index.html">Documentation <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><ul>
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up xtas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">xtas tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rest.html">REST API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">REST API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extending.html">Extending xtas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently anticipated questions</a></li>
 </ul>
@@ -81,6 +82,14 @@
             
               
                 
+  <li>
+    <a href="api.html" title="Previous Chapter: API reference"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm">&laquo; API reference</span>
+    </a>
+  </li>
+  <li>
+    <a href="extending.html" title="Next Chapter: Extending xtas"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm">Extending xtas &raquo;</span>
+    </a>
+  </li>
               
             
             
@@ -106,33 +115,33 @@
   <div class="row">
     <div class="col-md-12">
       
-
-<h1 id="index">Index</h1>
-
-<div class="genindex-jumpbox">
- <a href="#X"><strong>X</strong></a>
- 
+  <div class="section" id="rest-api">
+<h1>REST API<a class="headerlink" href="#rest-api" title="Permalink to this headline">¶</a></h1>
+<p>When run as a webserver, xtas exposes a simple REST API to its tasks
+(the one described in the <em class="xref std std-ref">api</em>).
+To tokenize a string using this API, you need to make two HTTP requests,
+one to start a task and one to wait until it has completed.
+Assuming default settings for the webserver, you can try:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ curl -H &quot;Content-type: text/plain&quot; -X POST -d &#39;Hello, world!&#39; \
+    http://127.0.0.1:5000/run/tokenize
+11d0f158-abdb-4a0a-860d-b365456122f4
+</pre></div>
 </div>
-<h2 id="X">X</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="api.html#module-xtas.core">xtas.core (module)</a>
-  </dt>
-
-      
-  <dt><a href="api.html#module-xtas.tasks.cluster">xtas.tasks.cluster (module)</a>
-  </dt>
-
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="api.html#module-xtas.tasks.single">xtas.tasks.single (module)</a>
-  </dt>
-
-  </dl></td>
-</tr></table>
-
+<p>The last line shows an id for the job that you submitted.
+Since tokenization is very fast, you can immediately query the REST endpoint
+again to get the results from the tokenization:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ curl http://127.0.0.1:5000/result/11d0f158-abdb-4a0a-860d-b365456122f4
+[&quot;Hello&quot;, &quot;,&quot;, &quot;world&quot;, &quot;!&quot;]
+</pre></div>
+</div>
+<p>Passing arguments to the task is also possible. To do so, you have to send the
+API request as JSON, as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ curl -H &quot;Content-type: application/json&quot; -X POST -d \
+    &#39;{&quot;data&quot;: &quot;Hello, world!&quot;, &quot;arguments&quot;: {&quot;output&quot;: &quot;rank&quot;}}&#39;
+</pre></div>
+</div>
+<p>The REST API, and this documentation, are very much in development.</p>
+</div>
 
 
     </div>
@@ -146,6 +155,10 @@
       
         <br/>
         
+<div id="sourcelink">
+  <a href="_sources/rest.txt"
+     rel="nofollow">Source</a>
+</div>
       
     </p>
     <p>

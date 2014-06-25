@@ -24,6 +24,7 @@ xtas.tasks.single
 .. autotask:: morphy
 .. autotask:: movie_review_polarity
 .. autotask:: pos_tag
+.. autotask:: semafor
 .. autotask:: semanticize
 .. autotask:: sentiwords_tag
 .. autotask:: stanford_ner_tag
