@@ -34,17 +34,16 @@ def test_call_frog():
     assert_equal(lines[5], '')
 
 
-LINES = ['1\tdit\tdit\t[dit]\tVNW(aanw,pron,stan,vol,3o,ev)\t0.9\tO\tB-NP\t\t',
-         '2\tis\tzijn\t[zijn]\tWW(pv,tgw,ev)\t0.9\tO\tB-VP\t\t',
-         '3\tin\tin\t[in]\tVZ(init)\t0.998321\tO\tB-PP\t\t',
-         '4\tAmsterdam\tAmsterdam\t[Amsterdam]\tSPEC(deeleigen)'
-         '\t1.000000\tB-LOC\tB-NP\t\t',
-         '5\t.\t.\t[.]\tLET()\t0.999956\tO\tO\t\t',
+LINES = ['1\tdit\tdit\t[dit]\tVNW(aanw,pron,stan,vol,3o,ev)\t0.9\tO\tB-NP\t2\tsu',
+         '2\tis\tzijn\t[zijn]\tWW(pv,tgw,ev)\t0.999017\tO\tB-VP\t0\tROOT',
+         '3\tin\tin\t[in]\tVZ(init)\t0.998321\tO\tB-PP\t2\tmod',
+         '4\tAmsterdam\tAmsterdam\t[Amsterdam]\tSPEC(deeleigen)\t1.000000\tB-LOC\tB-NP\t3\tobj1',
+         '5\t.\t.\t[.]\tLET()\t1.000000\tO\tO\t4\tpunct',
          '',
-         '1\tTweede\ttwee\t[twee][de]\tTW(rang,prenom,stan)\t0.9\tO\tB-NP\t\t',
-         '2\tzin\tzin\t[zin]\tN(soort,ev,basis,zijd,stan)\t0.99\tO\tI-NP\t\t',
-         '3\t!\t!\t[!]\tLET()\t0.995005\tO\tO\t\t',
-         '']
+         '1\tTweede\ttwee\t[twee][de]\tTW(rang,prenom,stan)\t0.989011\tO\tB-NP\t2\tmod',
+        '2\tzin\tzin\t[zin]\tN(soort,ev,basis,zijd,stan)\t0.998610\tO\tI-NP\t0\tROOT',
+        '3\t!\t!\t[!]\tLET()\t1.000000\tO\tO\t2\tpunct',
+        '']
 
 
 def test_parse_frog():
@@ -53,8 +52,10 @@ def test_parse_frog():
     expected = dict(id=0, sentence=0,
                     lemma='dit', word='dit',
                     pos='VNW(aanw,pron,stan,vol,3o,ev)',
-                    pos_confidence=0.9)
+                    pos_confidence=0.9,
+                    rel=("su", 1))
     assert_equal(tokens[0], expected)
+    assert_equal(tokens[3]['ne'], 'LOC')
     assert_equal(tokens[7]['sentence'], 1)
 
 

@@ -8,7 +8,7 @@ the NER and parser.
 
 The following line starts frog in the correct way:
 
-frog --skip=pm -S 9887
+frog -S 9887
 
 See: http://ilk.uvt.nl/frog/
 """
@@ -74,9 +74,15 @@ def parse_frog(lines):
             # end of sentence marker
             sid += 1
         else:
-            tid, token, lemma, morph, pos, conf = l.split("\t")[:6]
-            yield dict(id=i, sentence=sid, word=token, lemma=lemma,
-                       pos=pos, pos_confidence=float(conf))
+            print(l.strip())
+            parts = l.split("\t")
+            tid, token, lemma, morph, pos, conf, ne, _, parent, rel = parts
+            r = dict(id=i, sentence=sid, word=token, lemma=lemma,
+                     pos=pos, pos_confidence=float(conf),
+                     rel=(rel, int(parent) - 1))
+            if ne != 'O':
+                r["ne"] = ne.split()[0][2:]     # NER label from BIO tags
+            yield r
 
 
 def add_pos1(token):

@@ -220,7 +220,7 @@ def untokenize(tokens):
 
 @app.task
 def frog(doc, output='raw'):
-    """Wrapper around the Frog lemmatizer/POS tagger.
+    """Wrapper around the Frog lemmatizer/POS tagger/NER/dependency parser.
 
     Expects Frog to be running in server mode at localhost:9887. It is *not*
     started for you.
@@ -230,7 +230,7 @@ def frog(doc, output='raw'):
 
     The following line starts Frog in the correct way:
 
-    frog --skip=pm -S 9887
+    frog -S 9887
 
     Parameters
     ----------
