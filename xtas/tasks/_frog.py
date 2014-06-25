@@ -81,7 +81,7 @@ def parse_frog(lines):
                      pos=pos, pos_confidence=float(conf),
                      rel=(rel, int(parent) - 1))
             if ne != 'O':
-                r["ne"] = ne.split()[0][2:]     # NER label from BIO tags
+                r["ne"] = ne.split('_', 1)[0][2:]   # NER label from BIO tags
             yield r
 
 
