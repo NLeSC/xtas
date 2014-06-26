@@ -28,6 +28,7 @@ Contents
    api
    rest
    extending
+   changelog
    faq
 
 

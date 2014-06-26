@@ -1,8 +1,7 @@
 REST API
 ========
 
-When run as a webserver, xtas exposes a simple REST API to its tasks
-(the one described in the :ref:`api`).
+When run as a webserver, xtas exposes a simple REST API to its tasks.
 To tokenize a string using this API, you need to make two HTTP requests,
 one to start a task and one to wait until it has completed.
 Assuming default settings for the webserver, you can try::
@@ -24,4 +23,7 @@ API request as JSON, as follows::
     $ curl -H "Content-type: application/json" -X POST -d \
         '{"data": "Hello, world!", "arguments": {"output": "rank"}}'
 
-The REST API, and this documentation, are very much in development.
+All single-document tasks can be called in this way.
+The arguments should be JSON-wrapped versions
+of the arguments ordinarily passed to the Python functions
+(see :ref:`api`).
