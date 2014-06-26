@@ -73,6 +73,7 @@
 <li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">REST API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extending.html">Extending xtas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog/release notes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently anticipated questions</a></li>
 </ul>
 </ul>
@@ -117,8 +118,7 @@
       
   <div class="section" id="rest-api">
 <h1>REST API<a class="headerlink" href="#rest-api" title="Permalink to this headline">¶</a></h1>
-<p>When run as a webserver, xtas exposes a simple REST API to its tasks
-(the one described in the <em class="xref std std-ref">api</em>).
+<p>When run as a webserver, xtas exposes a simple REST API to its tasks.
 To tokenize a string using this API, you need to make two HTTP requests,
 one to start a task and one to wait until it has completed.
 Assuming default settings for the webserver, you can try:</p>
@@ -140,7 +140,10 @@ API request as JSON, as follows:</p>
     &#39;{&quot;data&quot;: &quot;Hello, world!&quot;, &quot;arguments&quot;: {&quot;output&quot;: &quot;rank&quot;}}&#39;
 </pre></div>
 </div>
-<p>The REST API, and this documentation, are very much in development.</p>
+<p>All single-document tasks can be called in this way.
+The arguments should be JSON-wrapped versions
+of the arguments ordinarily passed to the Python functions
+(see <a class="reference internal" href="api.html#api"><em>API reference</em></a>).</p>
 </div>
 
 
