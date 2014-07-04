@@ -62,7 +62,7 @@ def configure(config, import_error="raise", unknown_key="raise"):
         if unknown_keys:
             msg = ("unknown keys %r found on config object %r"
                    % (unknown_keys, config))
-            if unknown_action == 'raise':
+            if unknown_keys == 'raise':
                 raise ValueError(msg)
             else:
                 logger.warn(msg)

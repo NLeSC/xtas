@@ -1,5 +1,4 @@
 from collections import Sequence
-from itertools import islice
 
 import nltk
 
