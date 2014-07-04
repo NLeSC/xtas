@@ -6,8 +6,9 @@ import os
 import os.path
 from subprocess import Popen, PIPE
 from tempfile import NamedTemporaryFile
-from urllib import urlretrieve
 from zipfile import ZipFile
+
+from six.moves.urllib.request import urlretrieve
 
 import nltk
 

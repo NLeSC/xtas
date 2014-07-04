@@ -13,16 +13,19 @@ http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip
 """
 
 
-import os
-import re
-import logging
-import subprocess
-import itertools
 import datetime
+from io import StringIO
+import itertools
+import logging
+import os
 import os.path
-from cStringIO import StringIO
+import re
+import subprocess
 import threading
 import time
+
+from six import iteritems
+
 from unidecode import unidecode
 
 log = logging.getLogger(__name__)
@@ -109,7 +112,7 @@ class StanfordCoreNLP(object):
 
     def parse(self, text):
         """Call the server and return the raw results."""
-        if not isinstance(text, unicode):
+        if isinstance(text, bytes):
             text = text.decode("ascii")
         text = re.sub("\s+", " ", unidecode(text))
         return self.communicate(text + "\n")
@@ -244,7 +247,7 @@ def stanford_to_saf(lines):
 
     # add tokens and drop empty placeholders
     saf['tokens'] = tokens.values()
-    return {k: v for (k, v) in saf.iteritems() if v}
+    return {k: v for (k, v) in iteritems(saf) if v}
 
 RE_DEPENDENCY = "(\w+)\(.+-([0-9']+), .+-([0-9']+)\)"
 RE_COREF = r'\s*\((\S+)\) -> \((\S+)\), that is: \".*\" -> \".*\"'

@@ -1,8 +1,9 @@
 """Elasticsearch stuff."""
 
 from __future__ import absolute_import
-
 from datetime import datetime
+
+from six import iteritems
 
 from chardet import detect as chardetect
 from elasticsearch import Elasticsearch
@@ -91,7 +92,7 @@ def get_all_results(idx, typ, id):
     r = _es().get(index=idx, doc_type=typ, id=id, _source=['xtas_results'])
     if 'xtas_results' in r['_source']:
         return {k: v['data']
-                for (k, v) in r['_source']['xtas_results'].iteritems()}
+                for k, v in iteritems(r['_source']['xtas_results'])}
     else:
         return {}
 
