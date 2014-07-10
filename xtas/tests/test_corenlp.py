@@ -4,8 +4,9 @@ Test the CoreNLP parser/lemmatizer functions and task.
 
 import logging
 from unittest import SkipTest
+import os.path
 
-from nose.tools import assert_equal, assert_not_equal
+from nose.tools import assert_equal, assert_not_equal, assert_in
 
 from xtas.tasks._corenlp import parse, stanford_to_saf, get_corenlp_version
 from xtas.tasks.single import corenlp, corenlp_lemmatize
@@ -17,15 +18,14 @@ def _check_corenlp():
         raise SkipTest("CoreNLP not found at CORENLP_HOME")
 
 
-def test_raw():
-    _check_corenlp()
-    lines = parse("It. Works\n", annotators=['tokenize', 'ssplit'])
-    expected = ['Sentence #1 (2 tokens):', 'It.',
-                '[Text=It CharacterOffsetBegin=0 CharacterOffsetEnd=2]'
-                ' [Text=. CharacterOffsetBegin=2 CharacterOffsetEnd=3]',
-                'Sentence #2 (1 tokens):', 'Works',
-                '[Text=Works CharacterOffsetBegin=4 CharacterOffsetEnd=9]']
-    assert_equal(lines, expected)
+def test_parse_xml():
+    xml = open(os.path.join(os.path.dirname(__file__), "test_corenlp.xml")).read()
+    saf = stanford_to_saf(xml)
+    assert_equal({t['lemma'] for t in saf['tokens']},
+                 {"John", "attack", "I", "in", "London", "hit", "he", "back", "."})
+    london = [t for t in saf['tokens'] if t['lemma'] == 'London'][0]
+    assert_equal(london['pos'], 'NNP')
+    assert_in({"type": "LOCATION", "tokens": [london['id']]}, saf['entities'])
 
 
 def test_lemmatize():
@@ -81,12 +81,11 @@ def test_parse():
 def test_task():
     _check_corenlp()
     raw = corenlp_lemmatize("It works", output='raw')
-    assert_equal(len(raw), 3)  # list of header / sentence / tokens
+    assert_in("<lemma>work</lemma>", raw)  # list of header / sentence / tokens
     saf = corenlp_lemmatize("It works", output='saf')
     assert_equal(len(saf['tokens']), 2)
 
     raw = corenlp("It works", output='raw')
-    deps = {'root(ROOT-0, works-2)', 'nsubj(works-2, It-1)', ''}
-    assert_equal(set(raw[-3:]), deps)
+    assert_in('<dep type="nsubj">', raw)
     saf = corenlp("It works", output='saf')
     assert_equal(len(saf['dependencies']), 1)

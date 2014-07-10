@@ -13,3 +13,4 @@ six
 toolz
 unidecode
 weighwords
+corenlp_xml
