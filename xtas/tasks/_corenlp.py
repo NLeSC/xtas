@@ -160,24 +160,38 @@ def get_command(annotators=None, memory=None):
 def stanford_to_saf(xml_bytes):
     doc = Document(xml_bytes)
     saf = collections.defaultdict(list)
-    
+
     saf['header'] = {'format': "SAF",
                      'format-version': "0.0",
                      'processed':  {'module': "corenlp",
                                     'module-version': _CORENLP_VERSION,
                                     "started": datetime.datetime.now().isoformat()}
                  }
+    tokens = {} # (xml_sentid, xml_tokenid) : saf_tokenid
+    def tokenid(sentid, tokenid):
+        if (sentid, tokenid) in tokens:
+            raise ValueError("Duplicate tokenid: {sentid}, {tokenid}"
+                             .format(**locals()))
+        saf_tokenid = len(tokens) + 1
+        tokens[sentid, tokenid] = saf_tokenid
+        return saf_tokenid
+
     for sent in doc.sentences:
-        saf['tokens'] += [dict(id=t.id, sentence=sent.id, offset=t.character_offset_begin,
+        saf['tokens'] += [dict(id=tokenid(sent.id, t.id),
+                               sentence=sent.id, offset=t.character_offset_begin,
                                lemma=t.lemma, word=t.word,
                                pos=t.pos, pos1=POSMAP[t.pos]) for t in sent.tokens]
-        saf['entities'] += [dict(tokens=[t.id], type=t.ner) for t in sent.tokens if t.ner not in (None, 'O')]
+        saf['entities'] += [dict(tokens=[tokens[sent.id, t.id]], type=t.ner)
+                            for t in sent.tokens if t.ner not in (None, 'O')]
         if sent.collapsed_ccprocessed_dependencies:
-            saf['dependencies'] += [dict(child=dep.dependent.idx, parent=dep.governor.idx, relation=dep.type)
+            saf['dependencies'] += [dict(child=tokens[sent.id, dep.dependent.idx],
+                                         parent=tokens[sent.id, dep.governor.idx],
+                                         relation=dep.type)
                                     for dep in sent.collapsed_ccprocessed_dependencies.links
                                     if dep.type != 'root']
     if doc.coreferences:
-        saf['coreferences'] = [[[t.id for t in m.tokens] for m in coref.mentions]
+        saf['coreferences'] = [[[tokens[m.sentence.id, t.id] for t in m.tokens]
+                                for m in coref.mentions]
                                for coref in doc.coreferences]
     saf['trees'] = [dict(sentence=s.id, tree=s.parse_string.strip()) for s in doc.sentences if s.parse_string is not None]
 

@@ -78,6 +78,28 @@ def test_parse():
     assert_equal(corefs, {tuple(sorted(['John', 'himself']))})
 
 
+def test_multiple_sentences():
+    _check_corenlp()
+    p = parse("John lives in Amsterdam. He works in London")
+    saf = stanford_to_saf(p)
+    tokens = {t['id'] : t for t in saf['tokens']}
+    # are token ids unique?
+    assert_equal(len(tokens), len(saf['tokens']))
+    # is location in second sentence correct?
+    entities = {tokens[e['tokens'][0]]['lemma'] : e['type']
+                for e in saf['entities']}
+    assert_in(('London', 'LOCATION'), entities.items())
+    # is dependency in second sentence correct?
+    rels = [(tokens[rel['child']]['lemma'], rel['relation'], tokens[rel['parent']]['lemma'])
+            for rel in saf['dependencies']]
+    assert_in(("he", "nsubj", "work"), rels)
+    assert_in(("John", "nsubj", "live"), rels)
+    # is coref parsed correctly?
+    coref = {(tokens[x[0][0]]['lemma'], tokens[x[1][0]]['lemma']) for x in saf['coreferences']}
+    assert_equal(coref, {("John", "he")})
+
+
+
 def test_task():
     _check_corenlp()
     raw = corenlp_lemmatize("It works", output='raw')
