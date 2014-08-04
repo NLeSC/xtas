@@ -15,6 +15,9 @@ install:
   - sudo apt-get install python-numpy python-scipy
   - pip install .
   - pip install -r requirements.txt
+  - wget http://nlp.stanford.edu/software/stanford-corenlp-full-2014-06-16.zip -O temp.zip
+  - unzip temp.zip
+  - export CORENLP_HOME=`pwd`/stanford-corenlp-full-2014-06-16
 
 script:
   - python -m xtas.worker --loglevel=info --pidfile=worker.pid &
