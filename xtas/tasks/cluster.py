@@ -61,19 +61,19 @@ def kmeans(docs, k, lsa=None):
     """
     from sklearn.cluster import MiniBatchKMeans
     from sklearn.decomposition import TruncatedSVD
-    from sklearn.pipeline import Pipeline
+    from sklearn.pipeline import make_pipeline
     from sklearn.preprocessing import Normalizer
 
     docs = tosequence(docs)
 
     if lsa is not None:
-        kmeans = Pipeline([('tfidf', _vectorizer()),
-                           ('lsa', TruncatedSVD(n_components=lsa)),
-                           ('l2norm', Normalizer()),
-                           ('kmeans', MiniBatchKMeans(n_clusters=k))])
+        kmeans = make_pipeline(_vectorizer(),
+                               TruncatedSVD(n_components=lsa),
+                               Normalizer(),
+                               MiniBatchKMeans(n_clusters=k))
     else:
-        kmeans = Pipeline([('tfidf', _vectorizer()),
-                           ('kmeans', MiniBatchKMeans(n_clusters=k))])
+        kmeans = make_pipeline(_vectorizer(),
+                               MiniBatchKMeans(n_clusters=k))
 
     labels = kmeans.fit(fetch(d) for d in docs).steps[-1][1].labels_
     return group_clusters(docs, labels)
@@ -138,12 +138,11 @@ def lsa(docs, k, random_state=None):
         (term, weight) pairs.
     """
     from sklearn.decomposition import TruncatedSVD
-    from sklearn.pipeline import Pipeline
+    from sklearn.pipeline import make_pipeline
 
     vect = _vectorizer()
     svd = TruncatedSVD(n_components=k)
-    pipe = Pipeline([('tfidf', vect), ('svd', svd)])
-    pipe.fit(docs)
+    pipe = make_pipeline(vect, svd).fit(docs)
 
     vocab = vect.vocabulary_
     return [zip(vocab, comp) for comp in svd.components_]
