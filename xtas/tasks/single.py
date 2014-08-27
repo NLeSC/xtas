@@ -13,9 +13,9 @@ import json
 from six.moves.urllib.parse import urlencode
 from six.moves.urllib.request import urlopen
 
+from cytoolz import identity, pipe
 import nltk
 import spotlight
-from toolz import identity, pipe
 
 from .es import fetch
 from ..core import app

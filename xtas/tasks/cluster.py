@@ -7,8 +7,8 @@ from __future__ import absolute_import
 
 import operator
 
+import cytoolz
 from six import itervalues
-import toolz
 
 from .es import fetch
 from ..core import app
