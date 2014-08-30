@@ -1,9 +1,10 @@
 """Single-document tasks.
 
-These tasks process one document at a time. Usually, a document is passed as
-the first argument; it may either be a string or the result from
-``xtas.tasks.es.es_document``, which is a reference to a document in the
-Elasticsearch store.
+These process one document per function call (in Python) or REST call (via
+the web server, ``/run`` or ``/run_es``). Most single-document tasks take a
+document as their first argument. In the Python interface this may either be
+a string or the result from ``xtas.tasks.es.es_document``, a reference to a
+document in an Elasticsearch store.
 """
 
 from __future__ import absolute_import
@@ -25,6 +26,11 @@ from .._utils import nltk_download
 @app.task
 def guess_language(doc, output="best"):
     """Guess the language of a document.
+
+    This function applies a statistical method to determine the language of a
+    document. Depending on the ``output`` argument, it may either return a
+    single language code, or a ranking of languages that a document may be
+    written in, sorted by probability.
 
     Uses the langid library.
 
@@ -51,7 +57,8 @@ def guess_language(doc, output="best"):
 def morphy(doc):
     """Lemmatize tokens using morphy, WordNet's lemmatizer.
 
-    No part-of-speech tagging is done.
+    Finds the morphological root of all words in ``doc``, which is assumed to
+    be written in English.
 
     Returns
     -------
@@ -69,8 +76,12 @@ def morphy(doc):
 def movie_review_polarity(doc):
     """Movie review polarity classifier.
 
-    Runs a logistic regression model trained on a set of positive and negative
-    movie reviews (all in English).
+    Determines whether the film review ``doc`` is positive or negative. Might
+    be applicable to other types of document as well, but uses a statistical
+    model trained on a corpus of user reviews of movies, all in English.
+
+    See ``sentiwords_tag`` for a more general, but less direct, way of
+    determining the opinion expressed in a text.
 
     Returns
     -------
@@ -88,6 +99,8 @@ def _tokenize_if_needed(s):
 @app.task
 def stanford_ner_tag(doc, output="tokens"):
     """Named entity recognizer using Stanford NER.
+
+    English-language name detection and classification.
 
     Currently only supports the model 'english.all.3class.distsim.crf.ser.gz'.
 
@@ -117,7 +130,7 @@ def stanford_ner_tag(doc, output="tokens"):
 
 @app.task
 def pos_tag(tokens, model='nltk'):
-    """Perform part-of-speech (POS) tagging.
+    """Perform part-of-speech (POS) tagging for English.
 
     Currently only does English using the default model in NLTK.
 
@@ -231,7 +244,7 @@ def frog(doc, output='raw'):
 
     The following line starts Frog in the correct way:
 
-    frog -S 9887
+    ``frog -S 9887``
 
     Parameters
     ----------
