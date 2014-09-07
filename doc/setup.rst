@@ -20,8 +20,7 @@ manager, in which case it's a good idea to install other dependencies too
 (so ``pip`` has to do less work)::
 
     sudo apt-get install rabbitmq-server python-scipy openjdk-7-jre \
-        python-virtualenv python-nltk build-essential python-pip \
-        python-six
+        python-virtualenv build-essential python-pip libxslt-dev
 
 For other systems, including Macs, getting SciPy through a Python distro
 such as `Anaconda <http://continuum.io/downloads>`_ saves you the trouble

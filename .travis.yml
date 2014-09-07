@@ -18,6 +18,9 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then pip install -r requirements.txt; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then pip install -r requirements3.txt; fi
   - pip install .
+  - wget http://nlp.stanford.edu/software/stanford-corenlp-full-2014-06-16.zip -O temp.zip
+  - unzip temp.zip
+  - export CORENLP_HOME=`pwd`/stanford-corenlp-full-2014-06-16
 
 script:
   - python -m xtas.worker --loglevel=info --pidfile=worker.pid &

@@ -11,7 +11,7 @@ from sklearn.externals.joblib import dump, load
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.grid_search import GridSearchCV
 from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import make_pipeline
 
 from .._downloader import _make_data_home, _progress
 
@@ -48,11 +48,11 @@ def train(param_search=False):
     # The random state on the LR estimator is fixed to the most arbitrary value
     # that I could come up with. It is biased toward the middle number keys on
     # my keyboard.
-    clf = Pipeline([('tfidf', TfidfVectorizer(min_df=2, dtype=float,
-                                              sublinear_tf=True,
-                                              ngram_range=(1, 2),
-                                              strip_accents='unicode')),
-                    ('lr', LogisticRegression(random_state=623, C=5000))])
+    clf = make_pipeline(TfidfVectorizer(min_df=2, dtype=float,
+                                        sublinear_tf=True,
+                                        ngram_range=(1, 2),
+                                        strip_accents='unicode'),
+                        LogisticRegression(random_state=623, C=5000))
 
     if param_search:
         params = {'tfidf__ngram_range': [(1, 1), (1, 2)],
