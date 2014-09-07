@@ -1,3 +1,4 @@
+# Requirements for Python 3 (experimental)
 celery>=3.0.0
 chardet
 corenlp_xml
@@ -5,12 +6,13 @@ cytoolz
 elasticsearch
 flask>=0.10.1
 gensim
-langid>=1.1.4dev
-librabbitmq
-nltk
+kombu
+#langid>=1.1.4dev
+#librabbitmq
+nltk>=3.0.0
 pyspotlight
 PyStemmer
-scikit-learn>=0.15.1
+scikit-learn>=0.15.2
 setuptools>=1.3.2
 six>=1.4.1
 unidecode
