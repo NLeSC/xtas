@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API reference &mdash; xtas 3.0.0 documentation</title>
+    <title>API reference &mdash; xtas 3.0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '3.0.0',
+        VERSION:     '3.0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -29,7 +29,7 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="xtas 3.0.0 documentation" href="index.html" />
+    <link rel="top" title="xtas 3.0.2 documentation" href="index.html" />
     <link rel="next" title="REST API" href="rest.html" />
     <link rel="prev" title="xtas tutorial" href="tutorial.html" />
 <meta charset='utf-8'>
@@ -126,10 +126,11 @@
 <div class="section" id="module-xtas.tasks.single">
 <span id="xtas-tasks-single"></span><h2>xtas.tasks.single<a class="headerlink" href="#module-xtas.tasks.single" title="Permalink to this headline">¶</a></h2>
 <p>Single-document tasks.</p>
-<p>These tasks process one document at a time. Usually, a document is passed as
-the first argument; it may either be a string or the result from
-<tt class="docutils literal"><span class="pre">xtas.tasks.es.es_document</span></tt>, which is a reference to a document in the
-Elasticsearch store.</p>
+<p>These process one document per function call (in Python) or REST call (via
+the web server, <tt class="docutils literal"><span class="pre">/run</span></tt> or <tt class="docutils literal"><span class="pre">/run_es</span></tt>). Most single-document tasks take a
+document as their first argument. In the Python interface this may either be
+a string or the result from <tt class="docutils literal"><span class="pre">xtas.tasks.es.es_document</span></tt>, a reference to a
+document in an Elasticsearch store.</p>
 <dl class="task">
 <dt id="xtas.tasks.single.alpino">
 <em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">alpino</tt><big>(</big><em>doc</em>, <em>output='raw'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#alpino"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.alpino" title="Permalink to this definition">¶</a></dt>
@@ -212,7 +213,7 @@ started for you.</p>
 <p>Currently, the module is only tested with all frog modules active except
 for the NER and parser.</p>
 <p>The following line starts Frog in the correct way:</p>
-<p>frog -S 9887</p>
+<p><tt class="docutils literal"><span class="pre">frog</span> <span class="pre">-S</span> <span class="pre">9887</span></tt></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -235,6 +236,10 @@ If &#8216;saf&#8217;, returns a SAF dictionary.</p>
 <dt id="xtas.tasks.single.guess_language">
 <em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">guess_language</tt><big>(</big><em>doc</em>, <em>output='best'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#guess_language"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.guess_language" title="Permalink to this definition">¶</a></dt>
 <dd><p>Guess the language of a document.</p>
+<p>This function applies a statistical method to determine the language of a
+document. Depending on the <tt class="docutils literal"><span class="pre">output</span></tt> argument, it may either return a
+single language code, or a ranking of languages that a document may be
+written in, sorted by probability.</p>
 <p>Uses the langid library.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -257,7 +262,8 @@ list of such pairs for all languages in the model.</p>
 <dt id="xtas.tasks.single.morphy">
 <em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">morphy</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#morphy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.morphy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lemmatize tokens using morphy, WordNet&#8217;s lemmatizer.</p>
-<p>No part-of-speech tagging is done.</p>
+<p>Finds the morphological root of all words in <tt class="docutils literal"><span class="pre">doc</span></tt>, which is assumed to
+be written in English.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -276,8 +282,11 @@ list of such pairs for all languages in the model.</p>
 <dt id="xtas.tasks.single.movie_review_polarity">
 <em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">movie_review_polarity</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#movie_review_polarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.movie_review_polarity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Movie review polarity classifier.</p>
-<p>Runs a logistic regression model trained on a set of positive and negative
-movie reviews (all in English).</p>
+<p>Determines whether the film review <tt class="docutils literal"><span class="pre">doc</span></tt> is positive or negative. Might
+be applicable to other types of document as well, but uses a statistical
+model trained on a corpus of user reviews of movies, all in English.</p>
+<p>See <tt class="docutils literal"><span class="pre">sentiwords_tag</span></tt> for a more general, but less direct, way of
+determining the opinion expressed in a text.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -295,7 +304,7 @@ movie reviews (all in English).</p>
 <dl class="task">
 <dt id="xtas.tasks.single.pos_tag">
 <em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">pos_tag</tt><big>(</big><em>tokens</em>, <em>model='nltk'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#pos_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.pos_tag" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform part-of-speech (POS) tagging.</p>
+<dd><p>Perform part-of-speech (POS) tagging for English.</p>
 <p>Currently only does English using the default model in NLTK.</p>
 <p>Expects a list of tokens.</p>
 </dd></dl>
@@ -355,6 +364,7 @@ strings, polarity) pairs.</p>
 <dt id="xtas.tasks.single.stanford_ner_tag">
 <em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">stanford_ner_tag</tt><big>(</big><em>doc</em>, <em>output='tokens'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#stanford_ner_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.stanford_ner_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Named entity recognizer using Stanford NER.</p>
+<p>English-language name detection and classification.</p>
 <p>Currently only supports the model &#8216;english.all.3class.distsim.crf.ser.gz&#8217;.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

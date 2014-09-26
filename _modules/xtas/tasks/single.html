@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>xtas.tasks.single &mdash; xtas 3.0.0 documentation</title>
+    <title>xtas.tasks.single &mdash; xtas 3.0.2 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '3.0.0',
+        VERSION:     '3.0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -29,7 +29,7 @@
     <script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../../_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="xtas 3.0.0 documentation" href="../../../index.html" />
+    <link rel="top" title="xtas 3.0.2 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -110,21 +110,23 @@
   <h1>Source code for xtas.tasks.single</h1><div class="highlight"><pre>
 <span class="sd">&quot;&quot;&quot;Single-document tasks.</span>
 
-<span class="sd">These tasks process one document at a time. Usually, a document is passed as</span>
-<span class="sd">the first argument; it may either be a string or the result from</span>
-<span class="sd">``xtas.tasks.es.es_document``, which is a reference to a document in the</span>
-<span class="sd">Elasticsearch store.</span>
+<span class="sd">These process one document per function call (in Python) or REST call (via</span>
+<span class="sd">the web server, ``/run`` or ``/run_es``). Most single-document tasks take a</span>
+<span class="sd">document as their first argument. In the Python interface this may either be</span>
+<span class="sd">a string or the result from ``xtas.tasks.es.es_document``, a reference to a</span>
+<span class="sd">document in an Elasticsearch store.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
 
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">urlencode</span>
-<span class="kn">from</span> <span class="nn">urllib2</span> <span class="kn">import</span> <span class="n">urlopen</span>
 
+<span class="kn">from</span> <span class="nn">six.moves.urllib.parse</span> <span class="kn">import</span> <span class="n">urlencode</span>
+<span class="kn">from</span> <span class="nn">six.moves.urllib.request</span> <span class="kn">import</span> <span class="n">urlopen</span>
+
+<span class="kn">from</span> <span class="nn">cytoolz</span> <span class="kn">import</span> <span class="n">identity</span><span class="p">,</span> <span class="n">pipe</span>
 <span class="kn">import</span> <span class="nn">nltk</span>
 <span class="kn">import</span> <span class="nn">spotlight</span>
-<span class="kn">from</span> <span class="nn">toolz</span> <span class="kn">import</span> <span class="n">identity</span><span class="p">,</span> <span class="n">pipe</span>
 
 <span class="kn">from</span> <span class="nn">.es</span> <span class="kn">import</span> <span class="n">fetch</span>
 <span class="kn">from</span> <span class="nn">..core</span> <span class="kn">import</span> <span class="n">app</span>
@@ -134,6 +136,11 @@
 <span class="nd">@app.task</span>
 <div class="viewcode-block" id="guess_language"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.guess_language">[docs]</a><span class="k">def</span> <span class="nf">guess_language</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&quot;best&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Guess the language of a document.</span>
+
+<span class="sd">    This function applies a statistical method to determine the language of a</span>
+<span class="sd">    document. Depending on the ``output`` argument, it may either return a</span>
+<span class="sd">    single language code, or a ranking of languages that a document may be</span>
+<span class="sd">    written in, sorted by probability.</span>
 
 <span class="sd">    Uses the langid library.</span>
 
@@ -160,7 +167,8 @@
 <div class="viewcode-block" id="morphy"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.morphy">[docs]</a><span class="k">def</span> <span class="nf">morphy</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Lemmatize tokens using morphy, WordNet&#39;s lemmatizer.</span>
 
-<span class="sd">    No part-of-speech tagging is done.</span>
+<span class="sd">    Finds the morphological root of all words in ``doc``, which is assumed to</span>
+<span class="sd">    be written in English.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -178,8 +186,12 @@
 <div class="viewcode-block" id="movie_review_polarity"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.movie_review_polarity">[docs]</a><span class="k">def</span> <span class="nf">movie_review_polarity</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Movie review polarity classifier.</span>
 
-<span class="sd">    Runs a logistic regression model trained on a set of positive and negative</span>
-<span class="sd">    movie reviews (all in English).</span>
+<span class="sd">    Determines whether the film review ``doc`` is positive or negative. Might</span>
+<span class="sd">    be applicable to other types of document as well, but uses a statistical</span>
+<span class="sd">    model trained on a corpus of user reviews of movies, all in English.</span>
+
+<span class="sd">    See ``sentiwords_tag`` for a more general, but less direct, way of</span>
+<span class="sd">    determining the opinion expressed in a text.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -197,6 +209,8 @@
 <span class="nd">@app.task</span>
 <div class="viewcode-block" id="stanford_ner_tag"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.stanford_ner_tag">[docs]</a><span class="k">def</span> <span class="nf">stanford_ner_tag</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&quot;tokens&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Named entity recognizer using Stanford NER.</span>
+
+<span class="sd">    English-language name detection and classification.</span>
 
 <span class="sd">    Currently only supports the model &#39;english.all.3class.distsim.crf.ser.gz&#39;.</span>
 
@@ -226,7 +240,7 @@
 </div>
 <span class="nd">@app.task</span>
 <div class="viewcode-block" id="pos_tag"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.pos_tag">[docs]</a><span class="k">def</span> <span class="nf">pos_tag</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s">&#39;nltk&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Perform part-of-speech (POS) tagging.</span>
+    <span class="sd">&quot;&quot;&quot;Perform part-of-speech (POS) tagging for English.</span>
 
 <span class="sd">    Currently only does English using the default model in NLTK.</span>
 
@@ -287,6 +301,7 @@
 <span class="sd">    Uses the NLTK function word_tokenize.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="n">nltk_download</span><span class="p">(</span><span class="s">&#39;punkt&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
 </div>
@@ -340,7 +355,7 @@
 
 <span class="sd">    The following line starts Frog in the correct way:</span>
 
-<span class="sd">    frog -S 9887</span>
+<span class="sd">    ``frog -S 9887``</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
