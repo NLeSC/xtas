@@ -191,6 +191,7 @@ def tokenize(doc):
     Uses the NLTK function word_tokenize.
     """
     text = fetch(doc)
+    nltk_download('punkt')
     return nltk.word_tokenize(text)
 
 
