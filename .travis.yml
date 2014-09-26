@@ -2,6 +2,7 @@ language: python
 python:
   # Only 2.7 to prevent having to install NumPy and SciPy from source.
   - "2.7"
+  - "3.2"
 
 services:
   - elasticsearch
@@ -12,9 +13,11 @@ virtualenv:
 
 install:
   - sudo apt-get update
-  - sudo apt-get install python-numpy python-scipy
+  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then sudo apt-get install python-numpy python-scipy; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then sudo apt-get install python3-numpy python3-scipy; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then pip install -r requirements.txt; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then pip install -r requirements3.txt; fi
   - pip install .
-  - pip install -r requirements.txt
   - wget http://nlp.stanford.edu/software/stanford-corenlp-full-2014-06-16.zip -O temp.zip
   - unzip temp.zip
   - export CORENLP_HOME=`pwd`/stanford-corenlp-full-2014-06-16

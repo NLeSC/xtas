@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="CoreNLP-to-HTML.xsl" type="text/xsl"?>
-<!-- 
-     Test file for CoreNLP XML output. Input:  
+<!--
+     Test file for CoreNLP XML output. Input:
      John attacked me in London. I hit him back.
 -->
 

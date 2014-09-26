@@ -2,6 +2,7 @@
 
 from distutils.core import setup
 import os.path
+import sys
 
 
 # Get __version__ from xtas source
@@ -19,7 +20,8 @@ def readme():
 
 
 def requirements():
-    with open(os.path.join(dist_dir, "requirements.txt")) as f:
+    fname = "requirements%s.txt" % ("" if sys.version_info.major == 2 else "3")
+    with open(os.path.join(dist_dir, fname)) as f:
         return f.readlines()
 
 
