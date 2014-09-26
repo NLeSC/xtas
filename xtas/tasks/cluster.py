@@ -7,7 +7,7 @@ from __future__ import absolute_import
 
 import operator
 
-import cytoolz
+import cytoolz as toolz
 from six import itervalues
 
 from .es import fetch
