@@ -1,25 +1,23 @@
 """
 Wrapper around the ILK Frog lemmatizer/POS tagger
 
-The module expects frog to be running in server mode at localhost:9887
-
-Currently, the module is only tested with all frog modules active except for
-the NER and parser.
-
-The following line starts frog in the correct way:
-
-frog -S 9887
-
-See: http://ilk.uvt.nl/frog/
+See xtas.tasks.single.frog, http://ilk.uvt.nl/frog/.
 """
 
 import datetime
+import logging
+import os
 import socket
 
 from unidecode import unidecode
 
 FROG_HOST = "localhost"
-FROG_PORT = 9887
+FROG_PORT = os.environ.get('XTAS_FROG_PORT', 9887)
+try:
+    FROG_PORT = int(FROG_PORT)
+except Exception as e:
+    logging.warn("$FROG_PORT not recognized as port number, using %d: %r"
+                 % (FROG_PORT, e))
 
 _POSMAP = {"VZ": "P",
            "N": "N",

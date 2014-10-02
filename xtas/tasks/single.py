@@ -237,15 +237,16 @@ def untokenize(tokens):
 def frog(doc, output='raw'):
     """Wrapper around the Frog lemmatizer/POS tagger/NER/dependency parser.
 
-    Expects Frog to be running in server mode at localhost:9887. It is *not*
-    started for you.
+    Expects Frog to be running in server mode, listening on
+    ``localhost:${XTAS_FROG_PORT}`` or port 9987 if the environment variable
+    ``XTAS_FROG_PORT`` is not set. It is *not* started for you.
 
     Currently, the module is only tested with all frog modules active except
     for the NER and parser.
 
     The following line starts Frog in the correct way:
 
-    ``frog -S 9887``
+    ``frog -S ${XTAS_FROG_PORT:-9887}``
 
     Parameters
     ----------
