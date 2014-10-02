@@ -1,0 +1,10 @@
+dl.function, dl.class, dl.exception, dl.task {
+    border-top: 3px solid #00526e;
+    /* padding-top: 1em; */
+    clear: both;
+}
+
+/* used for parameter descriptions, much too big by default */
+blockquote {
+    font-size: 14px;
+}
