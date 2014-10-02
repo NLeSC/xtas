@@ -6,7 +6,7 @@ import logging
 import socket
 from unittest import SkipTest
 
-from nose.tools import assert_equal, assert_not_equal
+from nose.tools import assert_equal
 
 from xtas.tasks._frog import (FROG_HOST, FROG_PORT, call_frog, frog_to_saf,
                               parse_frog)
@@ -41,9 +41,9 @@ LINES = ['1\tdit\tdit\t[dit]\tVNW(aanw,pron,stan,vol,3o,ev)\t0.9\tO\tB-NP\t2\tsu
          '5\t.\t.\t[.]\tLET()\t1.000000\tO\tO\t4\tpunct',
          '',
          '1\tTweede\ttwee\t[twee][de]\tTW(rang,prenom,stan)\t0.989011\tO\tB-NP\t2\tmod',
-        '2\tzin\tzin\t[zin]\tN(soort,ev,basis,zijd,stan)\t0.998610\tO\tI-NP\t0\tROOT',
-        '3\t!\t!\t[!]\tLET()\t1.000000\tO\tO\t2\tpunct',
-        '']
+         '2\tzin\tzin\t[zin]\tN(soort,ev,basis,zijd,stan)\t0.998610\tO\tI-NP\t0\tROOT',
+         '3\t!\t!\t[!]\tLET()\t1.000000\tO\tO\t2\tpunct',
+         '']
 
 
 def test_parse_frog():

@@ -7,10 +7,9 @@ CoreNLP installation dir.
 """
 
 import os
-import socket
 from unittest import SkipTest
 
-from nose.tools import assert_equal, assert_not_equal
+from nose.tools import assert_equal
 
 
 def _check_corenlp_home():

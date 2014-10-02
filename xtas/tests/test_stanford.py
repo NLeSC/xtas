@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from nose.tools import assert_equal, assert_in, assert_less, assert_true
+from nose.tools import assert_equal, assert_true
 
 from xtas.tasks import stanford_ner_tag
 

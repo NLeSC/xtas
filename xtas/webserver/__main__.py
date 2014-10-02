@@ -49,7 +49,7 @@ def _get_task(taskname):
 def run_task(taskname):
     """Run named task on a document fed as POST data.
 
-    The POST data should have Content-type text/plain.
+    The POST data should have Content-type text/plain or application/json.
     """
     task = _get_task(taskname)
     data = request.data
@@ -90,8 +90,7 @@ def result(jobid):
 
 @app.route('/tasks')
 def show_tasks():
-    tasknames = sorted(t.split('.', 3)[-1] if t.startswith('xtas.tasks')
-                                           else t
+    tasknames = sorted(t.split('.', 3)[-1] if t.startswith('xtas.tasks') else t
                        for t in taskq.tasks
                        if not t.startswith('celery.'))
     return json.dumps(tasknames)

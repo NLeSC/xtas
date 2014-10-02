@@ -12,10 +12,9 @@ Tested with
 http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip
 """
 
-
-import datetime
+import collections
+from datetime import datetime
 import io
-import itertools
 import logging
 import os
 import os.path
@@ -23,7 +22,6 @@ import re
 import subprocess
 import threading
 import time
-import collections
 
 from corenlp_xml.document import Document
 
@@ -165,9 +163,10 @@ def stanford_to_saf(xml_bytes):
                      'format-version': "0.0",
                      'processed':  {'module': "corenlp",
                                     'module-version': _CORENLP_VERSION,
-                                    "started": datetime.datetime.now().isoformat()}
-                 }
-    tokens = {} # (xml_sentid, xml_tokenid) : saf_tokenid
+                                    "started": datetime.now().isoformat()}
+                     }
+    tokens = {}     # (xml_sentid, xml_tokenid) : saf_tokenid
+
     def tokenid(sentid, tokenid):
         if (sentid, tokenid) in tokens:
             raise ValueError("Duplicate tokenid: {sentid}, {tokenid}"
@@ -178,22 +177,30 @@ def stanford_to_saf(xml_bytes):
 
     for sent in doc.sentences:
         saf['tokens'] += [dict(id=tokenid(sent.id, t.id),
-                               sentence=sent.id, offset=t.character_offset_begin,
+                               sentence=sent.id,
+                               offset=t.character_offset_begin,
                                lemma=t.lemma, word=t.word,
-                               pos=t.pos, pos1=POSMAP[t.pos]) for t in sent.tokens]
-        saf['entities'] += [dict(tokens=[tokens[sent.id, t.id]], type=t.ner)
+                               pos=t.pos, pos1=POSMAP[t.pos])
+                          for t in sent.tokens]
+
+        saf['entities'] += [{'tokens': [tokens[sent.id, t.id]], 'type': t.ner}
                             for t in sent.tokens if t.ner not in (None, 'O')]
+
         if sent.collapsed_ccprocessed_dependencies:
-            saf['dependencies'] += [dict(child=tokens[sent.id, dep.dependent.idx],
-                                         parent=tokens[sent.id, dep.governor.idx],
-                                         relation=dep.type)
-                                    for dep in sent.collapsed_ccprocessed_dependencies.links
-                                    if dep.type != 'root']
+            links = sent.collapsed_ccprocessed_dependencies.links
+            saf['dependencies'] += [{'child': tokens[sent.id,
+                                                     dep.dependent.idx],
+                                     'parent': tokens[sent.id,
+                                                      dep.governor.idx],
+                                     'relation': dep.type}
+                                    for dep in links if dep.type != 'root']
+
     if doc.coreferences:
         saf['coreferences'] = [[[tokens[m.sentence.id, t.id] for t in m.tokens]
                                 for m in coref.mentions]
                                for coref in doc.coreferences]
-    saf['trees'] = [dict(sentence=s.id, tree=s.parse_string.strip()) for s in doc.sentences if s.parse_string is not None]
+    saf['trees'] = [{'sentence': s.id, 'tree': s.parse_string.strip()}
+                    for s in doc.sentences if s.parse_string is not None]
 
     # remove default and empty elements
     return {k: v for (k, v) in iteritems(saf) if v != []}

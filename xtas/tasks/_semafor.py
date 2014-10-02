@@ -36,14 +36,15 @@ class Semafor(object):
         semafor_home = os.environ["SEMAFOR_HOME"]
         model_dir = os.environ.get("MALT_MODEL_DIR", semafor_home)
         cp = os.path.join(semafor_home, "target", "Semafor-3.0-alpha-04.jar")
-        cmd = ["java","-Xms4g","-Xmx4g","-cp",cp,
+        cmd = ["java", "-Xms4g", "-Xmx4g", "-cp", cp,
                "edu.cmu.cs.lti.ark.fn.SemaforInteractive",
-               "model-dir:{model_dir}".format(**locals())]
+               "model-dir:" + model_dir]
         self.process = subprocess.Popen(cmd, stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE)
-        list(self.wait_for_prompt())
+        for _ in self._wait_for_prompt():
+            pass
 
-    def wait_for_prompt(self):
+    def _wait_for_prompt(self):
         while True:
             line = self.process.stdout.readline()
             if line == '':
@@ -56,12 +57,14 @@ class Semafor(object):
         self.process.stdin.write(conll_str.strip())
         self.process.stdin.write("\n\n")
         self.process.stdin.flush()
-        lines = list(self.wait_for_prompt())
+        lines = list(self._wait_for_prompt())
         assert len(lines) == 1
         return json.loads(lines[0])
 
 
 _SINGLETON_LOCK = threading.Lock()
+
+
 def call_semafor(conll_str):
     """
     Call semafor on the given conll_str using a thread-safe singleton instance

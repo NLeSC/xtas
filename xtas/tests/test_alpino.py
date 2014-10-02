@@ -4,10 +4,9 @@ Test the Alpino parser functions and task.
 
 import os
 import os.path
-import logging
 from unittest import SkipTest
 
-from nose.tools import assert_equal, assert_not_equal, assert_in
+from nose.tools import assert_equal
 
 from xtas.tasks._alpino import (tokenize, parse_raw,
                                 interpret_token, interpret_parse)
@@ -85,4 +84,4 @@ def test_alpino_unicode():
     text = u"E\xe9n test nog"
     saf = alpino(text, output='saf')
     assert_equal({t['lemma'] for t in saf['tokens']},
-                 {u"\xe9\xe9n" ,"test", "nog"})
+                 {u"\xe9\xe9n", "test", "nog"})

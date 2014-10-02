@@ -2,11 +2,10 @@
 Test the CoreNLP parser/lemmatizer functions and task.
 """
 
-import logging
+from os.path import dirname, join
 from unittest import SkipTest
-import os.path
 
-from nose.tools import assert_equal, assert_not_equal, assert_in
+from nose.tools import assert_equal, assert_in
 
 from xtas.tasks._corenlp import parse, stanford_to_saf, get_corenlp_version
 from xtas.tasks.single import corenlp, corenlp_lemmatize
@@ -19,10 +18,11 @@ def _check_corenlp():
 
 
 def test_parse_xml():
-    xml = open(os.path.join(os.path.dirname(__file__), "test_corenlp.xml")).read()
+    with open(join(dirname(__file__), "test_corenlp.xml")) as f:
+        xml = f.read()
     saf = stanford_to_saf(xml)
     assert_equal({t['lemma'] for t in saf['tokens']},
-                 {"John", "attack", "I", "in", "London", "hit", "he", "back", "."})
+                 set("John attack I in London hit he back .".split()))
     london = [t for t in saf['tokens'] if t['lemma'] == 'London'][0]
     assert_equal(london['pos'], 'NNP')
     assert_in({"type": "LOCATION", "tokens": [london['id']]}, saf['entities'])
@@ -82,22 +82,23 @@ def test_multiple_sentences():
     _check_corenlp()
     p = parse("John lives in Amsterdam. He works in London")
     saf = stanford_to_saf(p)
-    tokens = {t['id'] : t for t in saf['tokens']}
+    tokens = {t['id']: t for t in saf['tokens']}
     # are token ids unique?
     assert_equal(len(tokens), len(saf['tokens']))
     # is location in second sentence correct?
-    entities = {tokens[e['tokens'][0]]['lemma'] : e['type']
+    entities = {tokens[e['tokens'][0]]['lemma']: e['type']
                 for e in saf['entities']}
     assert_in(('London', 'LOCATION'), entities.items())
     # is dependency in second sentence correct?
-    rels = [(tokens[rel['child']]['lemma'], rel['relation'], tokens[rel['parent']]['lemma'])
+    rels = [(tokens[rel['child']]['lemma'], rel['relation'],
+             tokens[rel['parent']]['lemma'])
             for rel in saf['dependencies']]
     assert_in(("he", "nsubj", "work"), rels)
     assert_in(("John", "nsubj", "live"), rels)
     # is coref parsed correctly?
-    coref = {(tokens[x[0][0]]['lemma'], tokens[x[1][0]]['lemma']) for x in saf['coreferences']}
+    coref = {(tokens[x[0][0]]['lemma'], tokens[x[1][0]]['lemma'])
+             for x in saf['coreferences']}
     assert_equal(coref, {("John", "he")})
-
 
 
 def test_task():

@@ -13,11 +13,10 @@ frog -S 9887
 See: http://ilk.uvt.nl/frog/
 """
 
-from unidecode import unidecode
-import socket
-from StringIO import StringIO
-from itertools import takewhile
 import datetime
+import socket
+
+from unidecode import unidecode
 
 FROG_HOST = "localhost"
 FROG_PORT = 9887
