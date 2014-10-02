@@ -8,6 +8,8 @@ xtas.core
 
 .. automodule:: xtas.core
 
+.. autofunction:: configure
+
 
 xtas.tasks.single
 -----------------

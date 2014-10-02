@@ -350,7 +350,7 @@ def alpino(doc, output="raw"):
 
     References
     ----------
-    `Alpino homepage <http://www.let.rug.nl/vannoord/alp/Alpino/>`_
+    `Alpino homepage <http://www.let.rug.nl/vannoord/alp/Alpino/>`_.
     """
     from ._alpino import tokenize, parse_raw, interpret_parse
 
@@ -366,15 +366,16 @@ def alpino(doc, output="raw"):
 def corenlp(doc, output='raw'):
     """Wrapper around the CoreNLP parser.
 
-    Expects CORENLP_HOME to point to the CoreNLP installation dir.
+    Expects ``$CORENLP_HOME`` to point to the CoreNLP installation dir.
+
+    Tested with `CoreNLP 2014-01-04
+    <http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip>`_.
+
     Parameters
     ----------
     output : string
         If 'raw', returns the raw output lines from CoreNLP.
         If 'saf', returns a SAF dictionary.
-
-    Tested with
-    http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip
     """
     from ._corenlp import parse, stanford_to_saf
 
@@ -388,19 +389,18 @@ def corenlp(doc, output='raw'):
 
 @app.task
 def corenlp_lemmatize(doc, output='raw'):
+    """Wrapper around the CoreNLP lemmatizer.
 
-    """
-    Wrapper around the CoreNLP lemmatizer
-    The module expects CORENLP_HOME to point to the CoreNLP installation dir.
+    Expects ``$CORENLP_HOME`` to point to the CoreNLP installation dir.
+
+    Tested with `CoreNLP 2014-01-04
+    <http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip>`_.
 
     Parameters
     ----------
     output : string
         If 'raw', returns the raw output lines from CoreNLP.
         If 'saf', returns a SAF dictionary.
-
-    Tested with
-    http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip
     """
     from ._corenlp import parse, stanford_to_saf
 
@@ -417,16 +417,16 @@ def semafor(saf):
     """Wrapper around the Semafor semantic parser.
 
     Expects semafor running in server mode listening to
-    SEMAFOR_HOST:SEMAFOR_PORT (defaults to localhost:9888).
-    It also expects CORENLP_HOME to point to the CoreNLP installation dir.
+    ``${SEMAFOR_HOST}:${SEMAFOR_PORT}`` (defaults to localhost:9888).
+    It also expects ``$CORENLP_HOME`` to point to the CoreNLP installation dir.
 
     Input is expected to be a 'SAF' dictionary with trees and tokens.
     Output is a SAF dictionary with a frames attribute added.
 
     References
     ----------
-    `Semafor github page <https://github.com/sammthomson/semafor>'_
-    `CoreNLP home page <http://nlp.stanford.edu/software/corenlp.shtml>'_
+    * `Semafor GitHub page <https://github.com/sammthomson/semafor>'_.
+    * `CoreNLP home page <http://nlp.stanford.edu/software/corenlp.shtml>'_.
     """
     from ._semafor import add_frames
     add_frames(saf)
