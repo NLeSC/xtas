@@ -4,7 +4,8 @@ from nose.tools import (assert_equal, assert_greater, assert_in, assert_less,
                         assert_true)
 
 from xtas.tasks import (guess_language, morphy, movie_review_polarity,
-                        sentiwords_tag, tokenize, dbpedia_spotlight)
+                        stem_snowball, sentiwords_tag, tokenize,
+                        dbpedia_spotlight)
 
 
 def test_langid():
@@ -18,10 +19,20 @@ def test_langid():
     assert_true(isinstance(prob, float))
 
 
-def test_morphy():
-    s = "The cats sat on the mats."     # morphy doesn't catch sat
-    lemmata = morphy(s)
-    assert_equal(lemmata, "The cat sat on the mat .".split())
+def test_stemmers():
+    """Test morphy and snowball/Porter stemmers."""
+
+    s_en = "The cats sat on the mats."
+    out_en = "The cat sat on the mat .".split()     # "sat" is hard to stem...
+
+    lemmata = morphy(s_en)
+    assert_equal(lemmata, out_en)
+
+    stems = stem_snowball(s_en, language='en')
+    assert_equal(stems, out_en)
+
+    stems = stem_snowball(s_en, language='porter')
+    assert_equal(stems, out_en)
 
 
 def test_movie_review_polarity():

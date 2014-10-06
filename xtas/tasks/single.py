@@ -64,6 +64,10 @@ def morphy(doc):
     -------
     lemmas : list
         List of lemmas.
+
+    See also
+    --------
+    ``stem_snowball``: simpler approach to lemmatization (stemming).
     """
     # XXX Results will be better if we do POS tagging first, but then we
     # need to map Penn Treebank tags to WordNet tags.
@@ -94,6 +98,23 @@ def movie_review_polarity(doc):
 
 def _tokenize_if_needed(s):
     return tokenize(s) if isinstance(s, basestring) else s
+
+
+@app.task
+def stem_snowball(doc, language):
+    """Stem words in doc using the Snowball stemmer.
+
+    Set the parameter ``lang`` to a language code such as "de", "en", "nl", or
+    the special string "porter" to get Porter's classic stemming algorithm for
+    English.
+
+    See also
+    --------
+    ``morphy``: smarter approach to stemming (lemmatization), but only for
+    English.
+    """
+    from Stemmer import Stemmer
+    return Stemmer(language).stemWords(_tokenize_if_needed(doc))
 
 
 @app.task
