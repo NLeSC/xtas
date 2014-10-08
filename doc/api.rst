@@ -32,6 +32,7 @@ xtas.tasks.single
 .. autotask:: semanticize
 .. autotask:: sentiwords_tag
 .. autotask:: stanford_ner_tag
+.. autotask:: stem_snowball
 .. autotask:: tokenize
 .. autotask:: untokenize
 

@@ -67,7 +67,7 @@ def morphy(doc):
 
     See also
     --------
-    ``stem_snowball``: simpler approach to lemmatization (stemming).
+    stem_snowball: simpler approach to lemmatization (stemming).
     """
     # XXX Results will be better if we do POS tagging first, but then we
     # need to map Penn Treebank tags to WordNet tags.
@@ -110,8 +110,7 @@ def stem_snowball(doc, language):
 
     See also
     --------
-    ``morphy``: smarter approach to stemming (lemmatization), but only for
-    English.
+    morphy: smarter approach to stemming (lemmatization), but only for English.
     """
     from Stemmer import Stemmer
     return Stemmer(language).stemWords(_tokenize_if_needed(doc))
