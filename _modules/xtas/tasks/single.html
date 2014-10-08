@@ -5,17 +5,18 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>xtas.tasks.single &mdash; xtas 3.0.2 documentation</title>
+    <title>xtas.tasks.single &mdash; xtas 3.0.3 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/bootswatch-3.1.0/yeti/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/xtas.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '3.0.2',
+        VERSION:     '3.0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -29,7 +30,7 @@
     <script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../../_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="xtas 3.0.2 documentation" href="../../../index.html" />
+    <link rel="top" title="xtas 3.0.3 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -174,6 +175,10 @@
 <span class="sd">    -------</span>
 <span class="sd">    lemmas : list</span>
 <span class="sd">        List of lemmas.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    stem_snowball: simpler approach to lemmatization (stemming).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c"># XXX Results will be better if we do POS tagging first, but then we</span>
     <span class="c"># need to map Penn Treebank tags to WordNet tags.</span>
@@ -206,6 +211,22 @@
     <span class="k">return</span> <span class="n">tokenize</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">)</span> <span class="k">else</span> <span class="n">s</span>
 
 
+<span class="nd">@app.task</span>
+<div class="viewcode-block" id="stem_snowball"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.stem_snowball">[docs]</a><span class="k">def</span> <span class="nf">stem_snowball</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">language</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Stem words in doc using the Snowball stemmer.</span>
+
+<span class="sd">    Set the parameter ``lang`` to a language code such as &quot;de&quot;, &quot;en&quot;, &quot;nl&quot;, or</span>
+<span class="sd">    the special string &quot;porter&quot; to get Porter&#39;s classic stemming algorithm for</span>
+<span class="sd">    English.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    morphy: smarter approach to stemming (lemmatization), but only for English.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">Stemmer</span> <span class="kn">import</span> <span class="n">Stemmer</span>
+    <span class="k">return</span> <span class="n">Stemmer</span><span class="p">(</span><span class="n">language</span><span class="p">)</span><span class="o">.</span><span class="n">stemWords</span><span class="p">(</span><span class="n">_tokenize_if_needed</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span>
+
+</div>
 <span class="nd">@app.task</span>
 <div class="viewcode-block" id="stanford_ner_tag"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.stanford_ner_tag">[docs]</a><span class="k">def</span> <span class="nf">stanford_ner_tag</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&quot;tokens&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Named entity recognizer using Stanford NER.</span>
@@ -347,15 +368,16 @@
 <div class="viewcode-block" id="frog"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.frog">[docs]</a><span class="k">def</span> <span class="nf">frog</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&#39;raw&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Wrapper around the Frog lemmatizer/POS tagger/NER/dependency parser.</span>
 
-<span class="sd">    Expects Frog to be running in server mode at localhost:9887. It is *not*</span>
-<span class="sd">    started for you.</span>
+<span class="sd">    Expects Frog to be running in server mode, listening on</span>
+<span class="sd">    ``localhost:${XTAS_FROG_PORT}`` or port 9987 if the environment variable</span>
+<span class="sd">    ``XTAS_FROG_PORT`` is not set. It is *not* started for you.</span>
 
 <span class="sd">    Currently, the module is only tested with all frog modules active except</span>
 <span class="sd">    for the NER and parser.</span>
 
 <span class="sd">    The following line starts Frog in the correct way:</span>
 
-<span class="sd">    ``frog -S 9887``</span>
+<span class="sd">    ``frog -S ${XTAS_FROG_PORT:-9887}``</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -459,7 +481,7 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    `Alpino homepage &lt;http://www.let.rug.nl/vannoord/alp/Alpino/&gt;`_</span>
+<span class="sd">    `Alpino homepage &lt;http://www.let.rug.nl/vannoord/alp/Alpino/&gt;`_.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">._alpino</span> <span class="kn">import</span> <span class="n">tokenize</span><span class="p">,</span> <span class="n">parse_raw</span><span class="p">,</span> <span class="n">interpret_parse</span>
 
@@ -475,15 +497,16 @@
 <div class="viewcode-block" id="corenlp"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.corenlp">[docs]</a><span class="k">def</span> <span class="nf">corenlp</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&#39;raw&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Wrapper around the CoreNLP parser.</span>
 
-<span class="sd">    Expects CORENLP_HOME to point to the CoreNLP installation dir.</span>
+<span class="sd">    Expects ``$CORENLP_HOME`` to point to the CoreNLP installation dir.</span>
+
+<span class="sd">    Tested with `CoreNLP 2014-01-04</span>
+<span class="sd">    &lt;http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip&gt;`_.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    output : string</span>
 <span class="sd">        If &#39;raw&#39;, returns the raw output lines from CoreNLP.</span>
 <span class="sd">        If &#39;saf&#39;, returns a SAF dictionary.</span>
-
-<span class="sd">    Tested with</span>
-<span class="sd">    http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">._corenlp</span> <span class="kn">import</span> <span class="n">parse</span><span class="p">,</span> <span class="n">stanford_to_saf</span>
 
@@ -497,19 +520,18 @@
 </div>
 <span class="nd">@app.task</span>
 <div class="viewcode-block" id="corenlp_lemmatize"><a class="viewcode-back" href="../../../api.html#xtas.tasks.single.corenlp_lemmatize">[docs]</a><span class="k">def</span> <span class="nf">corenlp_lemmatize</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&#39;raw&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper around the CoreNLP lemmatizer.</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Wrapper around the CoreNLP lemmatizer</span>
-<span class="sd">    The module expects CORENLP_HOME to point to the CoreNLP installation dir.</span>
+<span class="sd">    Expects ``$CORENLP_HOME`` to point to the CoreNLP installation dir.</span>
+
+<span class="sd">    Tested with `CoreNLP 2014-01-04</span>
+<span class="sd">    &lt;http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip&gt;`_.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    output : string</span>
 <span class="sd">        If &#39;raw&#39;, returns the raw output lines from CoreNLP.</span>
 <span class="sd">        If &#39;saf&#39;, returns a SAF dictionary.</span>
-
-<span class="sd">    Tested with</span>
-<span class="sd">    http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">._corenlp</span> <span class="kn">import</span> <span class="n">parse</span><span class="p">,</span> <span class="n">stanford_to_saf</span>
 
@@ -526,16 +548,16 @@
     <span class="sd">&quot;&quot;&quot;Wrapper around the Semafor semantic parser.</span>
 
 <span class="sd">    Expects semafor running in server mode listening to</span>
-<span class="sd">    SEMAFOR_HOST:SEMAFOR_PORT (defaults to localhost:9888).</span>
-<span class="sd">    It also expects CORENLP_HOME to point to the CoreNLP installation dir.</span>
+<span class="sd">    ``${SEMAFOR_HOST}:${SEMAFOR_PORT}`` (defaults to localhost:9888).</span>
+<span class="sd">    It also expects ``$CORENLP_HOME`` to point to the CoreNLP installation dir.</span>
 
 <span class="sd">    Input is expected to be a &#39;SAF&#39; dictionary with trees and tokens.</span>
 <span class="sd">    Output is a SAF dictionary with a frames attribute added.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    `Semafor github page &lt;https://github.com/sammthomson/semafor&gt;&#39;_</span>
-<span class="sd">    `CoreNLP home page &lt;http://nlp.stanford.edu/software/corenlp.shtml&gt;&#39;_</span>
+<span class="sd">    * `Semafor GitHub page &lt;https://github.com/sammthomson/semafor&gt;&#39;_.</span>
+<span class="sd">    * `CoreNLP home page &lt;http://nlp.stanford.edu/software/corenlp.shtml&gt;&#39;_.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">._semafor</span> <span class="kn">import</span> <span class="n">add_frames</span>
     <span class="n">add_frames</span><span class="p">(</span><span class="n">saf</span><span class="p">)</span>

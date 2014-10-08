@@ -5,17 +5,18 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API reference &mdash; xtas 3.0.2 documentation</title>
+    <title>API reference &mdash; xtas 3.0.3 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootswatch-3.1.0/yeti/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/xtas.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '3.0.2',
+        VERSION:     '3.0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -29,7 +30,7 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="xtas 3.0.2 documentation" href="index.html" />
+    <link rel="top" title="xtas 3.0.3 documentation" href="index.html" />
     <link rel="next" title="REST API" href="rest.html" />
     <link rel="prev" title="xtas tutorial" href="tutorial.html" />
 <meta charset='utf-8'>
@@ -122,6 +123,45 @@
 <span id="xtas-core"></span><h2>xtas.core<a class="headerlink" href="#module-xtas.core" title="Permalink to this headline">¶</a></h2>
 <p>Core functionality. Contains the configuration and the (singleton) Celery
 &#8220;app&#8221; instance.</p>
+<dl class="function">
+<dt id="xtas.core.configure">
+<tt class="descclassname">xtas.core.</tt><tt class="descname">configure</tt><big>(</big><em>config</em>, <em>import_error='raise'</em>, <em>unknown_key='raise'</em><big>)</big><a class="reference internal" href="_modules/xtas/core.html#configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.core.configure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure xtas.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>config</strong> : dict</p>
+<blockquote>
+<div><p>Dict with keys <tt class="docutils literal"><span class="pre">CELERY</span></tt>, <tt class="docutils literal"><span class="pre">ELASTICSEARCH</span></tt> and <tt class="docutils literal"><span class="pre">EXTRA_MODULES</span></tt>
+will be used to configure the xtas Celery app.</p>
+<p><tt class="docutils literal"><span class="pre">config.CELERY</span></tt> will be passed to Celery&#8217;s <tt class="docutils literal"><span class="pre">config_from_object</span></tt>
+with the flag <tt class="docutils literal"><span class="pre">force=True</span></tt>.</p>
+<p><tt class="docutils literal"><span class="pre">ELASTICSEARCH</span></tt> should be a list of dicts with at least the key
+&#8216;host&#8217;. These are passed to the Elasticsearch constructor (from the
+official client) unchanged.</p>
+<p><tt class="docutils literal"><span class="pre">EXTRA_MODULES</span></tt> should be a list of module names to load.</p>
+<p>Failure to supply <tt class="docutils literal"><span class="pre">CELERY</span></tt> or <tt class="docutils literal"><span class="pre">ELASTICSEARCH</span></tt> causes the default
+configuration to be re-set. Extra modules will not be unloaded,
+though.</p>
+</div></blockquote>
+<p><strong>import_error</strong> : string</p>
+<blockquote>
+<div><p>Action to take when one of the <tt class="docutils literal"><span class="pre">EXTRA_MODULES</span></tt> cannot be imported.
+Either &#8220;log&#8221;, &#8220;raise&#8221; or &#8220;ignore&#8221;.</p>
+</div></blockquote>
+<p><strong>unknown_key</strong> : string</p>
+<blockquote class="last">
+<div><p>Action to take when a member not matching the ones listed above is
+encountered (except when its name starts with an underscore).
+Either &#8220;log&#8221;, &#8220;raise&#8221; or &#8220;ignore&#8221;.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <div class="section" id="module-xtas.tasks.single">
 <span id="xtas-tasks-single"></span><h2>xtas.tasks.single<a class="headerlink" href="#module-xtas.tasks.single" title="Permalink to this headline">¶</a></h2>
@@ -153,40 +193,45 @@ If &#8216;saf&#8217;, returns a SAF dictionary.</p>
 </tbody>
 </table>
 <p class="rubric">References</p>
-<p><a class="reference external" href="http://www.let.rug.nl/vannoord/alp/Alpino/">Alpino homepage</a></p>
+<p><a class="reference external" href="http://www.let.rug.nl/vannoord/alp/Alpino/">Alpino homepage</a>.</p>
 </dd></dl>
 
 <dl class="task">
 <dt id="xtas.tasks.single.corenlp">
 <em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">corenlp</tt><big>(</big><em>doc</em>, <em>output='raw'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#corenlp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.corenlp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around the CoreNLP parser.</p>
-<p>Expects CORENLP_HOME to point to the CoreNLP installation dir.
-Parameters
-&#8212;&#8212;&#8212;-
-output : string</p>
-<blockquote>
-<div>If &#8216;raw&#8217;, returns the raw output lines from CoreNLP.
-If &#8216;saf&#8217;, returns a SAF dictionary.</div></blockquote>
-<p>Tested with
-<a class="reference external" href="http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip">http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip</a></p>
-</dd></dl>
-
-<dl class="task">
-<dt id="xtas.tasks.single.corenlp_lemmatize">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">corenlp_lemmatize</tt><big>(</big><em>doc</em>, <em>output='raw'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#corenlp_lemmatize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.corenlp_lemmatize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrapper around the CoreNLP lemmatizer
-The module expects CORENLP_HOME to point to the CoreNLP installation dir.</p>
+<p>Expects <tt class="docutils literal"><span class="pre">$CORENLP_HOME</span></tt> to point to the CoreNLP installation dir.</p>
+<p>Tested with <a class="reference external" href="http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip">CoreNLP 2014-01-04</a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>output</strong> : string</p>
-<blockquote>
+<blockquote class="last">
 <div><p>If &#8216;raw&#8217;, returns the raw output lines from CoreNLP.
 If &#8216;saf&#8217;, returns a SAF dictionary.</p>
 </div></blockquote>
-<p><strong>Tested with</strong> :</p>
-<p class="last"><strong>http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.single.corenlp_lemmatize">
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">corenlp_lemmatize</tt><big>(</big><em>doc</em>, <em>output='raw'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#corenlp_lemmatize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.corenlp_lemmatize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper around the CoreNLP lemmatizer.</p>
+<p>Expects <tt class="docutils literal"><span class="pre">$CORENLP_HOME</span></tt> to point to the CoreNLP installation dir.</p>
+<p>Tested with <a class="reference external" href="http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip">CoreNLP 2014-01-04</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>output</strong> : string</p>
+<blockquote class="last">
+<div><p>If &#8216;raw&#8217;, returns the raw output lines from CoreNLP.
+If &#8216;saf&#8217;, returns a SAF dictionary.</p>
+</div></blockquote>
 </td>
 </tr>
 </tbody>
@@ -208,12 +253,13 @@ This task uses a Python client for DBp Spotlight:
 <dt id="xtas.tasks.single.frog">
 <em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">frog</tt><big>(</big><em>doc</em>, <em>output='raw'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#frog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.frog" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around the Frog lemmatizer/POS tagger/NER/dependency parser.</p>
-<p>Expects Frog to be running in server mode at localhost:9887. It is <em>not</em>
-started for you.</p>
+<p>Expects Frog to be running in server mode, listening on
+<tt class="docutils literal"><span class="pre">localhost:${XTAS_FROG_PORT}</span></tt> or port 9987 if the environment variable
+<tt class="docutils literal"><span class="pre">XTAS_FROG_PORT</span></tt> is not set. It is <em>not</em> started for you.</p>
 <p>Currently, the module is only tested with all frog modules active except
 for the NER and parser.</p>
 <p>The following line starts Frog in the correct way:</p>
-<p><tt class="docutils literal"><span class="pre">frog</span> <span class="pre">-S</span> <span class="pre">9887</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">frog</span> <span class="pre">-S</span> <span class="pre">${XTAS_FROG_PORT:-9887}</span></tt></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -276,6 +322,13 @@ be written in English.</p>
 </tr>
 </tbody>
 </table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="#xtas.tasks.single.stem_snowball" title="xtas.tasks.single.stem_snowball"><tt class="xref py py-obj docutils literal"><span class="pre">stem_snowball</span></tt></a></dt>
+<dd>simpler approach to lemmatization (stemming).</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="task">
@@ -314,13 +367,15 @@ determining the opinion expressed in a text.</p>
 <em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">semafor</tt><big>(</big><em>saf</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#semafor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.semafor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around the Semafor semantic parser.</p>
 <p>Expects semafor running in server mode listening to
-SEMAFOR_HOST:SEMAFOR_PORT (defaults to localhost:9888).
-It also expects CORENLP_HOME to point to the CoreNLP installation dir.</p>
+<tt class="docutils literal"><span class="pre">${SEMAFOR_HOST}:${SEMAFOR_PORT}</span></tt> (defaults to localhost:9888).
+It also expects <tt class="docutils literal"><span class="pre">$CORENLP_HOME</span></tt> to point to the CoreNLP installation dir.</p>
 <p>Input is expected to be a &#8216;SAF&#8217; dictionary with trees and tokens.
 Output is a SAF dictionary with a frames attribute added.</p>
 <p class="rubric">References</p>
-<p><a href="#id1"><span class="problematic" id="id2">`</span></a>Semafor github page &lt;<a class="reference external" href="https://github.com/sammthomson/semafor">https://github.com/sammthomson/semafor</a>&gt;&#8217;_
-<a href="#id3"><span class="problematic" id="id4">`</span></a>CoreNLP home page &lt;<a class="reference external" href="http://nlp.stanford.edu/software/corenlp.shtml">http://nlp.stanford.edu/software/corenlp.shtml</a>&gt;&#8217;_</p>
+<ul class="simple">
+<li><a href="#id2"><span class="problematic" id="id3">`</span></a>Semafor GitHub page &lt;<a class="reference external" href="https://github.com/sammthomson/semafor">https://github.com/sammthomson/semafor</a>&gt;&#8217;_.</li>
+<li><a href="#id4"><span class="problematic" id="id5">`</span></a>CoreNLP home page &lt;<a class="reference external" href="http://nlp.stanford.edu/software/corenlp.shtml">http://nlp.stanford.edu/software/corenlp.shtml</a>&gt;&#8217;_.</li>
+</ul>
 </dd></dl>
 
 <dl class="task">
@@ -394,6 +449,22 @@ is heuristic.</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="task">
+<dt id="xtas.tasks.single.stem_snowball">
+<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">stem_snowball</tt><big>(</big><em>doc</em>, <em>language</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#stem_snowball"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.stem_snowball" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stem words in doc using the Snowball stemmer.</p>
+<p>Set the parameter <tt class="docutils literal"><span class="pre">lang</span></tt> to a language code such as &#8220;de&#8221;, &#8220;en&#8221;, &#8220;nl&#8221;, or
+the special string &#8220;porter&#8221; to get Porter&#8217;s classic stemming algorithm for
+English.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference internal" href="#xtas.tasks.single.morphy" title="xtas.tasks.single.morphy"><tt class="xref py py-obj docutils literal"><span class="pre">morphy</span></tt></a></dt>
+<dd>smarter approach to stemming (lemmatization), but only for English.</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="task">
