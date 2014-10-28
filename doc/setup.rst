@@ -23,13 +23,14 @@ On a Debian/Ubuntu/Linux Mint system, these can be installed with the package
 manager, in which case it's a good idea to install other dependencies too
 (so ``pip`` has to do less work)::
 
-    sudo apt-get install rabbitmq-server python-scipy openjdk-7-jre \
-        python-virtualenv build-essential python-pip libxslt-dev
+    sudo apt-get install libatlas-dev liblapack-dev rabbitmq-server \
+        python-scipy openjdk-7-jre python-virtualenv build-essential \
+        python-pip libxslt-dev
 
 For CentOS/Fedora/Red Hat-style systems (this list is incomplete)::
 
-    sudo yum install atlas-dev java-1.7.0-openjdk lapack-dev libxslt-devel \
-        numpy python-devel rabbitmq-server scipy
+    sudo yum install atlas-devel java-1.7.0-openjdk lapack-devel \
+        libxslt-devel numpy python-devel rabbitmq-server scipy
 
 (RabbitMQ is an `EPEL <https://fedoraproject.org/wiki/EPEL>`_ package.)
 
