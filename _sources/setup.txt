@@ -31,7 +31,7 @@ For CentOS/Fedora/Red Hat-style systems (this list is incomplete)::
     sudo yum install atlas-dev java-1.7.0-openjdk lapack-dev libxslt-devel \
         numpy python-devel rabbitmq-server scipy
 
-(RabbitMQ is an `EPEL https://fedoraproject.org/wiki/EPEL>`_ package.)
+(RabbitMQ is an `EPEL <https://fedoraproject.org/wiki/EPEL>`_ package.)
 
 For other systems, including Macs, getting SciPy through a Python distro
 such as `Anaconda <http://continuum.io/downloads>`_ saves you the trouble
