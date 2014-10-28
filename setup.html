@@ -121,12 +121,16 @@
 <h1>Setting up xtas<a class="headerlink" href="#setting-up-xtas" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>Make sure you have <a class="reference external" href="http://www.elasticsearch.org/">Elasticsearch</a> and
-<a class="reference external" href="http://www.rabbitmq.com/">RabbitMQ</a> running. Installation instructions for
-those can be found in various places. Make sure you have Python 2.7 or newer.
-Some tasks require a Java VM. xtas is primarily developed on Linux; OS X
+<p>Make sure you have <a class="reference external" href="http://www.rabbitmq.com/">RabbitMQ</a> running.
+Installation instructions for RabbitMQ can be found in various places;
+using your operating system&#8217;s package manager is usually the easiest option
+(e.g., <tt class="docutils literal"><span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">rabbitmq-server</span></tt>).
+Make sure you have Python 2.7 or newer.
+Some tasks also require a Java VM. xtas is primarily developed on Linux; OS X
 support is not regularly tested, but issues/patches are welcome. Windows is
-not supported.</p>
+not supported.
+xtas can talk to <a class="reference external" href="http://www.elasticsearch.org/">Elasticsearch</a> and use if
+for document storage, but ES is not a hard dependency.</p>
 <p>TL;DR: <tt class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">xtas</span></tt>.</p>
 <p>Long story: get the install dependencies, Python, pip, NumPy, Java (JRE).
 On a Debian/Ubuntu/Linux Mint system, these can be installed with the package
@@ -136,6 +140,12 @@ manager, in which case it&#8217;s a good idea to install other dependencies too
     python-virtualenv build-essential python-pip libxslt-dev
 </pre></div>
 </div>
+<p>For CentOS/Fedora/Red Hat-style systems (this list is incomplete):</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo yum install atlas-dev java-1.7.0-openjdk lapack-dev libxslt-devel \
+    numpy python-devel rabbitmq-server scipy
+</pre></div>
+</div>
+<p>(RabbitMQ is an <a href="#id1"><span class="problematic" id="id2">`EPEL https://fedoraproject.org/wiki/EPEL&gt;`_</span></a> package.)</p>
 <p>For other systems, including Macs, getting SciPy through a Python distro
 such as <a class="reference external" href="http://continuum.io/downloads">Anaconda</a> saves you the trouble
 of setting up C, C++ and Fortran compilers.</p>
