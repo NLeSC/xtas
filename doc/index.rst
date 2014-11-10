@@ -9,11 +9,13 @@ xtas, the eXtensible Text Analysis Suite
 ========================================
 
 This is the manual for xtas, a distributed text analysis package
-based on Celery and Elasticsearch.
+based on Celery.
 
 xtas provides NLP functionality such as named-entity recognition, parsing,
 document clustering and topic models,
 through Python (synchronous/asynchronous) and REST APIs.
+It ties in with Elasticsearch, so you can store enriched documents
+and query for named entities or other semantic information.
 
 .. raw:: html
 
