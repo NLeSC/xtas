@@ -1,12 +1,14 @@
+anyjson
 celery>=3.0.0
 chardet
 corenlp_xml
 cytoolz
-elasticsearch
+elasticsearch>=1.2.0,<2.0.0
 flask>=0.10.1
 gensim
 langid>=1.1.4dev
 librabbitmq
+markupsafe
 nltk
 pyspotlight
 PyStemmer
