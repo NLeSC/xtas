@@ -75,7 +75,7 @@ def test_store_get_result():
         store_single("task1_result", "task1", idx, typ, id)
         client.indices.IndicesClient(es).flush()
         assert_equal(get_single_result("task1", idx, typ, id), "task1_result")
-
+        assert_in("task1", get_tasks_per_index(idx, typ))
         # test second result and test non-scalar data
         task2_result = {"a": {"b": ["c", "d"]}}
         store_single(task2_result, "task2", idx, typ, id)

@@ -88,6 +88,32 @@ def store_single(data, taskname, idx, typ, id):
     _es().index(index=idx, doc_type=child_type, id=id, body=doc, parent=id)
     return data
 
+def _child_type_to_taskname(child_type):
+  """Gets the taskname from the child_type of an xtas result"""
+  try:
+    typ, taskname = child_type.split("__")
+  except ValueError:
+    return None
+  return taskname
+
+def get_tasks_per_index(idx, typ):
+  """Lists the tasks that were performed on the given index
+     for documents of a specific type.
+     Uses call on elastic search instead of the internal CHECKED_MAPPINGS to actually check the index.
+  """
+  try:
+    indices_client = client.indices.IndicesClient(_es())
+    r = indices_client.get_mapping(index=idx)[idx]
+    tasks = set([])
+    if not 'mappings' in r: return tasks
+    for mapping_type, mapping in r['mappings'].iteritems():
+      if '_parent' in mapping:
+        if mapping['_parent']['type'] == typ:
+          tasks.add(_child_type_to_taskname(mapping_type))
+    return tasks
+  except exceptions.TransportError, e:
+      if e.status_code != 404:
+         raise
 
 def get_single_result(taskname, idx, typ, id):
     """Get a single xtas result"""
