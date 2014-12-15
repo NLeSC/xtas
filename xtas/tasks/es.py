@@ -67,21 +67,22 @@ def _check_parent_mapping(idx, child_type, parent_type):
     """
     Check that a mapping for the child_type exists
     Creates a new mapping with parent_type if needed
+    This will fail horrifically if index1 is created and then deleted, because it will keep the index, child_type in memory.
     """
-    if not child_type in CHECKED_MAPPINGS:
+    if  not (idx, child_type) in CHECKED_MAPPINGS:
         indices_client = client.indices.IndicesClient(_es())
         if not indices_client.exists_type(idx, child_type):
             body = {child_type: {"_parent": {"type": parent_type}}}
             indices_client.put_mapping(index=idx, doc_type=child_type,
                                        body=body)
-        CHECKED_MAPPINGS.add(child_type)
-
+        CHECKED_MAPPINGS.add((idx, child_type))
 
 @app.task
 def store_single(data, taskname, idx, typ, id):
     """Store the data as a child document."""
     child_type = "{typ}__{taskname}".format(**locals())
     _check_parent_mapping(idx, child_type, typ)
+    #CHECKED_MAPPINGS = set({})
     now = datetime.now().isoformat()
     doc = {'data': data, 'timestamp': now}
     _es().index(index=idx, doc_type=child_type, id=id, body=doc, parent=id)
