@@ -115,6 +115,13 @@ def get_tasks_per_index(idx, typ):
       if e.status_code != 404:
          raise
 
+def get_all_results(idx, typ, id):
+  """Get all xtas results that exist for a document"""
+  results = {}
+  for taskname in get_tasks_per_index(idx, typ):
+    results[taskname] = get_single_result(taskname, idx, typ, id)
+  return results
+
 def get_single_result(taskname, idx, typ, id):
     """Get a single xtas result"""
     child_type = "{typ}__{taskname}".format(**locals())
