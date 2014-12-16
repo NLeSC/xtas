@@ -80,7 +80,7 @@ def _check_parent_mapping(idx, child_type, parent_type):
 @app.task
 def store_single(data, taskname, idx, typ, id):
     """Store the data as a child document."""
-    child_type = "{typ}__{taskname}".format(**locals())
+    child_type = _taskname_to_child_type(taskname, typ) 
     _check_parent_mapping(idx, child_type, typ)
     #CHECKED_MAPPINGS = set({})
     now = datetime.now().isoformat()
@@ -91,10 +91,14 @@ def store_single(data, taskname, idx, typ, id):
 def _child_type_to_taskname(child_type):
   """Gets the taskname from the child_type of an xtas result"""
   try:
-    typ, taskname = child_type.split("__")
+    typ, taskname = child_type.split("__", 1)
   except ValueError:
     return None
   return taskname
+
+def _taskname_to_child_type(taskname, typ):
+  """Transforms the taskname into a child_type"""
+  return "{typ}__{taskname}".format(**locals())
 
 def get_tasks_per_index(idx, typ):
   """Lists the tasks that were performed on the given index
@@ -124,10 +128,23 @@ def get_all_results(idx, typ, id):
 
 def get_single_result(taskname, idx, typ, id):
     """Get a single xtas result"""
-    child_type = "{typ}__{taskname}".format(**locals())
+    child_type = _taskname_to_child_type(taskname, typ)
     try:
         r = _es().get_source(index=idx, doc_type=child_type, id=id, parent=id)
         return r['data']
     except exceptions.TransportError, e:
         if e.status_code != 404:
             raise
+
+def fetch_documents_by_task(idx, typ, query, taskname, field='body'):
+  """Query the task, return the documents"""
+  child_type = _taskname_to_child_type(taskname, typ)
+  query = {"has_child" : { 'type' : child_type, "query" : query } }
+  return fetch_query_batch(idx, typ, query, field)
+
+def fetch_results_by_document(idx, typ, query, taskname):
+  """Query the document, return the results of the task"""
+  child_type = _taskname_to_child_type(taskname, typ)
+  query = {"has_parent" : { 'type' : typ, "query" : query } }
+  return fetch_query_batch(idx, child_type, query, 'data')
+
