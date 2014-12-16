@@ -30,6 +30,8 @@ def _download_zip(url, name=None, check_dir=None):
             with ZipFile(temp.name) as z:
                 z.extractall(path=home)
 
+    return check_dir
+
 
 def _make_data_home(subdir=None):
     """Make XTAS_DATA directory, and subdir inside it (if not None)."""
