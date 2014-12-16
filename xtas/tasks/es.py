@@ -49,7 +49,7 @@ def fetch(doc):
 
 
 @app.task
-def fetch_query_batch(idx, typ, query, field='body'):
+def fetch_query_batch(idx, typ, query, field='body', full=True):
     """Fetch all documents matching query and return them as a list.
 
     Returns a list of field contents, with documents that don't have the
@@ -57,8 +57,12 @@ def fetch_query_batch(idx, typ, query, field='body'):
     """
     r = _es().search(index=idx, doc_type=typ, body={'query': query},
                    _source=[field])
-    r = (hit['_source'].get(field, None) for hit in r['hits']['hits'])
-    return [hit for hit in r if hit is not None]
+    print r
+    r = ((hit['_id'], hit['_source'].get(field, None)) for hit in r['hits']['hits'])
+    if full:
+      # This is disgusting and slow. Must find a way to put it into a query
+      tasks = get_tasks_per_index(idx, typ)
+    return [hit[1] for hit in r if hit is not None]
 
 CHECKED_MAPPINGS = set()
 
@@ -136,11 +140,11 @@ def get_single_result(taskname, idx, typ, id):
         if e.status_code != 404:
             raise
 
-def fetch_documents_by_task(idx, typ, query, taskname, field='body'):
+def fetch_documents_by_task(idx, typ, query, taskname, field='body', full=True):
   """Query the task, return the documents"""
   child_type = _taskname_to_child_type(taskname, typ)
   query = {"has_child" : { 'type' : child_type, "query" : query } }
-  return fetch_query_batch(idx, typ, query, field)
+  return fetch_query_batch(idx, typ, query, field, full)
 
 def fetch_results_by_document(idx, typ, query, taskname):
   """Query the document, return the results of the task"""
