@@ -93,7 +93,7 @@ this document, but in a field called "xtas_results".
 
 You can now run the unittest suite using::
 
-    nosetests -s -v --exe xtas
+    python setup.py test
 
 in the source directory (``pip install nose`` if needed). This requires a
 running worker process and Elasticsearch. Running the tests first is a good
