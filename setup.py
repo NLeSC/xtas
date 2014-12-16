@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
 import os.path
+
+from setuptools import setup
 
 
 # Get __version__ from xtas source
