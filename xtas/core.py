@@ -62,14 +62,15 @@ def configure(config, import_error="raise", unknown_key="raise"):
         if unknown_keys:
             msg = ("unknown keys %r found on config object %r"
                    % (unknown_keys, config))
-            if unknown_action == 'raise':
+            if unknown_keys == 'raise':
                 raise ValueError(msg)
             else:
                 logger.warn(msg)
 
     app.config_from_object(config.get('CELERY', 'xtas._defaultconfig.CELERY'))
-    _config['ELASTICSEARCH'] = config.get('ELASTICSEARCH',
-                                          _defaultconfig.ELASTICSEARCH)
+    es = config.get('ELASTICSEARCH', _defaultconfig.ELASTICSEARCH)
+    _config['ELASTICSEARCH'] = es
+    logger.info('Using Elasticsearch at %s' % es)
 
     for m in config.get('EXTRA_MODULES', []):
         try:
@@ -89,7 +90,3 @@ try:
 except ImportError:
     logger.info('Cannot import xtas_config, falling back to default')
     configure({})
-
-
-if __name__ == '__main__':
-    app.start()

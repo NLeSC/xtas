@@ -5,25 +5,48 @@ Setting up xtas
 Installation
 ------------
 
-Make sure you have `Elasticsearch <http://www.elasticsearch.org/>`_ and
-`RabbitMQ <http://www.rabbitmq.com/>`_ running. Installation instructions for
-those can be found in various places. Make sure you have Python 2.7 or newer.
-Some tasks require a Java VM. xtas has been tested on Linux; it should work on
-OS X but this has not been tested.
+Make sure you have `RabbitMQ <http://www.rabbitmq.com/>`_ running.
+Installation instructions for RabbitMQ can be found in various places;
+using your operating system's package manager is usually the easiest option
+(e.g., ``apt-get install rabbitmq-server``).
+Make sure you have Python 2.7 or newer.
+Some tasks also require a Java VM. xtas is primarily developed on Linux; OS X
+support is not regularly tested, but issues/patches are welcome. Windows is
+not supported.
+xtas can talk to `Elasticsearch <http://www.elasticsearch.org/>`_ and use if
+for document storage, but ES is not a hard dependency.
 
 TL;DR: ``pip install xtas``.
 
-Long story: first set up a virtualenv for xtas::
+Long story: get the install dependencies, Python, pip, NumPy, Java (JRE).
+On a Debian/Ubuntu/Linux Mint system, these can be installed with the package
+manager, in which case it's a good idea to install other dependencies too
+(so ``pip`` has to do less work)::
+
+    sudo apt-get install libatlas-dev liblapack-dev rabbitmq-server \
+        python-scipy openjdk-7-jre python-virtualenv build-essential \
+        python-pip libxslt-dev
+
+For CentOS/Fedora/Red Hat-style systems (this list is incomplete)::
+
+    sudo yum install atlas-devel java-1.7.0-openjdk lapack-devel \
+        libxslt-devel numpy python-devel rabbitmq-server scipy
+
+(RabbitMQ is an `EPEL <https://fedoraproject.org/wiki/EPEL>`_ package.)
+
+For other systems, including Macs, getting SciPy through a Python distro
+such as `Anaconda <http://continuum.io/downloads>`_ saves you the trouble
+of setting up C, C++ and Fortran compilers.
+
+Next, set up a virtualenv for xtas::
 
     virtualenv --system-site-packages /some/where
     . /some/where/bin/activate
 
-The option ``--system-site-packages`` makes sure system NumPy, SciPy and NLTK
-are used, if they are pre-installed on the machine (recommended). Compiling
-these can take quite a long time. If you don't use this option, do make sure
-you ``pip install numpy`` before trying anything else. If you don't have
-all of the dependencies, you may need C and C++ compilers. If you don't have
-SciPy preinstalled, you'll need a Fortran compiler and a lot of patience.
+The option ``--system-site-packages`` makes sure the system-wide NumPy, SciPy,
+scikit-learn and NLTK are used, if they are pre-installed on the machine.
+If you don't use this option, do make sure you ``pip install numpy``
+before trying anything else.
 
 Use `pip <https://pypi.python.org/pypi/pip/1.1>`_ to install xtas.
 To get the latest release::
@@ -33,6 +56,8 @@ To get the latest release::
 To get the bleeding edge version from GitHub::
 
     pip install git+https://github.com/NLeSC/xtas.git
+
+For installing from local source, see :doc:`extending`.
 
 
 Getting started
@@ -45,7 +70,7 @@ install that package if you don't already have it.
 
 Then start an xtas worker::
 
-    celery -A xtas.tasks worker --loglevel=info
+    python -m xtas.worker --loglevel=info
 
 Start the web frontend::
 
@@ -68,7 +93,7 @@ this document, but in a field called "xtas_results".
 
 You can now run the unittest suite using::
 
-    nosetests -s -v --exe xtas
+    python setup.py test
 
 in the source directory (``pip install nose`` if needed). This requires a
 running worker process and Elasticsearch. Running the tests first is a good

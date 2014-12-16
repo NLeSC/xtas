@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
 import os.path
+
+from setuptools import setup
 
 
 # Get __version__ from xtas source
 dist_dir = os.path.dirname(os.path.abspath(__file__))
-execfile(os.path.join(dist_dir, 'xtas/_version.py'))
+with open(os.path.join(dist_dir, 'xtas/_version.py')) as versionpy:
+    exec(versionpy.read())
 
 
 def readme():
@@ -28,8 +30,9 @@ setup(
     long_description=readme(),
     author="Lars Buitinck",
     author_email="l.buitinck@esciencecenter.nl",
-    packages=["xtas", "xtas.make_config", "xtas.tasks", "xtas.webserver"],
-    package_data={"xtas.tasks": ["*.txt"]},
+    packages=["xtas", "xtas.make_config", "xtas.tasks", "xtas.tests",
+              "xtas.webserver"],
+    package_data={"xtas.tasks": ["*.txt", "NERServer.class"]},
     url="https://github.com/NLeSC/xtas",
     version=__version__,
     classifiers=[

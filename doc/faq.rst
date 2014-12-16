@@ -8,3 +8,9 @@ By default, in ``~/xtas_data``. You can override this by setting the
 
 In addition, xtas uses NLTK extensively, and that will download resource files
 to ``~/nltk_data``.
+
+
+* I get ``SystemError: error return without exception set`` when starting a
+  Celery worker
+
+Check if RabbitMQ is running and xtas is properly configured to talk to it.

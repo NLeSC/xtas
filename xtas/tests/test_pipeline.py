@@ -51,8 +51,7 @@ def test_pipeline_cache():
     from xtas.tasks.pipeline import pipeline
     from xtas.tasks.es import es_document
     text = "The cat is happy"
-    expected_tokens = [{u'token': u'The'}, {u'token': u'cat'},
-                       {u'token': u'is'}, {u'token': u'happy'}]
+    expected_tokens = [u'The', u'cat', u'is', u'happy']
     expected_pos = [[u'The', u'DT'], [u'cat', u'NN'],
                     [u'is', u'VBZ'], [u'happy', u'JJ']]
     with eager_celery(), clean_es() as es:

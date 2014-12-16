@@ -1,10 +1,12 @@
 """Elasticsearch stuff."""
 
 from __future__ import absolute_import
-
 from datetime import datetime
 
 from elasticsearch import Elasticsearch, client, exceptions
+from six import iteritems
+
+from chardet import detect as chardetect
 
 from ..core import app, _config
 
@@ -33,7 +35,10 @@ def fetch(doc):
     ----------
     doc : {dict, string}
         A dictionary representing a handle returned by es_document, or a plain
-        string.
+        string. A Unicode string (Python 2 unicode, Python 3 str) will be
+        returned as-is. A byte string (Python 2 str, Python 3 bytes) will be
+        run through chardet to guess the encoding, then decoded with
+        errors="replace".
 
     Returns
     -------
@@ -43,9 +48,14 @@ def fetch(doc):
     if isinstance(doc, dict) and set(doc.keys()) == set(_ES_DOC_FIELDS):
         idx, typ, id, field = [doc[k] for k in _ES_DOC_FIELDS]
         return _es().get_source(index=idx, doc_type=typ, id=id)[field]
-    else:
-        # Assume simple string
+    elif isinstance(doc, unicode):
         return doc
+    elif isinstance(doc, str):
+        enc = chardetect(doc)['encoding']
+        return doc.decode(enc, errors="replace")
+    else:
+        raise TypeError("fetch expected es_document or string, got %s"
+                        % type(doc))
 
 
 @app.task
@@ -124,7 +134,10 @@ def get_tasks_per_index(idx, typ):
          raise
 
 def get_all_results(idx, typ, id):
-  """Get all xtas results that exist for a document"""
+  """
+    Get all xtas results that exist for a document
+    Returns a (possibly empty) {taskname : data} dict
+  """
   results = {}
   for taskname in get_tasks_per_index(idx, typ):
     results[taskname] = get_single_result(taskname, idx, typ, id)

@@ -5,9 +5,14 @@ These tasks process batches of documents, denoted as lists of strings.
 
 from __future__ import absolute_import
 
+import operator
+
+import cytoolz as toolz
+from six import itervalues
+
 from .es import fetch
 from ..core import app
-from .._utils import batches
+from .._utils import tosequence
 
 
 def _vectorizer(**kwargs):
@@ -24,9 +29,19 @@ def _vectorizer(**kwargs):
     return TfidfVectorizer(**kwargs)
 
 
+def group_clusters(docs, labels):
+    """Group docs by their cluster labels."""
+    return [zip(*cluster)[1]
+            for cluster in itervalues(toolz.groupby(operator.itemgetter(0),
+                                                    zip(labels, docs)))]
+
+
 @app.task
 def kmeans(docs, k, lsa=None):
-    """Run k-means clustering on a vectorized set of documents.
+    """Run k-means clustering on a set of documents.
+
+    Uses scikit-learn to tokenize documents, compute tf-idf weights, perform
+    (optional) LSA transformation, and cluster.
 
     Parameters
     ----------
@@ -40,25 +55,28 @@ def kmeans(docs, k, lsa=None):
 
     Returns
     -------
-    labels : list of integers
-        Cluster labels (integers in the range [0..k)) for all documents in X.
+    clusters : sequence of sequence of documents
+        The input documents, grouped by cluster. The order of clusters and
+        the order of documents within clusters is unspecified.
     """
     from sklearn.cluster import MiniBatchKMeans
     from sklearn.decomposition import TruncatedSVD
-    from sklearn.pipeline import Pipeline
+    from sklearn.pipeline import make_pipeline
     from sklearn.preprocessing import Normalizer
 
-    if lsa is not None:
-        kmeans = Pipeline([('tfidf', _vectorizer()),
-                           ('lsa', TruncatedSVD(n_components=lsa)),
-                           ('l2norm', Normalizer()),
-                           ('kmeans', MiniBatchKMeans(n_clusters=k))])
-    else:
-        kmeans = Pipeline([('tfidf', _vectorizer()),
-                           ('kmeans', MiniBatchKMeans(n_clusters=k))])
+    docs = tosequence(docs)
 
-    # XXX return friendlier output?
-    return kmeans.fit(fetch(d) for d in docs).steps[-1][1].labels_.tolist()
+    if lsa is not None:
+        kmeans = make_pipeline(_vectorizer(),
+                               TruncatedSVD(n_components=lsa),
+                               Normalizer(),
+                               MiniBatchKMeans(n_clusters=k))
+    else:
+        kmeans = make_pipeline(_vectorizer(),
+                               MiniBatchKMeans(n_clusters=k))
+
+    labels = kmeans.fit(fetch(d) for d in docs).steps[-1][1].labels_
+    return group_clusters(docs, labels)
 
 
 @app.task
@@ -66,15 +84,25 @@ def big_kmeans(docs, k, batch_size=1000, n_features=(2 ** 20),
                single_pass=True):
     """k-means for very large sets of documents.
 
+    See kmeans for documentation. Differs from that function in that it does
+    not computer tf-idf or LSA, and fetches the documents in a streaming
+    fashion, so they don't need to be held in memory. It does not do random
+    restarts.
+
+    If the option single_pass is set to False, the documents are visited
+    twice: once to fit a k-means model, once to determine their label in
+    this model.
     """
     from sklearn.cluster import MiniBatchKMeans
     from sklearn.feature_extraction.text import HashingVectorizer
+
+    docs = tosequence(docs)
 
     v = HashingVectorizer(input="content", n_features=n_features, norm="l2")
     km = MiniBatchKMeans(n_clusters=k)
 
     labels = []
-    for batch in batches(docs, batch_size):
+    for batch in toolz.partition_all(batch_size, docs):
         batch = map(fetch, docs)
         batch = v.transform(batch)
         y = km.fit_predict(batch)
@@ -82,12 +110,12 @@ def big_kmeans(docs, k, batch_size=1000, n_features=(2 ** 20),
             labels.extend(y.tolist())
 
     if not single_pass:
-        for batch in batches(docs, batch_size):
+        for batch in toolz.partition_all(batch_size, docs):
             batch = map(fetch, docs)
             batch = v.transform(batch)
             labels.extend(km.predict(batch).tolist())
 
-    return labels
+    return group_clusters(docs, labels)
 
 
 @app.task
@@ -101,7 +129,7 @@ def lsa(docs, k, random_state=None):
     k : integer
         Number of topics.
     random_state : integer, optional
-        Random number seed, for reproducibility.
+        Random number seed, for reproducibility of results.
 
     Returns
     -------
@@ -110,12 +138,11 @@ def lsa(docs, k, random_state=None):
         (term, weight) pairs.
     """
     from sklearn.decomposition import TruncatedSVD
-    from sklearn.pipeline import Pipeline
+    from sklearn.pipeline import make_pipeline
 
     vect = _vectorizer()
     svd = TruncatedSVD(n_components=k)
-    pipe = Pipeline([('tfidf', vect), ('svd', svd)])
-    pipe.fit(docs)
+    pipe = make_pipeline(vect, svd).fit(docs)
 
     vocab = vect.vocabulary_
     return [zip(vocab, comp) for comp in svd.components_]
@@ -123,7 +150,10 @@ def lsa(docs, k, random_state=None):
 
 @app.task
 def lda(docs, k):
-    """Latent Dirichlet allocation using Gensim.
+    """Latent Dirichlet allocation topic model.
+
+    Uses Gensim's LdaModel after tokenizing using scikit-learn's
+    TfidfVectorizer.
 
     Parameters
     ----------
@@ -149,6 +179,7 @@ def lda(docs, k):
 
 @app.task
 def parsimonious_wordcloud(docs, w=.5, k=10):
+    """Fit a parsimonious language model to terms in docs."""
     from weighwords import ParsimoniousLM
 
     model = ParsimoniousLM(docs, w=w)

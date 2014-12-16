@@ -2,9 +2,6 @@ from __future__ import division
 import errno
 import os
 import os.path
-from tempfile import NamedTemporaryFile
-from urllib import urlretrieve
-from zipfile import ZipFile
 
 
 def _make_data_home(subdir=None):
