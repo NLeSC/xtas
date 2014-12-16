@@ -59,7 +59,7 @@ def fetch(doc):
 
 
 @app.task
-def fetch_query_batch(idx, typ, query, field='body', full=True):
+def fetch_query_batch(idx, typ, query, field='body'):
     """Fetch all documents matching query and return them as a list.
 
     Returns a list of field contents, with documents that don't have the
@@ -69,12 +69,18 @@ def fetch_query_batch(idx, typ, query, field='body', full=True):
                    _source=[field])
     print r
     r = ((hit['_id'], hit['_source'].get(field, None)) for hit in r['hits']['hits'])
-    if full:
-      # This is disgusting and slow. Must find a way to put it into a query
-      tasks = get_tasks_per_index(idx, typ)
     return [hit[1] for hit in r if hit is not None]
 
 CHECKED_MAPPINGS = set()
+
+def fetch_query_full_document_batch(idx, typ, query):
+    """Fetch all documents and their results matching query and return them as a list.
+    """
+    r = _es().search(index=idx, doc_type=typ, body={'query': query},
+                   _source=[field])
+    # make sure also the children are returned
+    return r
+
 
 
 def _check_parent_mapping(idx, child_type, parent_type):
