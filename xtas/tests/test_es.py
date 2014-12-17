@@ -22,8 +22,8 @@ def clean_es():
     # check version number
     status, response = es.transport.perform_request("GET", "/")
     if status != 200 or not response['version']['number'].startswith("1.0"):
-        raise SkipTest("Wrong version number or response: {status} / {response}"
-                       .format(**locals()))
+        raise SkipTest("Wrong version number or response: {status} "
+                       + "/ {response}".format(**locals()))
     logging.info("deleting and recreating index {ES_TEST_INDEX}"
                  " at {ES_TEST_HOST}")
     if indexclient.exists(ES_TEST_INDEX):
@@ -63,10 +63,16 @@ def test_query_batch():
                               query={"term": {"test": "batch"}}, field="text")
         assert_equal(set(b), {"test", "test2"})
 
+
 def test_store_get_result():
     "test whether results can be stored and retrieved"
-    from xtas.tasks.es import store_single, get_single_result, get_tasks_per_index
-    from xtas.tasks.es import fetch_documents_by_task, fetch_results_by_document
+    from xtas.tasks.es import (
+        store_single,
+        get_single_result,
+        get_tasks_per_index,
+        fetch_documents_by_task,
+        fetch_results_by_document
+        )
     idx, typ = ES_TEST_INDEX, ES_TEST_TYPE
     with clean_es() as es:
         id = es.index(index=idx, doc_type=typ, body={"text": "test"})['_id']
@@ -82,14 +88,17 @@ def test_store_get_result():
         client.indices.IndicesClient(es).flush()
         assert_equal(get_single_result("task1", idx, typ, id), "task1_result")
         assert_equal(get_single_result("task2", idx, typ, id), task2_result)
-        query = {"match" : { "data" : {"query":"a"}}}
-        assert_equal(len(fetch_documents_by_task(idx, typ, query, "task2")), 1 )
-        query = {"match" : { "text" : {"query":"test"}}}
-        assert_equal(fetch_results_by_document(idx, typ, query, "task2"), [task2_result])
+        query = {"match": {"data": {"query": "a"}}}
+        assert_equal(len(fetch_documents_by_task(idx, typ, query, "task2")),
+                     1)
+        query = {"match": {"text": {"query": "test"}}}
+        assert_equal(fetch_results_by_document(idx, typ, query, "task2"),
+                     [task2_result])
         results = fetch_query_details_batch(idx, typ, query, True)
         assert_in("task1", results[0])
         assert_in("task2", results[0])
-	results = fetch_query_details_batch(idx, typ, query, tasknames=["task2"])
+        results = fetch_query_details_batch(idx, typ, query,
+                                            tasknames=["task2"])
         assert_in("task2", results[0])
         # store a task result under an existing task, check that it is replaced
         store_single("task1_result2", "task1", idx, typ, id)
