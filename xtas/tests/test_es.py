@@ -83,9 +83,14 @@ def test_store_get_result():
         assert_equal(get_single_result("task1", idx, typ, id), "task1_result")
         assert_equal(get_single_result("task2", idx, typ, id), task2_result)
         query = {"match" : { "data" : {"query":"a"}}}
-        assert_equal(fetch_documents_by_task(idx, typ, query, "task2", "text"), ["test"])
+        assert_equal(len(fetch_documents_by_task(idx, typ, query, "task2")), 1 )
         query = {"match" : { "text" : {"query":"test"}}}
         assert_equal(fetch_results_by_document(idx, typ, query, "task2"), [task2_result])
+        results = fetch_query_details_batch(idx, typ, query, True)
+        assert_in("task1", results[0])
+        assert_in("task2", results[0])
+	results = fetch_query_details_batch(idx, typ, query, tasknames=["task2"])
+        assert_in("task2", results[0])
         # store a task result under an existing task, check that it is replaced
         store_single("task1_result2", "task1", idx, typ, id)
         client.indices.IndicesClient(es).flush()
