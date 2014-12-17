@@ -67,9 +67,9 @@ def fetch_query_batch(idx, typ, query, field='body'):
     """
     r = _es().search(index=idx, doc_type=typ, body={'query': query},
                      _source=[field])
-    r = ((hit['_id'], hit['_source'].get(field, None))
+    r = (hit['_source'].get(field, None)
          for hit in r['hits']['hits'])
-    return [hit[1] for hit in r if hit is not None]
+    return [hit for hit in r if hit is not None]
 
 CHECKED_MAPPINGS = set()
 

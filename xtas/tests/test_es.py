@@ -1,4 +1,4 @@
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_in
 from unittest import SkipTest
 import logging
 from contextlib import contextmanager
@@ -21,7 +21,8 @@ def clean_es():
         raise SkipTest("ElasticSearch host not found, skipping elastic tests")
     # check version number
     status, response = es.transport.perform_request("GET", "/")
-    if status != 200 or not response['version']['number'].startswith("1.0"):
+    version_number = response['version']['number']
+    if status != 200 or not (version_number.startswith("1.") and int(version_number.split(".")[1]) >= 2):
         raise SkipTest("Wrong version number or response: {status} "
                        + "/ {response}".format(**locals()))
     logging.info("deleting and recreating index {ES_TEST_INDEX}"
@@ -71,7 +72,8 @@ def test_store_get_result():
         get_single_result,
         get_tasks_per_index,
         fetch_documents_by_task,
-        fetch_results_by_document
+        fetch_results_by_document,
+        fetch_query_details_batch
         )
     idx, typ = ES_TEST_INDEX, ES_TEST_TYPE
     with clean_es() as es:
@@ -88,18 +90,18 @@ def test_store_get_result():
         client.indices.IndicesClient(es).flush()
         assert_equal(get_single_result("task1", idx, typ, id), "task1_result")
         assert_equal(get_single_result("task2", idx, typ, id), task2_result)
-        query = {"match": {"data": {"query": "a"}}}
+        query = {"match": {"b": {"query": "c"}}}
         assert_equal(len(fetch_documents_by_task(idx, typ, query, "task2")),
                      1)
         query = {"match": {"text": {"query": "test"}}}
-        assert_equal(fetch_results_by_document(idx, typ, query, "task2"),
-                     [task2_result])
+        results = fetch_results_by_document(idx, typ, query, "task2")
+        assert_equal(len(results), 1)
         results = fetch_query_details_batch(idx, typ, query, True)
-        assert_in("task1", results[0])
-        assert_in("task2", results[0])
+        assert_in("task1", results[0][1])
+        assert_in("task2", results[0][1])
         results = fetch_query_details_batch(idx, typ, query,
                                             tasknames=["task2"])
-        assert_in("task2", results[0])
+        assert_in("task2", results[0][1])
         # store a task result under an existing task, check that it is replaced
         store_single("task1_result2", "task1", idx, typ, id)
         client.indices.IndicesClient(es).flush()
