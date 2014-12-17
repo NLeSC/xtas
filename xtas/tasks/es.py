@@ -74,17 +74,19 @@ def fetch_query_batch(idx, typ, query, field='body'):
 CHECKED_MAPPINGS = set()
 
 def fetch_query_details_batch(idx, typ, query, full=True, tasknames=None):
-    """Fetch all documents and their results matching query and return them as a list. 
-    If full=False, only the documents are returned, not their results.
+    """Fetch all documents and their results matching query
+      and return them as a list.
+      If full=False, only the documents are returned, not their results.
     One can restrict the tasks requested in tasknames.
     """
     r = _es().search(index=idx, doc_type=typ, body={'query': query})
-
     r =  [[hit['_id'], hit] for hit in r['hits']['hits']]
-    if not full and not tasknames: return r
+    if not full and not tasknames: 
+      return r
+
     # for full documents: make sure also the children are returnedi
     if not tasknames:
-        tasknames = get_tasks_per_index(idx, typ)
+      tasknames = get_tasks_per_index(idx, typ)
     for taskname in tasknames:
     #HACK: one additional query per taskname!
       results = fetch_results_by_document(idx, typ, query, taskname)
@@ -98,9 +100,9 @@ def fetch_query_details_batch(idx, typ, query, full=True, tasknames=None):
 
 def _check_parent_mapping(idx, child_type, parent_type):
     """
-    Check that a mapping for the child_type exists
-    Creates a new mapping with parent_type if needed
-    This will fail horrifically if index1 is created and then deleted, because it will keep the index, child_type in memory.
+      Check that a mapping for the child_type exists
+      Creates a new mapping with parent_type if needed
+      This will fail horrifically if index1 is created and then deleted, because it will keep the index, child_type in memory.
     """
     if  not (idx, child_type) in CHECKED_MAPPINGS:
         indices_client = client.indices.IndicesClient(_es())
@@ -136,7 +138,8 @@ def _taskname_to_child_type(taskname, typ):
 def get_tasks_per_index(idx, typ):
     """Lists the tasks that were performed on the given index
        for documents of a specific type.
-       Uses call on elastic search instead of the internal CHECKED_MAPPINGS to actually check the index.
+       Uses call on elastic search instead of the internal CHECKED_MAPPINGS to
+       actually check the index.
     """
     try:
       indices_client = client.indices.IndicesClient(_es())
