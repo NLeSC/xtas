@@ -73,21 +73,25 @@ def fetch_query_batch(idx, typ, query, field='body'):
 
 CHECKED_MAPPINGS = set()
 
-def fetch_query_details_batch(idx, typ, query, full=True):
-    """Fetch all documents and their results matching query and return them as a list.
+def fetch_query_details_batch(idx, typ, query, full=True, tasknames=None):
+    """Fetch all documents and their results matching query and return them as a list. 
+    If full=False, only the documents are returned, not their results.
+    One can restrict the tasks requested in tasknames.
     """
     r = _es().search(index=idx, doc_type=typ, body={'query': query})
 
     r =  [[hit['_id'], hit] for hit in r['hits']['hits']]
-    if not full: return r
-    for taskname in get_tasks_per_index(idx, typ):
+    if not full and not tasknames: return r
+    # for full documents: make sure also the children are returnedi
+    if not tasknames:
+        tasknames = get_tasks_per_index(idx, typ)
+    for taskname in tasknames:
     #HACK: one additional query per taskname!
       results = fetch_results_by_document(idx, typ, query, taskname)
       for id_child, hit_child in results:
         for id_r, hit_r in r:
           if hit_r['_id'] == id_child:
             hit_r[taskname] = hit_child['_source']['data']
-    # make sure also the children are returned
     return r
 
 
