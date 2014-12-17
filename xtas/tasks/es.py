@@ -73,11 +73,20 @@ def fetch_query_batch(idx, typ, query, field='body'):
 
 CHECKED_MAPPINGS = set()
 
-def fetch_query_full_document_batch(idx, typ, query):
+def fetch_query_details_batch(idx, typ, query, full=True):
     """Fetch all documents and their results matching query and return them as a list.
     """
-    r = _es().search(index=idx, doc_type=typ, body={'query': query},
-                   _source=[field])
+    r = _es().search(index=idx, doc_type=typ, body={'query': query})
+
+    r =  [[hit['_id'], hit] for hit in r['hits']['hits']]
+    if not full: return r
+    for taskname in get_tasks_per_index(idx, typ):
+    #HACK: one additional query per taskname!
+      results = fetch_results_by_document(idx, typ, query, taskname)
+      for id_child, hit_child in results:
+        for id_r, hit_r in r:
+          if hit_r['_id'] == id_child:
+            hit_r[taskname] = hit_child['_source']['data']
     # make sure also the children are returned
     return r
 
@@ -109,45 +118,45 @@ def store_single(data, taskname, idx, typ, id):
     return data
 
 def _child_type_to_taskname(child_type):
-  """Gets the taskname from the child_type of an xtas result"""
-  try:
-    typ, taskname = child_type.split("__", 1)
-  except ValueError:
-    return None
-  return taskname
+    """Gets the taskname from the child_type of an xtas result"""
+    try:
+      typ, taskname = child_type.split("__", 1)
+    except ValueError:
+      return None
+    return taskname
 
 def _taskname_to_child_type(taskname, typ):
-  """Transforms the taskname into a child_type"""
-  return "{typ}__{taskname}".format(**locals())
+    """Transforms the taskname into a child_type"""
+    return "{typ}__{taskname}".format(**locals())
 
 def get_tasks_per_index(idx, typ):
-  """Lists the tasks that were performed on the given index
-     for documents of a specific type.
-     Uses call on elastic search instead of the internal CHECKED_MAPPINGS to actually check the index.
-  """
-  try:
-    indices_client = client.indices.IndicesClient(_es())
-    r = indices_client.get_mapping(index=idx)[idx]
-    tasks = set([])
-    if not 'mappings' in r: return tasks
-    for mapping_type, mapping in r['mappings'].iteritems():
-      if '_parent' in mapping:
-        if mapping['_parent']['type'] == typ:
-          tasks.add(_child_type_to_taskname(mapping_type))
-    return tasks
-  except exceptions.TransportError, e:
-      if e.status_code != 404:
+    """Lists the tasks that were performed on the given index
+       for documents of a specific type.
+       Uses call on elastic search instead of the internal CHECKED_MAPPINGS to actually check the index.
+    """
+    try:
+      indices_client = client.indices.IndicesClient(_es())
+      r = indices_client.get_mapping(index=idx)[idx]
+      tasks = set([])
+      if not 'mappings' in r: return tasks
+      for mapping_type, mapping in r['mappings'].iteritems():
+        if '_parent' in mapping:
+          if mapping['_parent']['type'] == typ:
+            tasks.add(_child_type_to_taskname(mapping_type))
+      return tasks
+    except exceptions.TransportError, e:
+        if e.status_code != 404:
          raise
 
 def get_all_results(idx, typ, id):
-  """
-    Get all xtas results that exist for a document
-    Returns a (possibly empty) {taskname : data} dict
-  """
-  results = {}
-  for taskname in get_tasks_per_index(idx, typ):
-    results[taskname] = get_single_result(taskname, idx, typ, id)
-  return results
+    """
+      Get all xtas results that exist for a document
+      Returns a (possibly empty) {taskname : data} dict
+    """
+    results = {}
+    for taskname in get_tasks_per_index(idx, typ):
+      results[taskname] = get_single_result(taskname, idx, typ, id)
+    return results
 
 def get_single_result(taskname, idx, typ, id):
     """Get a single xtas result"""
@@ -159,15 +168,15 @@ def get_single_result(taskname, idx, typ, id):
         if e.status_code != 404:
             raise
 
-def fetch_documents_by_task(idx, typ, query, taskname, field='body', full=True):
-  """Query the task, return the documents"""
-  child_type = _taskname_to_child_type(taskname, typ)
-  query = {"has_child" : { 'type' : child_type, "query" : query } }
-  return fetch_query_batch(idx, typ, query, field, full)
+def fetch_documents_by_task(idx, typ, query, taskname, full=True):
+    """Query the task, return the documents"""
+    child_type = _taskname_to_child_type(taskname, typ)
+    query = {"has_child" : { 'type' : child_type, "query" : query } }
+    return fetch_query_details_batch(idx, typ, query, full)
 
 def fetch_results_by_document(idx, typ, query, taskname):
-  """Query the document, return the results of the task"""
-  child_type = _taskname_to_child_type(taskname, typ)
-  query = {"has_parent" : { 'type' : typ, "query" : query } }
-  return fetch_query_batch(idx, child_type, query, 'data')
+    """Query the document, return the results of the task"""
+    child_type = _taskname_to_child_type(taskname, typ)
+    query = {"has_parent" : { 'type' : typ, "query" : query } }
+    return fetch_query_details_batch(idx, child_type, query, full=False)
 
