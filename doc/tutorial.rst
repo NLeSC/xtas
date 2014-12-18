@@ -151,6 +151,7 @@ ES, so we can use xtas as preprocessing for a semantic search engine.
 We can use the ``store_single`` task to run NER on a document from the index
 and store the result back, if we append it to our chain::
 
+    >>> from celery import chain
     >>> from xtas.tasks.es import store_single
     >>> doc = es_document('20news', 'post', 3430, 'text')
     >>> ch = chain(stanford_ner_tag.s(doc, output="names"),
