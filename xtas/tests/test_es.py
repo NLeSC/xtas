@@ -4,7 +4,7 @@ import logging
 from contextlib import contextmanager
 
 from elasticsearch import Elasticsearch, client
-
+from xtas.tasks import es
 ES_TEST_INDEX = "xtas__unittest"
 ES_TEST_TYPE = "unittest_doc"
 
@@ -12,20 +12,22 @@ ES_TEST_TYPE = "unittest_doc"
 @contextmanager
 def clean_es():
     "provide a clean elasticsearch instance for unittests"
-    es = Elasticsearch()
     if not ES_TEST_INDEX:
         raise SkipTest("ES_TEST_INDEX not given, skipping elastic tests")
-    es = Elasticsearch()
-    indexclient = client.indices.IndicesClient(es)
-    if not es.ping():
+    _es = Elasticsearch()
+    indexclient = client.indices.IndicesClient(_es)
+    if not _es.ping():
         raise SkipTest("ElasticSearch host not found, skipping elastic tests")
     logging.info("deleting and recreating index {ES_TEST_INDEX}"
                  " at {ES_TEST_HOST}")
     if indexclient.exists(ES_TEST_INDEX):
         indexclient.delete(ES_TEST_INDEX)
+        
     indexclient.create(ES_TEST_INDEX)
+    es.CHECKED_MAPPINGS = set()
+
     try:
-        yield es
+        yield _es
     finally:
         indexclient.delete(ES_TEST_INDEX)
 

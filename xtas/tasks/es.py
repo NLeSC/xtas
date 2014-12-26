@@ -84,6 +84,16 @@ def store_single(data, taskname, idx, typ, id, return_data=True):
     return data if return_data else None
 
 
+def get_multiple_results(docs, taskname):
+    """
+    Get all xtas results for the given documents and task name
+    Baseline implementation to be optimized after pull request #49 is resolved
+    Returns a sequence of doc, result pairs
+    """
+    for doc in docs:
+        yield doc, get_single_result(taskname, doc['index'], doc['type'], doc['id'])
+
+
 def get_all_results(idx, typ, id):
     """
     Get all xtas results for the document
