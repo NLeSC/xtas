@@ -174,17 +174,104 @@ and store the result back, if we append it to our chain::
 locally is not what we're after. The ``store_single`` task has also stored the
 result back into the document, as you can verify with::
 
-    >>> pprint(es.get('20news', 3430)['_source']['xtas_results'])
-    {u'ner': {u'data': [[u'School of Computer Science', u'ORGANIZATION'],
-                        [u'McGill University Lines', u'ORGANIZATION'],
-                        [u'Sony', u'ORGANIZATION'],
-                        [u'SONY', u'ORGANIZATION'],
-                        [u'Invar Shadow Mask', u'ORGANIZATION'],
-                        [u'NEC', u'ORGANIZATION'],
-                        [u'NEC', u'ORGANIZATION'],
-                        [u'Tony', u'PERSON'],
-                        [u'McGill University', u'ORGANIZATION'],
-                        [u'Floyd', u'PERSON']],
-              u'timestamp': u'2014-03-20T16:23:07.457985'}}
+    >>> from xtas.tasks import get_all_results, get_single_result
+    >>> pprint(get_all_results(doc['index'], doc['type'], doc['id']))
+    {u'ner': [[u'Christopher Taylor', u'PERSON'],
+              [u'Bradley University Distribution', u'ORGANIZATION'],
+              [u'NHL', u'ORGANIZATION']],
+    }
+    >>> pprint(get_single_result('ner', doc['index'], doc['type'], doc['id']))
+    [[u'Christopher Taylor', u'PERSON'],
+     [u'Bradley University Distribution', u'ORGANIZATION'],
+     [u'NHL', u'ORGANIZATION']]
 
-This result can now be used in ES queries.
+``get_all_results`` returns all results for a document,
+while ``get_single_result`` only returns the results for a specific taskname
+(in our case specified as ``"ner"``).
+But what if we had the task run forever ago and can't remember the tasks
+that were run on a specific index?
+
+::
+    >>> pprint(get_tasks_per_index(doc['index'], doc['type']))
+    set([u'ner'])
+
+We can now actually query the xtas results.
+Let's say we are interested in all documents that contain a PERSON name,
+as identified by the named entity recognition::
+
+    >>> from xtas.tasks import fetch_documents_by_task
+    >>> query = {"match" : { "data" : {"query":"PERSON"}}}
+    >>> pprint(fetch_documents_by_task('20news', 'post', query, 'ner', full=True))
+    [[u'3430',
+      {u'_id': u'3430',
+       u'_index': u'20news',
+       u'_score': 1.0,
+       u'_source': {u'text': u"From: nittmo@camelot.bradley.edu (Christopher Taylor)\nSubject: Anyone Have Official Shorthanded Goal Totals?\nNntp-Posting-Host: camelot.bradley.edu\nOrganization: Bradley University\nDistribution: na\nLines: 4\n\nDoes anyone out there have the shorthanded goal totals of the NHL players\nfor this season?  We're trying to finish our rotisserie stats and need SHG\nto make it complete.\n\n"},
+       u'_type': u'post',
+       u'ner': [[u'Christopher Taylor', u'PERSON'],
+                [u'Bradley University Distribution', u'ORGANIZATION'],
+                [u'NHL', u'ORGANIZATION']]}]]
+
+We now query only the results of the NER task!
+The parameter ``full=True`` returns the full documents,
+i.e., includes the results of the task as well.
+The results of the xtas task are always stored in the ``data`` field:
+make sure to take that into account when building your queries.
+
+We can see that NHL is classified as an organisation.
+What if we would like to query all occurences of NHL
+to see if it is consistently classified as organisation?
+
+::
+    >>> from xtas.tasks import fetch_results_by_document
+    >>> query = {"match" : { "text" : {"query":"NHL"}}}
+    >>> pprint(fetch_results_by_document('20news', 'post', query, 'ner'))
+    [[u'3430',
+      {u'_id': u'3430',
+       u'_index': u'20news',
+       u'_score': 1.0,
+       u'_source': {u'data': [[u'Christopher Taylor', u'PERSON'],
+                              [u'Bradley University Distribution',
+                               u'ORGANIZATION'],
+                              [u'NHL', u'ORGANIZATION']],
+                    u'timestamp': u'2014-12-18T10:57:37.259356'},
+       u'_type': u'post__ner'}]]
+
+Those two functions are convenience wrappers for the actual query function
+``fetch_query_details_batch``:
+here we can fire any elastic search query and get all results in a batch.
+If we would want to have a simple query for all documents containing NHL,
+we would say::
+
+    >>> from xtas.tasks import fetch_query_details_batch
+    >>> query = {"match" : { "text" : {"query":"NHL"}}}
+    >>> pprint(fetch_query_details_batch('20news', 'post', query, True))
+    [[u'3362',
+      {u'_id': u'3362',
+       u'_index': u'20news',
+       u'_score': 0.8946465,
+       u'_source': {u'text': u'From: mmilitzo@scott.skidmore.edu (matthew militzok)\nSubject: 1992 - 1993 FINAL NHL PLAYER STATS\nOrganization: Skidmo
+    .... cut ....
+    ]]
+
+When multiple tasks were performed on the index,
+``tasknames`` restricts the returned annotation results
+to the ones in that list.
+
+More complex queries can be built,
+including relations between the between the different tasks and the documents.
+Keep in mind that the type of a task is (currently)
+a concatenation of the type of the original document and the taskname.
+The query build to fetch a document by its task is then::
+
+    >>> query = {'has_child': {'query': {'match': {'data': {'query': 'PERSON'}}}, 'type': 'post__ner'}}
+    >>> pprint(fetch_query_details_batch('20news', 'post', query, True))
+    [[u'3430',
+      {u'_id': u'3430',
+       u'_index': u'20news',
+       u'_score': 1.0,
+       u'_source': {u'text': u"From: nittmo@camelot.bradley.edu (Christopher Taylor)\nSubject: Anyone Have Official Shorthanded Goal Totals?\nNntp-Posting-Host: camelot.bradley.edu\nOrganization: Bradley University\nDistribution: na\nLines: 4\n\nDoes anyone out there have the shorthanded goal totals of the NHL players\nfor this season?  We're trying to finish our rotisserie stats and need SHG\nto make it complete.\n\n"},
+       u'_type': u'post',
+       u'ner': [[u'Christopher Taylor', u'PERSON'],
+                [u'Bradley University Distribution', u'ORGANIZATION'],
+                [u'NHL', u'ORGANIZATION']]}]]
