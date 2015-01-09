@@ -1,6 +1,22 @@
 Changelog/release notes
 =======================
 
+3.1
+---
+
+xtas 3.1 has improved integration with Elasticsearch compared to its
+predecessor, storing processing results as child documents. (Previously, they
+were stored as fields.) Documentation has also been greatly improved to
+demonstrate the use of xtas as a preprocessing engine for semantic search.
+
+Other new features are:
+
+* Stemming support for English, German, Norwegian, Italian, Dutch,
+  Portuguese, French, Swedish (via PyStemmer).
+* TCP port for communication with Frog (POS tagger/NER/parser for Dutch) is
+  now configurable.
+* Various bugfixes and small optimizations.
+
 3.0
 ---
 

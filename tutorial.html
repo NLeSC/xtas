@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>xtas tutorial &mdash; xtas 3.0.3 documentation</title>
+    <title>xtas tutorial &mdash; xtas 3.1 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '3.0.3',
+        VERSION:     '3.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="xtas 3.0.3 documentation" href="index.html" />
+    <link rel="top" title="xtas 3.1 documentation" href="index.html" />
     <link rel="next" title="API reference" href="api.html" />
     <link rel="prev" title="Setting up xtas" href="setup.html" />
 <meta charset='utf-8'>
@@ -52,7 +52,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           xtas</a>
-        <span class="navbar-text navbar-version pull-left"><b>3.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>3.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -258,7 +258,8 @@ index. What is even more interesting is that we can also store results back to
 ES, so we can use xtas as preprocessing for a semantic search engine.</p>
 <p>We can use the <tt class="docutils literal"><span class="pre">store_single</span></tt> task to run NER on a document from the index
 and store the result back, if we append it to our chain:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">xtas.tasks.es</span> <span class="kn">import</span> <span class="n">store_single</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">celery</span> <span class="kn">import</span> <span class="n">chain</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">xtas.tasks.es</span> <span class="kn">import</span> <span class="n">store_single</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">es_document</span><span class="p">(</span><span class="s">&#39;20news&#39;</span><span class="p">,</span> <span class="s">&#39;post&#39;</span><span class="p">,</span> <span class="mi">3430</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ch</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="n">stanford_ner_tag</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s">&quot;names&quot;</span><span class="p">),</span>
 <span class="gp">... </span>           <span class="n">store_single</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="s">&#39;ner&#39;</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;index&#39;</span><span class="p">],</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">],</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]))</span>
@@ -279,21 +280,113 @@ and store the result back, if we append it to our chain:</p>
 <p><tt class="docutils literal"><span class="pre">result.get()</span></tt> will now report the output from the NER tagger, but getting it
 locally is not what we&#8217;re after. The <tt class="docutils literal"><span class="pre">store_single</span></tt> task has also stored the
 result back into the document, as you can verify with:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">es</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;20news&#39;</span><span class="p">,</span> <span class="mi">3430</span><span class="p">)[</span><span class="s">&#39;_source&#39;</span><span class="p">][</span><span class="s">&#39;xtas_results&#39;</span><span class="p">])</span>
-<span class="go">{u&#39;ner&#39;: {u&#39;data&#39;: [[u&#39;School of Computer Science&#39;, u&#39;ORGANIZATION&#39;],</span>
-<span class="go">                    [u&#39;McGill University Lines&#39;, u&#39;ORGANIZATION&#39;],</span>
-<span class="go">                    [u&#39;Sony&#39;, u&#39;ORGANIZATION&#39;],</span>
-<span class="go">                    [u&#39;SONY&#39;, u&#39;ORGANIZATION&#39;],</span>
-<span class="go">                    [u&#39;Invar Shadow Mask&#39;, u&#39;ORGANIZATION&#39;],</span>
-<span class="go">                    [u&#39;NEC&#39;, u&#39;ORGANIZATION&#39;],</span>
-<span class="go">                    [u&#39;NEC&#39;, u&#39;ORGANIZATION&#39;],</span>
-<span class="go">                    [u&#39;Tony&#39;, u&#39;PERSON&#39;],</span>
-<span class="go">                    [u&#39;McGill University&#39;, u&#39;ORGANIZATION&#39;],</span>
-<span class="go">                    [u&#39;Floyd&#39;, u&#39;PERSON&#39;]],</span>
-<span class="go">          u&#39;timestamp&#39;: u&#39;2014-03-20T16:23:07.457985&#39;}}</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">xtas.tasks</span> <span class="kn">import</span> <span class="n">get_all_results</span><span class="p">,</span> <span class="n">get_single_result</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">get_all_results</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;index&#39;</span><span class="p">],</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">],</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]))</span>
+<span class="go">{u&#39;ner&#39;: [[u&#39;Christopher Taylor&#39;, u&#39;PERSON&#39;],</span>
+<span class="go">          [u&#39;Bradley University Distribution&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go">          [u&#39;NHL&#39;, u&#39;ORGANIZATION&#39;]],</span>
+<span class="go">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">get_single_result</span><span class="p">(</span><span class="s">&#39;ner&#39;</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;index&#39;</span><span class="p">],</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">],</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]))</span>
+<span class="go">[[u&#39;Christopher Taylor&#39;, u&#39;PERSON&#39;],</span>
+<span class="go"> [u&#39;Bradley University Distribution&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go"> [u&#39;NHL&#39;, u&#39;ORGANIZATION&#39;]]</span>
 </pre></div>
 </div>
-<p>This result can now be used in ES queries.</p>
+<p><tt class="docutils literal"><span class="pre">get_all_results</span></tt> returns all results for a document,
+while <tt class="docutils literal"><span class="pre">get_single_result</span></tt> only returns the results for a specific taskname
+(in our case specified as <tt class="docutils literal"><span class="pre">&quot;ner&quot;</span></tt>).
+But what if we had the task run forever ago and can&#8217;t remember the tasks
+that were run on a specific index?</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">get_tasks_per_index</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;index&#39;</span><span class="p">],</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]))</span>
+<span class="go">set([u&#39;ner&#39;])</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>We can now actually query the xtas results.
+Let&#8217;s say we are interested in all documents that contain a PERSON name,
+as identified by the named entity recognition:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">xtas.tasks</span> <span class="kn">import</span> <span class="n">fetch_documents_by_task</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;match&quot;</span> <span class="p">:</span> <span class="p">{</span> <span class="s">&quot;data&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s">&quot;query&quot;</span><span class="p">:</span><span class="s">&quot;PERSON&quot;</span><span class="p">}}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">fetch_documents_by_task</span><span class="p">(</span><span class="s">&#39;20news&#39;</span><span class="p">,</span> <span class="s">&#39;post&#39;</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="s">&#39;ner&#39;</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+<span class="go">[[u&#39;3430&#39;,</span>
+<span class="go">  {u&#39;_id&#39;: u&#39;3430&#39;,</span>
+<span class="go">   u&#39;_index&#39;: u&#39;20news&#39;,</span>
+<span class="go">   u&#39;_score&#39;: 1.0,</span>
+<span class="go">   u&#39;_source&#39;: {u&#39;text&#39;: u&quot;From: nittmo@camelot.bradley.edu (Christopher Taylor)\nSubject: Anyone Have Official Shorthanded Goal Totals?\nNntp-Posting-Host: camelot.bradley.edu\nOrganization: Bradley University\nDistribution: na\nLines: 4\n\nDoes anyone out there have the shorthanded goal totals of the NHL players\nfor this season?  We&#39;re trying to finish our rotisserie stats and need SHG\nto make it complete.\n\n&quot;},</span>
+<span class="go">   u&#39;_type&#39;: u&#39;post&#39;,</span>
+<span class="go">   u&#39;ner&#39;: [[u&#39;Christopher Taylor&#39;, u&#39;PERSON&#39;],</span>
+<span class="go">            [u&#39;Bradley University Distribution&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go">            [u&#39;NHL&#39;, u&#39;ORGANIZATION&#39;]]}]]</span>
+</pre></div>
+</div>
+<p>We now query only the results of the NER task!
+The parameter <tt class="docutils literal"><span class="pre">full=True</span></tt> returns the full documents,
+i.e., includes the results of the task as well.
+The results of the xtas task are always stored in the <tt class="docutils literal"><span class="pre">data</span></tt> field:
+make sure to take that into account when building your queries.</p>
+<p>We can see that NHL is classified as an organisation.
+What if we would like to query all occurences of NHL
+to see if it is consistently classified as organisation?</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">xtas.tasks</span> <span class="kn">import</span> <span class="n">fetch_results_by_document</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;match&quot;</span> <span class="p">:</span> <span class="p">{</span> <span class="s">&quot;text&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s">&quot;query&quot;</span><span class="p">:</span><span class="s">&quot;NHL&quot;</span><span class="p">}}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">fetch_results_by_document</span><span class="p">(</span><span class="s">&#39;20news&#39;</span><span class="p">,</span> <span class="s">&#39;post&#39;</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="s">&#39;ner&#39;</span><span class="p">))</span>
+<span class="go">[[u&#39;3430&#39;,</span>
+<span class="go">  {u&#39;_id&#39;: u&#39;3430&#39;,</span>
+<span class="go">   u&#39;_index&#39;: u&#39;20news&#39;,</span>
+<span class="go">   u&#39;_score&#39;: 1.0,</span>
+<span class="go">   u&#39;_source&#39;: {u&#39;data&#39;: [[u&#39;Christopher Taylor&#39;, u&#39;PERSON&#39;],</span>
+<span class="go">                          [u&#39;Bradley University Distribution&#39;,</span>
+<span class="go">                           u&#39;ORGANIZATION&#39;],</span>
+<span class="go">                          [u&#39;NHL&#39;, u&#39;ORGANIZATION&#39;]],</span>
+<span class="go">                u&#39;timestamp&#39;: u&#39;2014-12-18T10:57:37.259356&#39;},</span>
+<span class="go">   u&#39;_type&#39;: u&#39;post__ner&#39;}]]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>Those two functions are convenience wrappers for the actual query function
+<tt class="docutils literal"><span class="pre">fetch_query_details_batch</span></tt>:
+here we can fire any elastic search query and get all results in a batch.
+If we would want to have a simple query for all documents containing NHL,
+we would say:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">xtas.tasks</span> <span class="kn">import</span> <span class="n">fetch_query_details_batch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;match&quot;</span> <span class="p">:</span> <span class="p">{</span> <span class="s">&quot;text&quot;</span> <span class="p">:</span> <span class="p">{</span><span class="s">&quot;query&quot;</span><span class="p">:</span><span class="s">&quot;NHL&quot;</span><span class="p">}}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">fetch_query_details_batch</span><span class="p">(</span><span class="s">&#39;20news&#39;</span><span class="p">,</span> <span class="s">&#39;post&#39;</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="bp">True</span><span class="p">))</span>
+<span class="go">[[u&#39;3362&#39;,</span>
+<span class="go">  {u&#39;_id&#39;: u&#39;3362&#39;,</span>
+<span class="go">   u&#39;_index&#39;: u&#39;20news&#39;,</span>
+<span class="go">   u&#39;_score&#39;: 0.8946465,</span>
+<span class="go">   u&#39;_source&#39;: {u&#39;text&#39;: u&#39;From: mmilitzo@scott.skidmore.edu (matthew militzok)\nSubject: 1992 - 1993 FINAL NHL PLAYER STATS\nOrganization: Skidmo</span>
+<span class="go">.... cut ....</span>
+<span class="go">]]</span>
+</pre></div>
+</div>
+<p>When multiple tasks were performed on the index,
+<tt class="docutils literal"><span class="pre">tasknames</span></tt> restricts the returned annotation results
+to the ones in that list.</p>
+<p>More complex queries can be built,
+including relations between the between the different tasks and the documents.
+Keep in mind that the type of a task is (currently)
+a concatenation of the type of the original document and the taskname.
+The query build to fetch a document by its task is then:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;has_child&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;query&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;match&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;query&#39;</span><span class="p">:</span> <span class="s">&#39;PERSON&#39;</span><span class="p">}}},</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;post__ner&#39;</span><span class="p">}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">fetch_query_details_batch</span><span class="p">(</span><span class="s">&#39;20news&#39;</span><span class="p">,</span> <span class="s">&#39;post&#39;</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="bp">True</span><span class="p">))</span>
+<span class="go">[[u&#39;3430&#39;,</span>
+<span class="go">  {u&#39;_id&#39;: u&#39;3430&#39;,</span>
+<span class="go">   u&#39;_index&#39;: u&#39;20news&#39;,</span>
+<span class="go">   u&#39;_score&#39;: 1.0,</span>
+<span class="go">   u&#39;_source&#39;: {u&#39;text&#39;: u&quot;From: nittmo@camelot.bradley.edu (Christopher Taylor)\nSubject: Anyone Have Official Shorthanded Goal Totals?\nNntp-Posting-Host: camelot.bradley.edu\nOrganization: Bradley University\nDistribution: na\nLines: 4\n\nDoes anyone out there have the shorthanded goal totals of the NHL players\nfor this season?  We&#39;re trying to finish our rotisserie stats and need SHG\nto make it complete.\n\n&quot;},</span>
+<span class="go">   u&#39;_type&#39;: u&#39;post&#39;,</span>
+<span class="go">   u&#39;ner&#39;: [[u&#39;Christopher Taylor&#39;, u&#39;PERSON&#39;],</span>
+<span class="go">            [u&#39;Bradley University Distribution&#39;, u&#39;ORGANIZATION&#39;],</span>
+<span class="go">            [u&#39;NHL&#39;, u&#39;ORGANIZATION&#39;]]}]]</span>
+</pre></div>
+</div>
 </div>
 </div>
 

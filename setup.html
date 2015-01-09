@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Setting up xtas &mdash; xtas 3.0.3 documentation</title>
+    <title>Setting up xtas &mdash; xtas 3.1 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '3.0.3',
+        VERSION:     '3.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="xtas 3.0.3 documentation" href="index.html" />
+    <link rel="top" title="xtas 3.1 documentation" href="index.html" />
     <link rel="next" title="xtas tutorial" href="tutorial.html" />
     <link rel="prev" title="xtas, the eXtensible Text Analysis Suite" href="index.html" />
 <meta charset='utf-8'>
@@ -52,7 +52,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           xtas</a>
-        <span class="navbar-text navbar-version pull-left"><b>3.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>3.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -136,13 +136,14 @@ for document storage, but ES is not a hard dependency.</p>
 On a Debian/Ubuntu/Linux Mint system, these can be installed with the package
 manager, in which case it&#8217;s a good idea to install other dependencies too
 (so <tt class="docutils literal"><span class="pre">pip</span></tt> has to do less work):</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install rabbitmq-server python-scipy openjdk-7-jre \
-    python-virtualenv build-essential python-pip libxslt-dev
+<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install libatlas-dev liblapack-dev rabbitmq-server \
+    python-scipy openjdk-7-jre python-virtualenv build-essential \
+    python-pip libxslt-dev
 </pre></div>
 </div>
 <p>For CentOS/Fedora/Red Hat-style systems (this list is incomplete):</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo yum install atlas-dev java-1.7.0-openjdk lapack-dev libxslt-devel \
-    numpy python-devel rabbitmq-server scipy
+<div class="highlight-python"><div class="highlight"><pre>sudo yum install atlas-devel java-1.7.0-openjdk lapack-devel \
+    libxslt-devel numpy python-devel rabbitmq-server scipy
 </pre></div>
 </div>
 <p>(RabbitMQ is an <a class="reference external" href="https://fedoraproject.org/wiki/EPEL">EPEL</a> package.)</p>
@@ -196,7 +197,7 @@ documents, and visit a URL such as</p>
 in ES index &#8220;blog&#8221;. After some time, the results from Morphy are written to
 this document, but in a field called &#8220;xtas_results&#8221;.</p>
 <p>You can now run the unittest suite using:</p>
-<div class="highlight-python"><div class="highlight"><pre>nosetests -s -v --exe xtas
+<div class="highlight-python"><div class="highlight"><pre>python setup.py test
 </pre></div>
 </div>
 <p>in the source directory (<tt class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nose</span></tt> if needed). This requires a
