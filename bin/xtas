@@ -3,7 +3,8 @@
 # xtas xTAS server
 # Init script for xtas for CentOS 6.5. 
 # It may be compatible with other RedHat-based distributions.
-# Init script developed by 904Labs.com.#
+# Init script developed by 904Labs.com.
+#
 #
 # chkconfig: 2345 80 90
 # description: xTas is an extensible text analysis suite,\
