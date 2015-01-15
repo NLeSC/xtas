@@ -12,6 +12,10 @@ import celery.result
 from flask import Flask, Response, abort, request
 from flask import __version__ as flask_version
 
+from tornado.wsgi import WSGIContainer
+from tornado.httpserver import HTTPServer
+from tornado.ioloop import IOLoop
+
 from xtas import __version__
 from xtas.tasks import app as taskq
 from xtas.tasks import es_document, store_single
@@ -104,6 +108,8 @@ if __name__ == "__main__":
                         help='Host to listen on.')
     parser.add_argument('--port', dest='port', default=5000, type=int,
                         help='Port to listen on.')
+    parser.add_argument('--threads', dest='threads', default=5, type=int,
+                        help='Number of threads.')
     args = parser.parse_args()
 
     loglevel = logging.DEBUG if args.debug else logging.INFO
@@ -114,4 +120,7 @@ if __name__ == "__main__":
     if app.debug:
         print("Serving tasks:")
         pprint(list(taskq.tasks.keys()))
-    app.run(host=args.host, port=args.port)
+    http_server = HTTPServer(WSGIContainer(app))
+    http_server.bind(args.port, address=args.host)
+    http_server.start(args.threads)
+    IOLoop.instance().start()
