@@ -1,0 +1,86 @@
+#!/bin/bash
+#
+# xtas xTAS server
+# Init script for xtas for CentOS 6.5. 
+# It may be compatible with other RedHat-based distributions.
+# Init script developed by 904Labs.com.#
+#
+# chkconfig: 2345 80 90
+# description: xTas is an extensible text analysis suite,\
+#              developed by the University of Amsterdam \
+#              and the Netherlands e-Science Centre.
+# processname: python -m xtas.worker
+#
+### BEGIN INIT INFO
+# Provides:          xtas
+# Required-Start:    $network rabbitmq-server frog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Description:       xTas, the extensible text analysis suite
+### END INIT INFO
+
+# Source function library.
+. /etc/init.d/functions
+
+START_PROG="daemon"
+VIRTUALENV_PROG=/usr/local/bin/virtualenv
+VIRTUALENV=/home/xtas/xtas
+PYTHON=/home/xtas/xtas/bin/python
+PYTHONPATH_XTAS=/home/xtas/xtas/lib/python2.7/site-packages/
+PYTHONPATH_SYSTEM=/usr/local/lib/python2.7/site-packages/
+LOG_XTAS=/home/xtas/logs/xtas
+XTAS_USER="xtas"
+LOCK_FILE_XTAS=/var/lock/subsys/xtas
+
+test -x $VIRTUALENV_PROG || exit 0
+test -x $VIRTUALENV || exit 0
+
+RETVAL=0
+
+start() {
+	echo -n "Starting xtas: "
+	
+	$START_PROG \
+		--user $XTAS_USER \
+		PYTHONPATH=$PYTHONPATH_XTAS:$PYTHONPATH_SYSTEM \
+		$PYTHON -m xtas.worker \
+			> $LOG_XTAS.log \
+			2> $LOG_XTAS.err \
+			0<&- &
+	
+
+	RETVAL=$?
+	if [ $RETVAL -eq 0 ] ; then
+		 touch $LOCK_FILE_XTAS
+		 success
+	 else
+		 failure
+	 fi
+	echo
+	return $RETVAL
+}	
+
+stop() {
+	echo -n "Shutting down xtas: "
+	set +e
+	killproc $PYTHON
+	RETVAL=$?
+	set -e
+	[ $RETVAL -eq 0 ] && rm -f $LOCK_FILE_XTAS
+	echo
+	return $RETVAL
+}
+
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    *)
+	echo "Usage: xtas {start|stop}"
+	RETVAL=1
+	;;
+esac
+exit $RETVAL
