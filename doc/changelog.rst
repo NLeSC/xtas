@@ -1,6 +1,12 @@
 Changelog/release notes
 =======================
 
+dev
+---
+
+xtas now uses the Tornado WSGI container for improved throughput in the REST
+server.
+
 3.1
 ---
 

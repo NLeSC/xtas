@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # frog Frog text analysis service for Dutch
-# Init script for xtas for CentOS 6.5. 
+# Init script for xtas for CentOS 6.5.
 # It may be compatible with other RedHat-based distributions.
 # Init script developed by 904Labs.com.
 #
@@ -18,7 +18,10 @@
 ### END INIT INFO
 
 # Frog modules to skip
-# --skip=[mptncla]    Skip Tokenizer (t), Lemmatizer (l), Morphological Analyzer (a), Chunker (c), Multi-Word Units (m), Named Entity Recognition (n), or Parser (p) 
+# --skip=[mptncla]
+#   Skip Tokenizer (t), Lemmatizer (l), Morphological Analyzer (a),
+#   Chunker (c), Multi-Word Units (m), Named Entity Recognition (n),
+#   or Parser (p)
 
 
 # Source function library.
@@ -43,7 +46,7 @@ RETVAL=0
 
 start() {
 	echo -n "Starting frog: "
-	
+
 	$START_PROG \
 		--user $XTAS_USER \
 		$OMP_NUM_THREADS \
@@ -55,14 +58,14 @@ start() {
 		0<&- &
 	RETVAL=$?
 	if [ $RETVAL -eq 0 ] ; then
-		 touch $LOCK_FILE_FROG
-		 success
-	 else
-		 failure
-	 fi
+		touch $LOCK_FILE_FROG
+		success
+	else
+		failure
+	fi
 	echo
 	return $RETVAL
-}	
+}
 
 stop() {
 	echo -n "Shutting down frog: "

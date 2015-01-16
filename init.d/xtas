@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # xtas xTAS server
-# Init script for xtas for CentOS 6.5. 
+# Init script for xtas for CentOS 6.5.
 # It may be compatible with other RedHat-based distributions.
 # Init script developed by 904Labs.com.
 #
@@ -40,7 +40,7 @@ RETVAL=0
 
 start() {
 	echo -n "Starting xtas: "
-	
+
 	$START_PROG \
 		--user $XTAS_USER \
 		PYTHONPATH=$PYTHONPATH_XTAS:$PYTHONPATH_SYSTEM \
@@ -48,18 +48,17 @@ start() {
 			> $LOG_XTAS.log \
 			2> $LOG_XTAS.err \
 			0<&- &
-	
 
 	RETVAL=$?
 	if [ $RETVAL -eq 0 ] ; then
-		 touch $LOCK_FILE_XTAS
-		 success
-	 else
-		 failure
-	 fi
+		touch $LOCK_FILE_XTAS
+		success
+	else
+		failure
+	fi
 	echo
 	return $RETVAL
-}	
+}
 
 stop() {
 	echo -n "Shutting down xtas: "
