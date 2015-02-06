@@ -5,14 +5,10 @@ import operator
 import os
 import os.path
 from subprocess import Popen, PIPE
-from tempfile import NamedTemporaryFile
-from zipfile import ZipFile
-
-from six.moves.urllib.request import urlretrieve
 
 import nltk
 
-from .._downloader import _make_data_home, _progress
+from .._downloader import _download_zip
 
 
 logger = logging.getLogger(__name__)
@@ -23,22 +19,9 @@ STANFORD_NER = (
 )
 
 
-def download():
-    home = _make_data_home()
-    ner_dir = os.path.join(home, 'stanford-ner-2014-01-04')
-
-    if not os.path.exists(ner_dir):
-        with NamedTemporaryFile() as temp:
-            logger.info('Downloading %s' % STANFORD_NER)
-            urlretrieve(STANFORD_NER, temp.name, reporthook=_progress)
-            with ZipFile(temp.name) as z:
-                z.extractall(path=home)
-
-    return ner_dir
-
-
 # Download and start server at import, not call time. Import is done lazily.
-ner_dir = download()
+ner_dir = _download_zip(STANFORD_NER, name="Stanford NER",
+                        check_dir="stanford-ner-2014-01-04")
 jar = os.path.join(ner_dir, 'stanford-ner.jar')
 model = os.path.join(ner_dir,
                      'classifiers/english.all.3class.distsim.crf.ser.gz')

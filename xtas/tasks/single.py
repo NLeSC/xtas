@@ -54,6 +54,15 @@ def guess_language(doc, output="best"):
 
 
 @app.task
+def heideltime(doc, language='english'):
+    # TODO document me
+    from ._heideltime import call_heideltime
+
+    # TODO parse the TIMEX XML format.
+    return call_heideltime(fetch(doc), language)
+
+
+@app.task
 def morphy(doc):
     """Lemmatize tokens using morphy, WordNet's lemmatizer.
 
