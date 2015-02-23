@@ -12,6 +12,7 @@ import celery.result
 from flask import Flask, Response, abort, request
 from flask import __version__ as flask_version
 
+from tornado import version as tornado_version
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -25,14 +26,14 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    # XXX should do this only in debug mode or when key is given to prevent
-    # attacks on specific Flask versions.
     pyver = sys.version_info
-    text = '\n'.join(["xtas web server\n",
-                      "Python version %d.%d.%d" % (pyver.major, pyver.minor,
-                                                   pyver.micro),
-                      "Celery version %s" % celery_version,
-                      "Flask version %s" % flask_version])
+    text = "xtas web server\n"
+    if app.debug:
+        text += '\n'.join(["\nPython version %d.%d.%d"
+                               % (pyver.major, pyver.minor, pyver.micro),
+                           "Celery version %s" % celery_version,
+                           "Flask version %s" % flask_version,
+                           "Tornado version %s" % tornado_version])
     return Response(text, mimetype="text/plain")
 
 
