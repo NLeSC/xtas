@@ -30,7 +30,7 @@ def home():
     text = "xtas web server\n"
     if app.debug:
         text += '\n'.join(["\nPython version %d.%d.%d"
-                               % (pyver.major, pyver.minor, pyver.micro),
+                           % (pyver.major, pyver.minor, pyver.micro),
                            "Celery version %s" % celery_version,
                            "Flask version %s" % flask_version,
                            "Tornado version %s" % tornado_version])
