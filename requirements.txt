@@ -3,6 +3,7 @@ celery>=3.0.0
 chardet
 corenlp_xml
 cytoolz
+docopt
 elasticsearch>=1.2.0,<2.0.0
 flask>=0.10.1
 gensim

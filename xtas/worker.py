@@ -1,46 +1,52 @@
+"""xtas worker
+
+Usage:
+    xtas.worker [options]
+
+Options:
+  -h, --help           show this help message and exit
+  --loglevel=LOGLEVEL  Set minimum severity level of logger, e.g. DEBUG,
+                       ERROR, INFO. [default: WARNING].
+  --pidfile=PIDFILE    Write PID of worker to PIDFILE (not removed at
+                       shutdown!).
+  --version            Print version info and exit.
+
+"""
+
 from __future__ import print_function
 
-from argparse import ArgumentParser
 import logging
 import os
 import sys
 
 from celery.bin.worker import worker
+from docopt import docopt
 
 from . import __version__
 
 
 if __name__ == '__main__':
-    parser = ArgumentParser()
-    parser.add_argument('--loglevel', dest='loglevel', default='WARN',
-                        help='Set minimum severity level of logger,'
-                             ' e.g. DEBUG, ERROR, INFO. Default=WARNING.')
-    parser.add_argument('--pidfile', dest='pidfile',
-                        help='Write PID of worker to PIDFILE'
-                             ' (not removed at shutdown!).')
-    parser.add_argument('--version', dest='version', const=True,
-                        action='store_const',
-                        help='Print version info and exit.')
-    args = parser.parse_args()
+    args = docopt(__doc__)
 
-    logging.basicConfig(level=args.loglevel.upper())
+    loglevel = args['--loglevel'].upper()
+    logging.basicConfig(level=loglevel)
 
-    if args.pidfile is not None:
+    pidfilepath = args.get('--pidfile')
+    if pidfilepath is not None:
         # XXX use 'x' in Python 3
-        with open(args.pidfile, 'w') as pidfile:
-            logging.info('Writing PID to %s' % args.pidfile)
+        with open(pidfilepath, 'w') as pidfile:
+            logging.info('Writing PID to %s' % pidfilepath)
             pidfile.write(str(os.getpid()))
 
     # This import must be done after we've parsed the cmdline args and set
     # the logging level.
     from .core import app
 
-    if args.version:
+    if args.get('--version'):
         print("xtas %s" % __version__)
         print("Celery", end=" ")
         app.worker_main(["--version"])
         sys.exit()
 
-    # XXX app.worker_main is prettier but doesn't seem to reply to --loglevel.
-    w = worker(app=app)
-    w.run(loglevel=args.loglevel)
+    # XXX app.worker_main is prettier but doesn't seem to respond to --loglevel
+    worker(app=app).run(loglevel=loglevel)
