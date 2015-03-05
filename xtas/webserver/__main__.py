@@ -23,7 +23,8 @@ from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 
-app = Flask(__name__)
+from . import app
+from xtas import __version__
 
 args = docopt(__doc__)
 

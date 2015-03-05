@@ -12,7 +12,6 @@ import celery.result
 from flask import Flask, Response, abort, request
 from flask import __version__ as flask_version
 
-from xtas import __version__
 from xtas.tasks import app as taskq
 from xtas.tasks import es_document, store_single
 
