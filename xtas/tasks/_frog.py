@@ -74,9 +74,11 @@ def parse_frog(lines):
             print(l.strip())
             parts = l.split("\t")
             tid, token, lemma, morph, pos, conf, ne, _, parent, rel = parts
+            if rel:
+                rel = (rel, int(parent) - 1)
             r = dict(id=i, sentence=sid, word=token, lemma=lemma,
                      pos=pos, pos_confidence=float(conf),
-                     rel=(rel, int(parent) - 1))
+                     rel=rel)
             if ne != 'O':
                 r["ne"] = ne.split('_', 1)[0][2:]   # NER label from BIO tags
             yield r

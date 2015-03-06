@@ -13,6 +13,7 @@ Options:
 """
 
 from __future__ import absolute_import
+from pprint import pprint
 
 import logging
 
@@ -25,6 +26,7 @@ from tornado.ioloop import IOLoop
 
 from . import app
 from xtas import __version__
+from xtas.tasks import app as taskq
 
 args = docopt(__doc__)
 
