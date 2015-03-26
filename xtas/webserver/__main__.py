@@ -19,7 +19,6 @@ import logging
 
 from docopt import docopt
 
-from tornado import version as tornado_version
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop

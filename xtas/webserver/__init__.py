@@ -1,9 +1,6 @@
 from __future__ import absolute_import
 
-import argparse
 import json
-import logging
-from pprint import pprint
 import sys
 
 from celery import chain
@@ -23,11 +20,12 @@ def home():
     pyver = sys.version_info
     text = "xtas web server\n"
     if app.debug:
+        # XXX We previously reported the Tornado version, but I'm not sure
+        # how to determine whether we're running under Tornado.
         text += '\n'.join(["\nPython version %d.%d.%d"
                                % (pyver.major, pyver.minor, pyver.micro),
                            "Celery version %s" % celery_version,
-                           "Flask version %s" % flask_version,
-                           "Tornado version %s" % tornado_version])
+                           "Flask version %s" % flask_version])
     return Response(text, mimetype="text/plain")
 
 
