@@ -4,8 +4,8 @@ Changelog/release notes
 dev
 ---
 
-xtas now uses the Tornado WSGI container for improved throughput in the REST
-server.
+The xtas REST server can now run within an application container such as
+uwsgi. By default, it uses Tornado for improved throughput.
 
 3.1
 ---
