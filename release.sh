@@ -15,4 +15,4 @@ git clone . "$clonedir"
 cd "$clonedir"
 python setup.py sdist upload
 
-echo "To push new docs: (cd doc && make gh-pages && git push)"
+echo "To push new docs: (cd doc && make gh-pages && git push origin gh-pages)"

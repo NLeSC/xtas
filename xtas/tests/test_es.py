@@ -1,4 +1,4 @@
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_in
 from unittest import SkipTest
 import logging
 from contextlib import contextmanager
@@ -19,6 +19,12 @@ def clean_es():
     indexclient = client.indices.IndicesClient(es)
     if not es.ping():
         raise SkipTest("ElasticSearch host not found, skipping elastic tests")
+    # check version number
+    status, response = es.transport.perform_request("GET", "/")
+    version_number = response['version']['number']
+    if status != 200 or not (version_number.startswith("1.") and int(version_number.split(".")[1]) >= 2):
+        raise SkipTest("Wrong version number or response: {status} "
+                       + "/ {response}".format(**locals()))
     logging.info("deleting and recreating index {ES_TEST_INDEX}"
                  " at {ES_TEST_HOST}")
     if indexclient.exists(ES_TEST_INDEX):
@@ -61,36 +67,46 @@ def test_query_batch():
 
 def test_store_get_result():
     "test whether results can be stored and retrieved"
-    from xtas.tasks.es import store_single, get_single_result, get_all_results
+    from xtas.tasks.es import (
+        store_single,
+        get_single_result,
+        get_tasks_per_index,
+        fetch_documents_by_task,
+        fetch_results_by_document,
+        fetch_query_details_batch
+        )
     idx, typ = ES_TEST_INDEX, ES_TEST_TYPE
     with clean_es() as es:
         id = es.index(index=idx, doc_type=typ, body={"text": "test"})['_id']
         assert_equal(get_single_result("task1", idx, typ, id), None)
-        assert_equal(get_all_results(idx, typ, id), {})
 
-        r = store_single("task1_result", "task1", idx, typ, id,
-                         return_data=False)
-        assert_equal(r, None)
+        store_single("task1_result", "task1", idx, typ, id)
         client.indices.IndicesClient(es).flush()
         assert_equal(get_single_result("task1", idx, typ, id), "task1_result")
-        assert_equal(get_all_results(idx, typ, id), {"task1": "task1_result"})
-
+        assert_in("task1", get_tasks_per_index(idx, typ))
         # test second result and test non-scalar data
         task2_result = {"a": {"b": ["c", "d"]}}
         store_single(task2_result, "task2", idx, typ, id)
         client.indices.IndicesClient(es).flush()
         assert_equal(get_single_result("task1", idx, typ, id), "task1_result")
         assert_equal(get_single_result("task2", idx, typ, id), task2_result)
-        assert_equal(get_all_results(idx, typ, id),
-                     {"task1": "task1_result", "task2": task2_result})
-
+        query = {"match": {"b": {"query": "c"}}}
+        assert_equal(len(fetch_documents_by_task(idx, typ, query, "task2")),
+                     1)
+        query = {"match": {"text": {"query": "test"}}}
+        results = fetch_results_by_document(idx, typ, query, "task2")
+        assert_equal(len(results), 1)
+        results = fetch_query_details_batch(idx, typ, query, True)
+        assert_in("task1", results[0][1])
+        assert_in("task2", results[0][1])
+        results = fetch_query_details_batch(idx, typ, query,
+                                            tasknames=["task2"])
+        assert_in("task2", results[0][1])
         # store a task result under an existing task, check that it is replaced
         store_single("task1_result2", "task1", idx, typ, id)
         client.indices.IndicesClient(es).flush()
         assert_equal(get_single_result("task1", idx, typ, id), "task1_result2")
         assert_equal(get_single_result("task2", idx, typ, id), task2_result)
-        assert_equal(get_all_results(idx, typ, id),
-                     {"task1": "task1_result2", "task2": task2_result})
 
         # check that the original document is intact
         src = es.get_source(index=idx, doc_type=typ, id=id)

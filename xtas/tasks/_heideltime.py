@@ -2,6 +2,7 @@ from os.path import dirname, join
 import shutil
 import subprocess
 import tempfile
+import xml.etree.ElementTree as etree
 
 from .._downloader import _download_zip, _make_data_home
 
@@ -23,10 +24,13 @@ subprocess.call(['sed', '-i',
 
 def call_heideltime(doc, language):
     with tempfile.NamedTemporaryFile(prefix='xtas-heideltime') as f:
-        f.write(doc)
+        f.write(doc.encode('utf-8') if isinstance(doc, unicode) else doc)
         f.flush()
         out = subprocess.check_output(['java', '-jar', _jar,
                                        '-c', _config_props,
                                        '-l', language, '-pos', 'treetagger',
                                        f.name])
+    out = etree.fromstring(out.replace('&', '&amp;'))
+    out = [x.attrib['value'] for x in out.findall('TIMEX3')]
+
     return out

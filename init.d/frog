@@ -1,0 +1,93 @@
+#!/bin/bash
+#
+# frog Frog text analysis service for Dutch
+# Init script for xtas for CentOS 6.5.
+# It may be compatible with other RedHat-based distributions.
+# Init script developed by 904Labs.com.
+#
+# chkconfig: 2345 80 89
+# description: Frog is text analysis suite for Dutch
+# processname: frog
+
+### BEGIN INIT INFO
+# Provides:          frog
+# Required-Stop:     xtas
+# Default-start:     2 3 4 5
+# Default-stop:      0 1 6
+# Description:       Frog, a text analysis suit for Dutch
+### END INIT INFO
+
+# Frog modules to skip
+# --skip=[mptncla]
+#   Skip Tokenizer (t), Lemmatizer (l), Morphological Analyzer (a),
+#   Chunker (c), Multi-Word Units (m), Named Entity Recognition (n),
+#   or Parser (p)
+
+
+# Source function library.
+. /etc/init.d/functions
+
+START_PROG="daemon"
+PYTHON=/home/xtas/xtas/bin/python
+FROG=/home/xtas/opt/bin/frog
+OMP_NUM_THREADS="OMP_NUM_THREADS=3"
+LD_LIBRADY_PATH="LD_LIBRARY_PATH=/usr/local/lib"
+FROG_PORT=9887
+FROG_OPTS=
+LOG_FROG=/home/xtas/logs/frog
+XTAS_USER="xtas"
+LOCK_FILE_FROG=/var/lock/subsys/frog
+
+test -x $VIRTUALENV_PROG || exit 0
+test -x $VIRTUALENV || exit 0
+test -x $FROG || exit 0
+
+RETVAL=0
+
+start() {
+	echo -n "Starting frog: "
+
+	$START_PROG \
+		--user $XTAS_USER \
+		$OMP_NUM_THREADS \
+		$LD_LIBRARY_PATH   \
+		numactl --interleave=all         \
+		"$FROG $FROG_OPTS -S $FROG_PORT" \
+		> ${LOG_FROG}.log \
+		2> ${LOG_FROG}.err \
+		0<&- &
+	RETVAL=$?
+	if [ $RETVAL -eq 0 ] ; then
+		touch $LOCK_FILE_FROG
+		success
+	else
+		failure
+	fi
+	echo
+	return $RETVAL
+}
+
+stop() {
+	echo -n "Shutting down frog: "
+	set +e
+	killproc $FROG
+	RETVAL=$?
+	set -e
+	[ $RETVAL -eq 0 ] && rm -f $LOCK_FILE_FROG
+	echo
+	return $RETVAL
+}
+
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    *)
+	echo "Usage: frog {start|stop}"
+	RETVAL=1
+	;;
+esac
+exit $RETVAL

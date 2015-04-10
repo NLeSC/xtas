@@ -1,2 +1,2 @@
 # This module must contain the version ONLY. It's parsed by setup.py.
-__version__ = '3.0.3'
+__version__ = '3.1'

@@ -6,7 +6,9 @@ from contextlib import contextmanager
 
 from nose.tools import assert_equal
 
-from .test_es import clean_es, ES_TEST_INDEX
+from xtas.tests.test_es import clean_es, ES_TEST_INDEX
+
+from elasticsearch import client
 
 ES_TEST_TYPE = "unittest_doc"
 
@@ -62,6 +64,7 @@ def test_pipeline_cache():
         assert_equal(r, expected_tokens)
         # second time result should come from cache.
         # Test with block=False which returns async object if not cached
+        client.indices.IndicesClient(es).flush()
         r = pipeline(doc, pipe, store_intermediate=True, block=False)
         assert_equal(r, expected_tokens)
         # add pos_tag to pipeline. Check that tokenize is not called
@@ -72,11 +75,13 @@ def test_pipeline_cache():
         OLD_TOKENIZE = nltk.word_tokenize
         nltk.word_tokenize = None
         try:
+            client.indices.IndicesClient(es).flush()
             r = pipeline(doc, pipe, store_intermediate=True)
             # compare json to ignore tuple/list difference
             assert_equal(json.dumps(r), json.dumps(expected_pos))
         finally:
             nltk.word_tokenize = OLD_TOKENIZE
         # whole pipeline should now be skipped
+        client.indices.IndicesClient(es).flush()
         r = pipeline(doc, pipe, store_intermediate=True, block=False)
         assert_equal(json.dumps(r), json.dumps(expected_pos))

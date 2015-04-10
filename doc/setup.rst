@@ -112,3 +112,10 @@ Amsterdam timezone, have Elasticsearch at ``localhost:9200``, etc.), run::
 to generate a file called ``xtas_config.py`` in the current directory. Change
 this file as needed, make sure it is in the ``PYTHONPATH`` (*not* in the
 ``xtas/`` directory) and re-start the worker and webserver.
+
+
+Running as a daemon
+-------------------
+
+xtas can be run as a service on Linux. See the directory ``init.d`` in the
+xtas source distribution for example init scripts.

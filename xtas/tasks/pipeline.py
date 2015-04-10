@@ -4,7 +4,7 @@ Pipelining with partial caching
 
 import celery
 
-from xtas.tasks.es import _ES_DOC_FIELDS, get_all_results, store_single, fetch
+from xtas.tasks.es import _ES_DOC_FIELDS, get_single_result, store_single, fetch
 from xtas.core import app
 
 
@@ -28,14 +28,13 @@ def pipeline(doc, pipeline, store_final=True, store_intermediate=False,
         idx, typ, id, field = [doc[k] for k in _ES_DOC_FIELDS]
         chain = []
         input = None
-        cache = get_all_results(idx, typ, id)
         # Check cache for existing documents
         # Iterate over tasks in reverse order, check cached result, and
         # otherwise prepend task (and cache store command) to chain
         for i in range(len(tasks), 0, -1):
             taskname = "__".join(t.task for t in tasks[:i])
-            if taskname in cache:
-                input = cache[taskname]
+            input = get_single_result(taskname, idx, typ, id)
+            if input:
                 break
             if (i == len(tasks) and store_final) or store_intermediate:
                 chain.insert(0, store_single.s(taskname, idx, typ, id))
