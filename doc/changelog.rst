@@ -1,11 +1,13 @@
 Changelog/release notes
 =======================
 
-dev
+3.2
 ---
 
 The xtas REST server can now run within an application container such as
 uwsgi. By default, it uses Tornado for improved throughput.
+
+A wrapper for the Heideltime temporal tagger has been added.
 
 3.1
 ---
