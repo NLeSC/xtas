@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Changelog/release notes &mdash; xtas 3.1 documentation</title>
+    <title>Changelog/release notes &mdash; xtas 3.2 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '3.1',
+        VERSION:     '3.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="xtas 3.1 documentation" href="index.html" />
+    <link rel="top" title="xtas 3.2 documentation" href="index.html" />
     <link rel="next" title="Frequently anticipated questions" href="faq.html" />
     <link rel="prev" title="Extending xtas" href="extending.html" />
 <meta charset='utf-8'>
@@ -52,7 +52,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           xtas</a>
-        <span class="navbar-text navbar-version pull-left"><b>3.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>3.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -120,7 +120,13 @@
   <div class="section" id="changelog-release-notes">
 <h1>Changelog/release notes<a class="headerlink" href="#changelog-release-notes" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
-<h2>3.1<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>3.2<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>The xtas REST server can now run within an application container such as
+uwsgi. By default, it uses Tornado for improved throughput.</p>
+<p>A wrapper for the Heideltime temporal tagger has been added.</p>
+</div>
+<div class="section" id="id2">
+<h2>3.1<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>xtas 3.1 has improved integration with Elasticsearch compared to its
 predecessor, storing processing results as child documents. (Previously, they
 were stored as fields.) Documentation has also been greatly improved to
@@ -134,8 +140,8 @@ now configurable.</li>
 <li>Various bugfixes and small optimizations.</li>
 </ul>
 </div>
-<div class="section" id="id2">
-<h2>3.0<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h2>3.0<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p>xtas 3.0 is a complete rewrite of the University of Amsterdam&#8217;s xTAS system
 (retroactively, xtas 2) and its predecessor, Fietstas (xtas 1). No attempt
 has been made to retain backward compatibility, so that code could be
@@ -186,7 +192,7 @@ allocation (LDA), based on scikit-learn and Gensim</li>
       
     </p>
     <p>
-        &copy; Copyright 2013–2014 Netherlands eScience Center, University of Amsterdam.<br/>
+        &copy; Copyright 2013–2015 Netherlands eScience Center, University of Amsterdam.<br/>
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.2.<br/>
     </p>
   </div>
