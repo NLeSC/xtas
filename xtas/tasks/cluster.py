@@ -183,4 +183,4 @@ def parsimonious_wordcloud(docs, w=.5, k=10):
     from weighwords import ParsimoniousLM
 
     model = ParsimoniousLM(docs, w=w)
-    return [model.top(10, d) for d in docs]
+    return [model.top(k, d) for d in docs]
