@@ -58,8 +58,8 @@ class Semafor(object):
         self.process.stdin.write("\n\n")
         self.process.stdin.flush()
         lines = list(self._wait_for_prompt())
-        assert len(lines) == 1
-        return json.loads(lines[0])
+        line, = lines   # Raises if len(lines) != 1.
+        return json.loads(line)
 
 
 _SINGLETON_LOCK = threading.Lock()
