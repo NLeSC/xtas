@@ -5,5 +5,5 @@ include LICENSE.txt
 include README.rst
 include requirements.txt
 
-include xtas/tasks/data/sentiwords.txt
+include xtas/tasks/sentiwords/sentiwords.txt
 include xtas/tests/test_corenlp.xml
