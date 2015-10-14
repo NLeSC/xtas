@@ -32,7 +32,7 @@ setup(
     author_email="l.buitinck@esciencecenter.nl",
     packages=["xtas", "xtas.make_config", "xtas.tasks", "xtas.tests",
               "xtas.webserver"],
-    package_data={"xtas.tasks": ["*.txt", "NERServer.class"]},
+    package_data={"xtas.tasks": ["*.txt", "*.xml", "NERServer.class"]},
     url="https://github.com/NLeSC/xtas",
     version=__version__,
     classifiers=[
