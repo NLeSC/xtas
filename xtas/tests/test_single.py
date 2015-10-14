@@ -3,9 +3,9 @@
 from nose.tools import (assert_equal, assert_greater, assert_in, assert_less,
                         assert_true)
 
-from xtas.tasks import (guess_language, morphy, movie_review_polarity,
-                        stem_snowball, sentiwords_tag, tokenize,
-                        dbpedia_spotlight)
+from xtas.tasks import (dbpedia_spotlight, guess_language, morphy,
+                        movie_review_polarity, nlner_conll, stem_snowball,
+                        sentiwords_tag, tokenize)
 
 
 def test_langid():
@@ -89,3 +89,13 @@ def test_dbpedia_spotlight():
         assert_true(isinstance(ann['resource'], list))
         # There should be at least one candidate
         assert_greater(ann['resource'], 0)
+
+
+def test_nlner_conll():
+    text = "Oorspronkelijk kwam Pantchoulidzew uit het Russische Pjatigorsk"
+
+    expected = [(u'Oorspronkelijk', 'O'), (u'kwam', 'O'),
+                (u'Pantchoulidzew', 'B-MISC'), (u'uit', 'O'), (u'het', 'O'),
+                (u'Russische', 'B-MISC'), (u'Pjatigorsk', 'I-MISC')]
+
+    assert_equal(nlner_conll(text), expected)
