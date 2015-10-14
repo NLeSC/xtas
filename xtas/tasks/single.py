@@ -109,6 +109,7 @@ def _tokenize_if_needed(s):
     return tokenize(s) if isinstance(s, basestring) else s
 
 
+@app.task
 def nlner_conll(doc):
     """Baseline NER tagger for Dutch, based on the CoNLL'02 dataset.
 
