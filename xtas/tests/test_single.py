@@ -4,8 +4,8 @@ from nose.tools import (assert_equal, assert_greater, assert_in, assert_less,
                         assert_true)
 
 from xtas.tasks import (dbpedia_spotlight, guess_language, morphy,
-                        movie_review_polarity, nlner_conll, stem_snowball,
-                        sentiwords_tag, tokenize)
+                        movie_review_emotions, movie_review_polarity,
+                        nlner_conll, stem_snowball, sentiwords_tag, tokenize)
 
 
 def test_langid():
@@ -104,3 +104,15 @@ def test_nlner_conll():
     tagged = nlner_conll(text)
     tagged = [(term, tag[0]) for term, tag in expected]
     assert_equal(tagged, expected)
+
+
+def test_movie_review_emotions():
+    text = "Saw is a scary film."
+
+    sent, emo = zip(*movie_review_emotions(text))
+
+    # We tend to get ('Fear', 'Joy', 'Love') or ('Fear', 'Love') for this
+    # sentence.
+    assert_equal(len(sent), 1)
+    assert_equal(len(emo), 1)
+    assert_in('Fear', emo[0])

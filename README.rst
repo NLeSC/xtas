@@ -8,7 +8,9 @@ Distributed text analysis suite based on Celery.
 
 Copyright University of Amsterdam, Netherlands eScience Center and
 contributors, distributed under the Apache License (see ``AUTHORS.txt``,
-``LICENSE.txt``).
+``LICENSE.txt``). Parts of xtas use GPL-licensed software, such as the
+Stanford NLP tools, and datasets that may incur additional restrictions.
+Check the documentation for individual functions.
 
 
 Quickstart

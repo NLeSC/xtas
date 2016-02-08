@@ -90,6 +90,32 @@ def morphy(doc):
 
 
 @app.task
+def movie_review_emotions(doc):
+    """Emotion (fine-grained sentiment) tagger for movie reviews.
+
+    The training data for this function is that of Buitinck et al., with the
+    training and test data concatenated. The algorithm is SVMs in a binary
+    relevance (one-vs-rest) combination.
+
+    Returns
+    -------
+    tagged : list of (string, list of string)
+        A list of (sentence, labels) pairs. Each sentence may have zero or
+        more labels.
+
+    References
+    ----------
+    L. Buitinck, J. van Amerongen, E. Tan and M. de Rijke (2015).
+    Multi-emotion detection in user-generated reviews. Proc. ECIR.
+    https://staff.fnwi.uva.nl/m.derijke/wp-content/papercite-data/pdf/buitinck-multi-emotion-2015.pdf
+    """
+    from ._emotion import classify
+    nltk_download('punkt')
+    sentences = nltk.sent_tokenize(doc)
+    return list(zip(sentences, classify(sentences)))
+
+
+@app.task
 def movie_review_polarity(doc):
     """Movie review polarity classifier.
 
@@ -97,13 +123,16 @@ def movie_review_polarity(doc):
     be applicable to other types of document as well, but uses a statistical
     model trained on a corpus of user reviews of movies, all in English.
 
-    See ``sentiwords_tag`` for a more general, but less direct, way of
-    determining the opinion expressed in a text.
-
     Returns
     -------
     p : float
         The probability that the movie review ``doc`` is positive.
+
+    See also
+    --------
+    movie_review_emotions: per-sentence fine-grained sentiment tagger
+
+    sentiwords_tag: more generic sentiment expression tagger
     """
     from ._polarity import classify
     return classify(doc)
@@ -216,6 +245,13 @@ def sentiwords_tag(doc, output="bag"):
         Output format. Either "bag" for a histogram (dict) of annotated token
         span frequencies, or "tokens" a mixed list of strings and (list of
         strings, polarity) pairs.
+
+
+    See also
+    --------
+    movie_review_emotions: per-sentence fine-grained sentiment tagger
+
+    movie_review_polarity: figure out if a movie review is positive or negative
     """
     from ._sentiwords import tag
     doc = _tokenize_if_needed(fetch(doc))
