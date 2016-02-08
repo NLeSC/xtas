@@ -95,7 +95,7 @@ def test_nlner_conll():
     text = "Oorspronkelijk kwam Pantchoulidzew uit het Russische Pjatigorsk"
 
     expected = [(u'Oorspronkelijk', 'O'), (u'kwam', 'O'),
-                (u'Pantchoulidzew', 'B-MISC'), (u'uit', 'O'), (u'het', 'O'),
+                (u'Pantchoulidzew', 'B-PER'), (u'uit', 'O'), (u'het', 'O'),
                 (u'Russische', 'B-MISC'), (u'Pjatigorsk', 'I-MISC')]
 
     assert_equal(nlner_conll(text), expected)
