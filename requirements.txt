@@ -11,7 +11,7 @@ gensim
 langid>=1.1.4dev
 librabbitmq
 markupsafe
-nltk
+nltk>=3.1.0
 pyspotlight
 PyStemmer
 scikit-learn>=0.15.1
