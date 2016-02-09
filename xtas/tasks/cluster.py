@@ -173,8 +173,7 @@ def lda(docs, k):
 
     topics = model.show_topics(formatted=False)
     vocab = vect.get_feature_names()
-    #return [(vocab[int(idx)], w) for topic in topics for w, idx in topic]
-    return [[(vocab[int(idx)], w) for w, idx in topic] for topic in topics]
+    return [(vocab[int(idx)], w) for topic in topics for w, idx in topic]
 
 
 @app.task
