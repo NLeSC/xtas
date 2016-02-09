@@ -14,6 +14,10 @@ xtas provides NLP functionality such as named-entity recognition, parsing,
 document clustering and topic models,
 through Python (synchronous/asynchronous) and REST APIs.
 
+xtas allows you to run distribute text analysis tasks over multiple machines.
+But you can also use it as a fast extension/replacement
+for existing packages such as NLTK.
+
 xtas ties in with Elasticsearch.
 You can use ES to store documents, then enrich them using xtas
 The result of xtas analyses can go back into Elasticsearch,
