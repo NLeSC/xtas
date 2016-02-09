@@ -190,7 +190,7 @@ def pos_tag(tokens, model='nltk'):
     """
     if model != 'nltk':
         raise ValueError("unknown POS tagger %r" % model)
-    nltk_download('maxent_treebank_pos_tagger')
+    nltk_download('averaged_perceptron_tagger')
     return nltk.pos_tag(tokens)
 
 

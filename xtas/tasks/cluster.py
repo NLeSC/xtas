@@ -152,29 +152,22 @@ def lsa(docs, k, random_state=None):
 def lda(docs, k):
     """Latent Dirichlet allocation topic model.
 
-    Uses Gensim's LdaModel after tokenizing using scikit-learn's
-    TfidfVectorizer.
+    Uses scikit-learn's TfidfVectorizer and LatentDirichletAllocation.
 
     Parameters
     ----------
     k : integer
         Number of topics.
     """
-    from gensim.matutils import Sparse2Corpus
-    from gensim.models import LdaModel
+    from sklearn.decomposition import LatentDirichletAllocation
+    from sklearn.pipeline import make_pipeline
 
-    # Use a scikit-learn vectorizer rather than Gensim's equivalent
-    # for speed and consistency with LSA and k-means.
     vect = _vectorizer()
-    corpus = vect.fit_transform(fetch(d) for d in docs)
-    corpus = Sparse2Corpus(corpus)
+    lda = LatentDirichletAllocation(n_topics=k)
+    pipe = make_pipeline(vect, lda).fit(docs)
 
-    model = LdaModel(corpus=corpus, num_topics=k)
-
-    topics = model.show_topics(formatted=False)
-    vocab = vect.get_feature_names()
-    #return [(vocab[int(idx)], w) for topic in topics for w, idx in topic]
-    return [[(vocab[int(idx)], w) for w, idx in topic] for topic in topics]
+    vocab = vect.vocabulary_
+    return [zip(vocab, comp) for comp in lda.components_]
 
 
 @app.task

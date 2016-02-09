@@ -13,6 +13,7 @@ virtualenv:
 install:
   - sudo apt-get update
   - sudo apt-get install python-numpy python-scipy
+  - pip install Cython
   - pip install .
   - pip install -r requirements.txt
 
