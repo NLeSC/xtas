@@ -55,10 +55,14 @@ def guess_language(doc, output="best"):
 
 @app.task
 def heideltime(doc, language='english'):
-    # TODO document me
+    """Runs the Heideltime temporal tagger on the document doc.
+
+    Returns the text of doc with temporal expressions marked up in the TIMEX
+    format.
+    """
     from ._heideltime import call_heideltime
 
-    # TODO parse the TIMEX XML format.
+    # TODO Add an option to parse the TIMEX XML format.
     return call_heideltime(fetch(doc), language)
 
 
@@ -424,8 +428,12 @@ def corenlp(doc, output='raw'):
 
     Expects ``$CORENLP_HOME`` to point to the CoreNLP installation dir.
 
+    If run with all annotators, it requires around 3G of memory,
+    and it will keep the process in memory indefinitely.
+
     Tested with `CoreNLP 2014-01-04
-    <http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip>`_.
+    <http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip>`_
+    (see http://nlp.stanford.edu/software/corenlp.shtml).
 
     Parameters
     ----------
