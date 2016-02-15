@@ -8,21 +8,29 @@
 xtas, the eXtensible Text Analysis Suite
 ========================================
 
-This is the manual for xtas, a distributed text analysis package
-based on Celery.
-xtas provides NLP functionality such as named-entity recognition, parsing,
-document clustering and topic models,
-through Python (synchronous/asynchronous) and REST APIs.
+xtas is a collection of natural language processing and text mining tools,
+brought together in a single software package
+with built-in distributed computing
+and support for the Elasticsearch document store.
 
-xtas allows you to run distribute text analysis tasks over multiple machines.
-But you can also use it as a fast extension/replacement
-for existing packages such as NLTK.
+xtas functionality consists partly of wrappers for existing packages,
+with automatic installation of software and data;
+and partly of custom-built modules coming out of research.
+Currently offered are various parsers for Dutch and English
+(Alpino, CoreNLP, Frog, Semafor),
+named entity recognizers (Frog, Stanford and custom-built ones),
+a temporal expression tagger (Heideltime)
+and a sentiment tagger based on SentiWords.
 
-xtas ties in with Elasticsearch.
-You can use ES to store documents, then enrich them using xtas
-The result of xtas analyses can go back into Elasticsearch,
-so you can easily implement semantic search:
-queries over named entities, sentiment analysis results, etc.
+A basic installation of xtas works like a Python module.
+Built-in package management and a simple, uniform interface
+take away the hassle of installing, configuring and using
+many existing NLP tools.
+
+xtas's open architecture makes it possible to include custom code,
+run this in a distributed fashion and have it communicate with Elasticsearch
+to provide document storage and retrieval.
+See :ref:`extending` for details.
 
 .. raw:: html
 
