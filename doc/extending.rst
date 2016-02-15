@@ -11,22 +11,34 @@ It describes how to write now tasks and tie them in with the package.
 Writing new tasks
 -----------------
 
-If you have a custom task that you want xtas to perform, then you can add it
-as follows. Let's start with an example task that reverses a document,
-character-by-character. Put the following in a file ``mytasks.py``::
+If you have a custom task that you want xtas to perform,
+then you can add it as follows.
+Suppose you want to perform sentiment analysis on French text
+using the `Pattern <http://www.clips.ua.ac.be/pages/pattern>`_ toolkit.
+First, install Pattern::
 
+    pip install pattern
+
+Now define an xtas task that uses Pattern to process a French text.
+Put the following a file, say, ``pattern_tasks.py``::
+
+    import pattern.fr
     from xtas.core import app
 
     @app.task
-    def reverse(doc):
-        return doc[::-1]
+    def fr_sentiment(text):
+        """Perform sentiment analysis on French text.
+
+        Returns the text (for reference), a subjectivity score,
+        and a positive/negative score.
+        """
+        return (text,) + pattern.fr.sentiment(text)
 
 Make sure this file can be imported::
 
-    $ python
-    >>> from mytasks import reverse
+    >>> from pattern_tasks import fr_sentiment
 
-If the above gave an error, adjust your ``PYTHONPATH``::
+If the above gave an error, adjust your ``PYTHONPATH`` (in the shell)::
 
     export PYTHONPATH=.:$PYTHONPATH
 
@@ -35,27 +47,27 @@ a configuration file ``xtas_config.py`` in the current directory. At the bottom
 of the file is an empty list called ``EXTRA_MODULES``. Put your module in it::
 
     EXTRA_MODULES = [
-        'mytasks',
+        'pattern_tasks',
     ]
 
-Now restart the worker. It should report ``mytasks.reverse`` as its first
-task, followed by all the built-in tasks. You can now run your ``reverse``
-function asynchronously, e.g. in a Python shell::
+Now restart the worker. It should report ``pattern_tasks.fr_sentiment``
+as its first task, followed by all the built-in tasks.
+You can now run your task function asynchronously, e.g. in a Python shell::
 
-    >>> from mytasks import reverse
-    >>> result = reverse.apply_async(["Hello, world!"])
+    >>> from pattern_tasks import fr_sentiment
+    >>> result = fr_sentiment.apply_async(["Bon!"])
     >>> result.get()
-    u'!dlrow ,olleH'
+    ['Bon!', 0.875, 0.7]
 
 If you also restart the webserver, you should see the new task in the list of
 single-document tasks::
 
-    $ curl -s http://localhost:5000/tasks | python -m json.tool | grep mytasks
-        "mytasks.reverse",
+    $ curl -s http://localhost:5000/tasks | python -m json.tool | grep pattern
+        "pattern_tasks.fr_sentiment",
 
 To use the custom task from the REST API, e.g. with ``/run_es``, give its
-fully qualified name (``mytasks.reverse``). Only built-in tasks have their
-name abbreviated to not include the module name.
+fully qualified name (``pattern_tasks.fr_sentiment``).
+Only built-in tasks have their name abbreviated to not include the module name.
 
 .. note::
    The webserver will currently assume your task is a single-document one,
