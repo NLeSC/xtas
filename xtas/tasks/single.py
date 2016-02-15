@@ -424,7 +424,7 @@ def alpino(doc, output="raw"):
 
 @app.task
 def corenlp(doc, output='raw'):
-    """Wrapper around the CoreNLP parser.
+    """Wrapper around the Stanford CoreNLP parser.
 
     Expects ``$CORENLP_HOME`` to point to the CoreNLP installation dir.
 
@@ -453,7 +453,7 @@ def corenlp(doc, output='raw'):
 
 @app.task
 def corenlp_lemmatize(doc, output='raw'):
-    """Wrapper around the CoreNLP lemmatizer.
+    """Wrapper around the Stanford CoreNLP lemmatizer.
 
     Expects ``$CORENLP_HOME`` to point to the CoreNLP installation dir.
 
