@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
@@ -39,7 +39,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 
   </head>
-  <body>
+  <body role="document">
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -89,7 +89,7 @@
     </a>
   </li>
   <li>
-    <a href="faq.html" title="Next Chapter: Frequently anticipated questions"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm">Frequently antic... &raquo;</span>
+    <a href="faq.html" title="Next Chapter: Frequently anticipated questions"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm">Frequently an... &raquo;</span>
     </a>
   </li>
               
@@ -120,13 +120,21 @@
   <div class="section" id="changelog-release-notes">
 <h1>Changelog/release notes<a class="headerlink" href="#changelog-release-notes" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
-<h2>3.2<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>3.3<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>New fast NER tagger for Dutch. Contributed by Daan Odijk of UvA, and based on the CoNLL dataset.</li>
+<li>Fixed a bug that prevented parsimonious language models from returning top-k words for large k. Patch contributed by Sicco van Sas.</li>
+<li>Various minor fixes.</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>3.2<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>The xtas REST server can now run within an application container such as
 uwsgi. By default, it uses Tornado for improved throughput.</p>
 <p>A wrapper for the Heideltime temporal tagger has been added.</p>
 </div>
-<div class="section" id="id2">
-<h2>3.1<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h2>3.1<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p>xtas 3.1 has improved integration with Elasticsearch compared to its
 predecessor, storing processing results as child documents. (Previously, they
 were stored as fields.) Documentation has also been greatly improved to
@@ -140,8 +148,8 @@ now configurable.</li>
 <li>Various bugfixes and small optimizations.</li>
 </ul>
 </div>
-<div class="section" id="id3">
-<h2>3.0<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h2>3.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <p>xtas 3.0 is a complete rewrite of the University of Amsterdam&#8217;s xTAS system
 (retroactively, xtas 2) and its predecessor, Fietstas (xtas 1). No attempt
 has been made to retain backward compatibility, so that code could be
@@ -155,7 +163,7 @@ redesigned in a clean, simple, scalable way.</p>
 <p>And the following NLP tasks:</p>
 <ul class="simple">
 <li>Tokenization, based on NLTK</li>
-<li>Named-entity recognition with Stanford NER (<tt class="docutils literal"><span class="pre">stanford_ner_tag</span></tt>)</li>
+<li>Named-entity recognition with Stanford NER (<code class="docutils literal"><span class="pre">stanford_ner_tag</span></code>)</li>
 <li>Wrapper for the Frog Dutch POS tagger/NER tagger/dependency parser</li>
 <li>Wrapper for the Alpino parser for Dutch</li>
 <li>Language guessing</li>
@@ -164,7 +172,7 @@ redesigned in a clean, simple, scalable way.</p>
 <li>English POS tagging with NLTK</li>
 <li>Wrapper for the Semafor semantic parser</li>
 <li>Word-level sentiment polarity tagging with SentiWords</li>
-<li>Document clustering with <span class="math">\(k\)</span>-means (<tt class="docutils literal"><span class="pre">kmeans</span></tt>, <tt class="docutils literal"><span class="pre">big_kmeans</span></tt>)</li>
+<li>Document clustering with <span class="math">\(k\)</span>-means (<code class="docutils literal"><span class="pre">kmeans</span></code>, <code class="docutils literal"><span class="pre">big_kmeans</span></code>)</li>
 <li>Topic modeling with latent semantic analysis (LSA), latent dirichlet
 allocation (LDA), based on scikit-learn and Gensim</li>
 <li>Parsimonious language modeling, useful for discriminative word clouds</li>
@@ -193,7 +201,7 @@ allocation (LDA), based on scikit-learn and Gensim</li>
     </p>
     <p>
         &copy; Copyright 2013–2015 Netherlands eScience Center, University of Amsterdam.<br/>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.2.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.5.<br/>
     </p>
   </div>
 </footer>

@@ -1,6 +1,13 @@
 Changelog/release notes
 =======================
 
+3.3
+---
+
+* New fast NER tagger for Dutch. Contributed by Daan Odijk of UvA, and based on the CoNLL dataset.
+* Fixed a bug that prevented parsimonious language models from returning top-k words for large k. Patch contributed by Sicco van Sas.
+* Various minor fixes.
+
 3.2
 ---
 

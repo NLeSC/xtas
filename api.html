@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
@@ -39,7 +39,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 
   </head>
-  <body>
+  <body role="document">
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -125,7 +125,7 @@
 &#8220;app&#8221; instance.</p>
 <dl class="function">
 <dt id="xtas.core.configure">
-<tt class="descclassname">xtas.core.</tt><tt class="descname">configure</tt><big>(</big><em>config</em>, <em>import_error='raise'</em>, <em>unknown_key='raise'</em><big>)</big><a class="reference internal" href="_modules/xtas/core.html#configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.core.configure" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">xtas.core.</code><code class="descname">configure</code><span class="sig-paren">(</span><em>config</em>, <em>import_error='raise'</em>, <em>unknown_key='raise'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xtas/core.html#configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.core.configure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Configure xtas.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -133,21 +133,21 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>config</strong> : dict</p>
 <blockquote>
-<div><p>Dict with keys <tt class="docutils literal"><span class="pre">CELERY</span></tt>, <tt class="docutils literal"><span class="pre">ELASTICSEARCH</span></tt> and <tt class="docutils literal"><span class="pre">EXTRA_MODULES</span></tt>
+<div><p>Dict with keys <code class="docutils literal"><span class="pre">CELERY</span></code>, <code class="docutils literal"><span class="pre">ELASTICSEARCH</span></code> and <code class="docutils literal"><span class="pre">EXTRA_MODULES</span></code>
 will be used to configure the xtas Celery app.</p>
-<p><tt class="docutils literal"><span class="pre">config.CELERY</span></tt> will be passed to Celery&#8217;s <tt class="docutils literal"><span class="pre">config_from_object</span></tt>
-with the flag <tt class="docutils literal"><span class="pre">force=True</span></tt>.</p>
-<p><tt class="docutils literal"><span class="pre">ELASTICSEARCH</span></tt> should be a list of dicts with at least the key
+<p><code class="docutils literal"><span class="pre">config.CELERY</span></code> will be passed to Celery&#8217;s <code class="docutils literal"><span class="pre">config_from_object</span></code>
+with the flag <code class="docutils literal"><span class="pre">force=True</span></code>.</p>
+<p><code class="docutils literal"><span class="pre">ELASTICSEARCH</span></code> should be a list of dicts with at least the key
 &#8216;host&#8217;. These are passed to the Elasticsearch constructor (from the
 official client) unchanged.</p>
-<p><tt class="docutils literal"><span class="pre">EXTRA_MODULES</span></tt> should be a list of module names to load.</p>
-<p>Failure to supply <tt class="docutils literal"><span class="pre">CELERY</span></tt> or <tt class="docutils literal"><span class="pre">ELASTICSEARCH</span></tt> causes the default
+<p><code class="docutils literal"><span class="pre">EXTRA_MODULES</span></code> should be a list of module names to load.</p>
+<p>Failure to supply <code class="docutils literal"><span class="pre">CELERY</span></code> or <code class="docutils literal"><span class="pre">ELASTICSEARCH</span></code> causes the default
 configuration to be re-set. Extra modules will not be unloaded,
 though.</p>
 </div></blockquote>
 <p><strong>import_error</strong> : string</p>
 <blockquote>
-<div><p>Action to take when one of the <tt class="docutils literal"><span class="pre">EXTRA_MODULES</span></tt> cannot be imported.
+<div><p>Action to take when one of the <code class="docutils literal"><span class="pre">EXTRA_MODULES</span></code> cannot be imported.
 Either &#8220;log&#8221;, &#8220;raise&#8221; or &#8220;ignore&#8221;.</p>
 </div></blockquote>
 <p><strong>unknown_key</strong> : string</p>
@@ -167,13 +167,13 @@ Either &#8220;log&#8221;, &#8220;raise&#8221; or &#8220;ignore&#8221;.</p>
 <span id="xtas-tasks-single"></span><h2>xtas.tasks.single<a class="headerlink" href="#module-xtas.tasks.single" title="Permalink to this headline">¶</a></h2>
 <p>Single-document tasks.</p>
 <p>These process one document per function call (in Python) or REST call (via
-the web server, <tt class="docutils literal"><span class="pre">/run</span></tt> or <tt class="docutils literal"><span class="pre">/run_es</span></tt>). Most single-document tasks take a
+the web server, <code class="docutils literal"><span class="pre">/run</span></code> or <code class="docutils literal"><span class="pre">/run_es</span></code>). Most single-document tasks take a
 document as their first argument. In the Python interface this may either be
-a string or the result from <tt class="docutils literal"><span class="pre">xtas.tasks.es.es_document</span></tt>, a reference to a
+a string or the result from <code class="docutils literal"><span class="pre">xtas.tasks.es.es_document</span></code>, a reference to a
 document in an Elasticsearch store.</p>
 <dl class="task">
 <dt id="xtas.tasks.single.alpino">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">alpino</tt><big>(</big><em>doc</em>, <em>output='raw'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#alpino"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.alpino" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">alpino</code><span class="sig-paren">(</span><em>doc</em>, <em>output='raw'</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.alpino" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around the Alpino (dependency) parser for Dutch.</p>
 <p>Expects an environment variable ALPINO_HOME to point at
 the Alpino installation dir.</p>
@@ -198,10 +198,13 @@ If &#8216;saf&#8217;, returns a SAF dictionary.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.corenlp">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">corenlp</tt><big>(</big><em>doc</em>, <em>output='raw'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#corenlp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.corenlp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrapper around the CoreNLP parser.</p>
-<p>Expects <tt class="docutils literal"><span class="pre">$CORENLP_HOME</span></tt> to point to the CoreNLP installation dir.</p>
-<p>Tested with <a class="reference external" href="http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip">CoreNLP 2014-01-04</a>.</p>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">corenlp</code><span class="sig-paren">(</span><em>doc</em>, <em>output='raw'</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.corenlp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper around the Stanford CoreNLP parser.</p>
+<p>Expects <code class="docutils literal"><span class="pre">$CORENLP_HOME</span></code> to point to the CoreNLP installation dir.</p>
+<p>If run with all annotators, it requires around 3G of memory,
+and it will keep the process in memory indefinitely.</p>
+<p>Tested with <a class="reference external" href="http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip">CoreNLP 2014-01-04</a>
+(see <a class="reference external" href="http://nlp.stanford.edu/software/corenlp.shtml">http://nlp.stanford.edu/software/corenlp.shtml</a>).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -219,9 +222,9 @@ If &#8216;saf&#8217;, returns a SAF dictionary.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.corenlp_lemmatize">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">corenlp_lemmatize</tt><big>(</big><em>doc</em>, <em>output='raw'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#corenlp_lemmatize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.corenlp_lemmatize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrapper around the CoreNLP lemmatizer.</p>
-<p>Expects <tt class="docutils literal"><span class="pre">$CORENLP_HOME</span></tt> to point to the CoreNLP installation dir.</p>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">corenlp_lemmatize</code><span class="sig-paren">(</span><em>doc</em>, <em>output='raw'</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.corenlp_lemmatize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper around the Stanford CoreNLP lemmatizer.</p>
+<p>Expects <code class="docutils literal"><span class="pre">$CORENLP_HOME</span></code> to point to the CoreNLP installation dir.</p>
 <p>Tested with <a class="reference external" href="http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip">CoreNLP 2014-01-04</a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -240,7 +243,7 @@ If &#8216;saf&#8217;, returns a SAF dictionary.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.dbpedia_spotlight">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">dbpedia_spotlight</tt><big>(</big><em>doc</em>, <em>lang='en'</em>, <em>conf=0.5</em>, <em>supp=0</em>, <em>api_url=None</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#dbpedia_spotlight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.dbpedia_spotlight" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">dbpedia_spotlight</code><span class="sig-paren">(</span><em>doc</em>, <em>lang='en'</em>, <em>conf=0.5</em>, <em>supp=0</em>, <em>api_url=None</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.dbpedia_spotlight" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run text through a DBpedia Spotlight instance.</p>
 <p>Calls the DBpedia Spotlight instance to perform entity linking and
 returns the names/links it has found.</p>
@@ -251,15 +254,15 @@ This task uses a Python client for DBp Spotlight:
 
 <dl class="task">
 <dt id="xtas.tasks.single.frog">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">frog</tt><big>(</big><em>doc</em>, <em>output='raw'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#frog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.frog" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">frog</code><span class="sig-paren">(</span><em>doc</em>, <em>output='raw'</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.frog" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around the Frog lemmatizer/POS tagger/NER/dependency parser.</p>
 <p>Expects Frog to be running in server mode, listening on
-<tt class="docutils literal"><span class="pre">localhost:${XTAS_FROG_PORT}</span></tt> or port 9987 if the environment variable
-<tt class="docutils literal"><span class="pre">XTAS_FROG_PORT</span></tt> is not set. It is <em>not</em> started for you.</p>
+<code class="docutils literal"><span class="pre">localhost:${XTAS_FROG_PORT}</span></code> or port 9987 if the environment variable
+<code class="docutils literal"><span class="pre">XTAS_FROG_PORT</span></code> is not set. It is <em>not</em> started for you.</p>
 <p>Currently, the module is only tested with all frog modules active except
 for the NER and parser.</p>
 <p>The following line starts Frog in the correct way:</p>
-<p><tt class="docutils literal"><span class="pre">frog</span> <span class="pre">-S</span> <span class="pre">${XTAS_FROG_PORT:-9887}</span></tt></p>
+<p><code class="docutils literal"><span class="pre">frog</span> <span class="pre">-S</span> <span class="pre">${XTAS_FROG_PORT:-9887}</span></code></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -277,7 +280,7 @@ If &#8216;saf&#8217;, returns a SAF dictionary.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><tt class="xref py py-obj docutils literal"><span class="pre">nlner_conll</span></tt></dt>
+<dt><code class="xref py py-obj docutils literal"><span class="pre">nlner_conll</span></code></dt>
 <dd>simple NER tagger for Dutch.</dd>
 </dl>
 </div>
@@ -287,10 +290,10 @@ If &#8216;saf&#8217;, returns a SAF dictionary.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.guess_language">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">guess_language</tt><big>(</big><em>doc</em>, <em>output='best'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#guess_language"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.guess_language" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">guess_language</code><span class="sig-paren">(</span><em>doc</em>, <em>output='best'</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.guess_language" title="Permalink to this definition">¶</a></dt>
 <dd><p>Guess the language of a document.</p>
 <p>This function applies a statistical method to determine the language of a
-document. Depending on the <tt class="docutils literal"><span class="pre">output</span></tt> argument, it may either return a
+document. Depending on the <code class="docutils literal"><span class="pre">output</span></code> argument, it may either return a
 single language code, or a ranking of languages that a document may be
 written in, sorted by probability.</p>
 <p>Uses the langid library.</p>
@@ -313,9 +316,9 @@ list of such pairs for all languages in the model.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.morphy">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">morphy</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#morphy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.morphy" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">morphy</code><span class="sig-paren">(</span><em>doc</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.morphy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lemmatize tokens using morphy, WordNet&#8217;s lemmatizer.</p>
-<p>Finds the morphological root of all words in <tt class="docutils literal"><span class="pre">doc</span></tt>, which is assumed to
+<p>Finds the morphological root of all words in <code class="docutils literal"><span class="pre">doc</span></code>, which is assumed to
 be written in English.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -332,7 +335,7 @@ be written in English.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><a class="reference internal" href="#xtas.tasks.single.stem_snowball" title="xtas.tasks.single.stem_snowball"><tt class="xref py py-obj docutils literal"><span class="pre">stem_snowball</span></tt></a></dt>
+<dt><a class="reference internal" href="#xtas.tasks.single.stem_snowball" title="xtas.tasks.single.stem_snowball"><code class="xref py py-obj docutils literal"><span class="pre">stem_snowball</span></code></a></dt>
 <dd>simpler approach to lemmatization (stemming).</dd>
 </dl>
 </div>
@@ -340,12 +343,12 @@ be written in English.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.movie_review_polarity">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">movie_review_polarity</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#movie_review_polarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.movie_review_polarity" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">movie_review_polarity</code><span class="sig-paren">(</span><em>doc</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.movie_review_polarity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Movie review polarity classifier.</p>
-<p>Determines whether the film review <tt class="docutils literal"><span class="pre">doc</span></tt> is positive or negative. Might
+<p>Determines whether the film review <code class="docutils literal"><span class="pre">doc</span></code> is positive or negative. Might
 be applicable to other types of document as well, but uses a statistical
 model trained on a corpus of user reviews of movies, all in English.</p>
-<p>See <tt class="docutils literal"><span class="pre">sentiwords_tag</span></tt> for a more general, but less direct, way of
+<p>See <code class="docutils literal"><span class="pre">sentiwords_tag</span></code> for a more general, but less direct, way of
 determining the opinion expressed in a text.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -353,7 +356,7 @@ determining the opinion expressed in a text.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>p</strong> : float</p>
 <blockquote class="last">
-<div><p>The probability that the movie review <tt class="docutils literal"><span class="pre">doc</span></tt> is positive.</p>
+<div><p>The probability that the movie review <code class="docutils literal"><span class="pre">doc</span></code> is positive.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -363,7 +366,7 @@ determining the opinion expressed in a text.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.pos_tag">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">pos_tag</tt><big>(</big><em>tokens</em>, <em>model='nltk'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#pos_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.pos_tag" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">pos_tag</code><span class="sig-paren">(</span><em>tokens</em>, <em>model='nltk'</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.pos_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform part-of-speech (POS) tagging for English.</p>
 <p>Currently only does English using the default model in NLTK.</p>
 <p>Expects a list of tokens.</p>
@@ -371,11 +374,11 @@ determining the opinion expressed in a text.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.semafor">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">semafor</tt><big>(</big><em>saf</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#semafor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.semafor" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">semafor</code><span class="sig-paren">(</span><em>saf</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.semafor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around the Semafor semantic parser.</p>
 <p>Expects semafor running in server mode listening to
-<tt class="docutils literal"><span class="pre">${SEMAFOR_HOST}:${SEMAFOR_PORT}</span></tt> (defaults to localhost:9888).
-It also expects <tt class="docutils literal"><span class="pre">$CORENLP_HOME</span></tt> to point to the CoreNLP installation dir.</p>
+<code class="docutils literal"><span class="pre">${SEMAFOR_HOST}:${SEMAFOR_PORT}</span></code> (defaults to localhost:9888).
+It also expects <code class="docutils literal"><span class="pre">$CORENLP_HOME</span></code> to point to the CoreNLP installation dir.</p>
 <p>Input is expected to be a &#8216;SAF&#8217; dictionary with trees and tokens.
 Output is a SAF dictionary with a frames attribute added.</p>
 <p class="rubric">References</p>
@@ -387,7 +390,7 @@ Output is a SAF dictionary with a frames attribute added.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.semanticize">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">semanticize</tt><big>(</big><em>doc</em>, <em>lang='en'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#semanticize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.semanticize" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">semanticize</code><span class="sig-paren">(</span><em>doc</em>, <em>lang='en'</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.semanticize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run text through the UvA semanticizer.</p>
 <p>Calls the UvA semanticizer webservice to perform entity linking and
 returns the names/links it has found.</p>
@@ -399,7 +402,7 @@ derive prior polarities from SentiWordNet&#8221;. Proc. EMNLP, pp. 1259-1269.</p
 
 <dl class="task">
 <dt id="xtas.tasks.single.sentiwords_tag">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">sentiwords_tag</tt><big>(</big><em>doc</em>, <em>output='bag'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#sentiwords_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.sentiwords_tag" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">sentiwords_tag</code><span class="sig-paren">(</span><em>doc</em>, <em>output='bag'</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.sentiwords_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tag doc with SentiWords polarity priors.</p>
 <p>Performs left-to-right, longest-match annotation of token spans with
 polarities from SentiWords.</p>
@@ -424,7 +427,7 @@ strings, polarity) pairs.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.stanford_ner_tag">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">stanford_ner_tag</tt><big>(</big><em>doc</em>, <em>output='tokens'</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#stanford_ner_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.stanford_ner_tag" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">stanford_ner_tag</code><span class="sig-paren">(</span><em>doc</em>, <em>output='tokens'</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.stanford_ner_tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Named entity recognizer using Stanford NER.</p>
 <p>English-language name detection and classification.</p>
 <p>Currently only supports the model &#8216;english.all.3class.distsim.crf.ser.gz&#8217;.</p>
@@ -459,7 +462,7 @@ is heuristic.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><tt class="xref py py-obj docutils literal"><span class="pre">nlner_conll</span></tt></dt>
+<dt><code class="xref py py-obj docutils literal"><span class="pre">nlner_conll</span></code></dt>
 <dd>NER tagger for Dutch.</dd>
 </dl>
 </div>
@@ -467,15 +470,15 @@ is heuristic.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.stem_snowball">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">stem_snowball</tt><big>(</big><em>doc</em>, <em>language</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#stem_snowball"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.stem_snowball" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">stem_snowball</code><span class="sig-paren">(</span><em>doc</em>, <em>language</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.stem_snowball" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stem words in doc using the Snowball stemmer.</p>
-<p>Set the parameter <tt class="docutils literal"><span class="pre">lang</span></tt> to a language code such as &#8220;de&#8221;, &#8220;en&#8221;, &#8220;nl&#8221;, or
+<p>Set the parameter <code class="docutils literal"><span class="pre">lang</span></code> to a language code such as &#8220;de&#8221;, &#8220;en&#8221;, &#8220;nl&#8221;, or
 the special string &#8220;porter&#8221; to get Porter&#8217;s classic stemming algorithm for
 English.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <dl class="last docutils">
-<dt><a class="reference internal" href="#xtas.tasks.single.morphy" title="xtas.tasks.single.morphy"><tt class="xref py py-obj docutils literal"><span class="pre">morphy</span></tt></a></dt>
+<dt><a class="reference internal" href="#xtas.tasks.single.morphy" title="xtas.tasks.single.morphy"><code class="xref py py-obj docutils literal"><span class="pre">morphy</span></code></a></dt>
 <dd>smarter approach to stemming (lemmatization), but only for English.</dd>
 </dl>
 </div>
@@ -483,14 +486,14 @@ English.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.single.tokenize">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">tokenize</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#tokenize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.tokenize" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">tokenize</code><span class="sig-paren">(</span><em>doc</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.tokenize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tokenize text.</p>
 <p>Uses the NLTK function word_tokenize.</p>
 </dd></dl>
 
 <dl class="task">
 <dt id="xtas.tasks.single.untokenize">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.single.</tt><tt class="descname">untokenize</tt><big>(</big><em>tokens</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/single.html#untokenize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.single.untokenize" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.single.</code><code class="descname">untokenize</code><span class="sig-paren">(</span><em>tokens</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.single.untokenize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Undo tokenization.</p>
 <p>Simply concatenates the given tokens with spaces in between. Useful after
 tokenization and filtering.</p>
@@ -511,7 +514,7 @@ tokenization and filtering.</p>
 <p>These tasks process batches of documents, denoted as lists of strings.</p>
 <dl class="task">
 <dt id="xtas.tasks.cluster.big_kmeans">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">big_kmeans</tt><big>(</big><em>docs</em>, <em>k</em>, <em>batch_size=1000</em>, <em>n_features=1048576</em>, <em>single_pass=True</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#big_kmeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.big_kmeans" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.cluster.</code><code class="descname">big_kmeans</code><span class="sig-paren">(</span><em>docs</em>, <em>k</em>, <em>batch_size=1000</em>, <em>n_features=1048576</em>, <em>single_pass=True</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.cluster.big_kmeans" title="Permalink to this definition">¶</a></dt>
 <dd><p>k-means for very large sets of documents.</p>
 <p>See kmeans for documentation. Differs from that function in that it does
 not computer tf-idf or LSA, and fetches the documents in a streaming
@@ -524,7 +527,7 @@ this model.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.cluster.kmeans">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">kmeans</tt><big>(</big><em>docs</em>, <em>k</em>, <em>lsa=None</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#kmeans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.kmeans" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.cluster.</code><code class="descname">kmeans</code><span class="sig-paren">(</span><em>docs</em>, <em>k</em>, <em>lsa=None</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.cluster.kmeans" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run k-means clustering on a set of documents.</p>
 <p>Uses scikit-learn to tokenize documents, compute tf-idf weights, perform
 (optional) LSA transformation, and cluster.</p>
@@ -560,10 +563,9 @@ the order of documents within clusters is unspecified.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.cluster.lda">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">lda</tt><big>(</big><em>docs</em>, <em>k</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#lda"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.lda" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.cluster.</code><code class="descname">lda</code><span class="sig-paren">(</span><em>docs</em>, <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.cluster.lda" title="Permalink to this definition">¶</a></dt>
 <dd><p>Latent Dirichlet allocation topic model.</p>
-<p>Uses Gensim&#8217;s LdaModel after tokenizing using scikit-learn&#8217;s
-TfidfVectorizer.</p>
+<p>Uses scikit-learn&#8217;s TfidfVectorizer and LatentDirichletAllocation.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -580,7 +582,7 @@ TfidfVectorizer.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.cluster.lsa">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">lsa</tt><big>(</big><em>docs</em>, <em>k</em>, <em>random_state=None</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#lsa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.lsa" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.cluster.</code><code class="descname">lsa</code><span class="sig-paren">(</span><em>docs</em>, <em>k</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.cluster.lsa" title="Permalink to this definition">¶</a></dt>
 <dd><p>Latent semantic analysis.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -613,7 +615,7 @@ TfidfVectorizer.</p>
 
 <dl class="task">
 <dt id="xtas.tasks.cluster.parsimonious_wordcloud">
-<em class="property">(task) </em><tt class="descclassname">xtas.tasks.cluster.</tt><tt class="descname">parsimonious_wordcloud</tt><big>(</big><em>docs</em>, <em>w=0.5</em>, <em>k=10</em><big>)</big><a class="reference internal" href="_modules/xtas/tasks/cluster.html#parsimonious_wordcloud"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xtas.tasks.cluster.parsimonious_wordcloud" title="Permalink to this definition">¶</a></dt>
+<em class="property">(task) </em><code class="descclassname">xtas.tasks.cluster.</code><code class="descname">parsimonious_wordcloud</code><span class="sig-paren">(</span><em>docs</em>, <em>w=0.5</em>, <em>k=10</em><span class="sig-paren">)</span><a class="headerlink" href="#xtas.tasks.cluster.parsimonious_wordcloud" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit a parsimonious language model to terms in docs.</p>
 </dd></dl>
 
@@ -640,7 +642,7 @@ TfidfVectorizer.</p>
     </p>
     <p>
         &copy; Copyright 2013–2015 Netherlands eScience Center, University of Amsterdam.<br/>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.2.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.5.<br/>
     </p>
   </div>
 </footer>

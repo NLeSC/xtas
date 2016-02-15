@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
@@ -39,7 +39,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 
   </head>
-  <body>
+  <body role="document">
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -89,7 +89,7 @@
     </a>
   </li>
   <li>
-    <a href="changelog.html" title="Next Chapter: Changelog/release notes"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm">Changelog/releas... &raquo;</span>
+    <a href="changelog.html" title="Next Chapter: Changelog/release notes"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm">Changelog/rel... &raquo;</span>
     </a>
   </li>
               
@@ -118,57 +118,69 @@
     <div class="col-md-12">
       
   <div class="section" id="extending-xtas">
-<h1>Extending xtas<a class="headerlink" href="#extending-xtas" title="Permalink to this headline">¶</a></h1>
+<span id="extending"></span><h1>Extending xtas<a class="headerlink" href="#extending-xtas" title="Permalink to this headline">¶</a></h1>
 <p>This is a short guide to extending xtas to suit specific needs
 and (optionally) contributing code back.
 It describes how to write now tasks and tie them in with the package.</p>
 <div class="section" id="writing-new-tasks">
 <h2>Writing new tasks<a class="headerlink" href="#writing-new-tasks" title="Permalink to this headline">¶</a></h2>
-<p>If you have a custom task that you want xtas to perform, then you can add it
-as follows. Let&#8217;s start with an example task that reverses a document,
-character-by-character. Put the following in a file <tt class="docutils literal"><span class="pre">mytasks.py</span></tt>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">xtas.core</span> <span class="kn">import</span> <span class="n">app</span>
+<p>If you have a custom task that you want xtas to perform,
+then you can add it as follows.
+Suppose you want to perform sentiment analysis on French text
+using the <a class="reference external" href="http://www.clips.ua.ac.be/pages/pattern">Pattern</a> toolkit.
+First, install Pattern:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>pip install pattern
+</pre></div>
+</div>
+<p>Now define an xtas task that uses Pattern to process a French text.
+Put the following a file, say, <code class="docutils literal"><span class="pre">pattern_tasks.py</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pattern.fr</span>
+<span class="kn">from</span> <span class="nn">xtas.core</span> <span class="kn">import</span> <span class="n">app</span>
 
 <span class="nd">@app.task</span>
-<span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">doc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">def</span> <span class="nf">fr_sentiment</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Perform sentiment analysis on French text.</span>
+
+<span class="sd">    Returns the text (for reference), a subjectivity score,</span>
+<span class="sd">    and a positive/negative score.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">text</span><span class="p">,)</span> <span class="o">+</span> <span class="n">pattern</span><span class="o">.</span><span class="n">fr</span><span class="o">.</span><span class="n">sentiment</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Make sure this file can be imported:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ python
-&gt;&gt;&gt; from mytasks import reverse
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pattern_tasks</span> <span class="kn">import</span> <span class="n">fr_sentiment</span>
 </pre></div>
 </div>
-<p>If the above gave an error, adjust your <tt class="docutils literal"><span class="pre">PYTHONPATH</span></tt>:</p>
-<div class="highlight-python"><div class="highlight"><pre>export PYTHONPATH=.:$PYTHONPATH
+<p>If the above gave an error, adjust your <code class="docutils literal"><span class="pre">PYTHONPATH</span></code> (in the shell):</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>export PYTHONPATH=.:$PYTHONPATH
 </pre></div>
 </div>
-<p>Now adjust the xtas configuration. Run <tt class="docutils literal"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">xtas.make_config</span></tt> to get
-a configuration file <tt class="docutils literal"><span class="pre">xtas_config.py</span></tt> in the current directory. At the bottom
-of the file is an empty list called <tt class="docutils literal"><span class="pre">EXTRA_MODULES</span></tt>. Put your module in it:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">EXTRA_MODULES</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s">&#39;mytasks&#39;</span><span class="p">,</span>
+<p>Now adjust the xtas configuration. Run <code class="docutils literal"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">xtas.make_config</span></code> to get
+a configuration file <code class="docutils literal"><span class="pre">xtas_config.py</span></code> in the current directory. At the bottom
+of the file is an empty list called <code class="docutils literal"><span class="pre">EXTRA_MODULES</span></code>. Put your module in it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">EXTRA_MODULES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;pattern_tasks&#39;</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 </div>
-<p>Now restart the worker. It should report <tt class="docutils literal"><span class="pre">mytasks.reverse</span></tt> as its first
-task, followed by all the built-in tasks. You can now run your <tt class="docutils literal"><span class="pre">reverse</span></tt>
-function asynchronously, e.g. in a Python shell:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mytasks</span> <span class="kn">import</span> <span class="n">reverse</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">reverse</span><span class="o">.</span><span class="n">apply_async</span><span class="p">([</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">])</span>
+<p>Now restart the worker. It should report <code class="docutils literal"><span class="pre">pattern_tasks.fr_sentiment</span></code>
+as its first task, followed by all the built-in tasks.
+You can now run your task function asynchronously, e.g. in a Python shell:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pattern_tasks</span> <span class="kn">import</span> <span class="n">fr_sentiment</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">fr_sentiment</span><span class="o">.</span><span class="n">apply_async</span><span class="p">([</span><span class="s2">&quot;Bon!&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-<span class="go">u&#39;!dlrow ,olleH&#39;</span>
+<span class="go">[&#39;Bon!&#39;, 0.875, 0.7]</span>
 </pre></div>
 </div>
 <p>If you also restart the webserver, you should see the new task in the list of
 single-document tasks:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ curl -s http://localhost:5000/tasks | python -m json.tool | grep mytasks
-    &quot;mytasks.reverse&quot;,
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ curl -s http://localhost:5000/tasks | python -m json.tool | grep pattern
+    &quot;pattern_tasks.fr_sentiment&quot;,
 </pre></div>
 </div>
-<p>To use the custom task from the REST API, e.g. with <tt class="docutils literal"><span class="pre">/run_es</span></tt>, give its
-fully qualified name (<tt class="docutils literal"><span class="pre">mytasks.reverse</span></tt>). Only built-in tasks have their
-name abbreviated to not include the module name.</p>
+<p>To use the custom task from the REST API, e.g. with <code class="docutils literal"><span class="pre">/run_es</span></code>, give its
+fully qualified name (<code class="docutils literal"><span class="pre">pattern_tasks.fr_sentiment</span></code>).
+Only built-in tasks have their name abbreviated to not include the module name.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The webserver will currently assume your task is a single-document one,
@@ -181,26 +193,26 @@ rather than a batch task. This is a known defect.</p>
 capable of distributing it, then we&#8217;re happy to consider it for inclusion in
 xtas. Make sure you have copyright to the code you write or your employer
 gives you permission to contribute under the terms of the Apache License
-(<tt class="docutils literal"><span class="pre">LICENSE.txt</span></tt> in the main source directory).</p>
+(<code class="docutils literal"><span class="pre">LICENSE.txt</span></code> in the main source directory).</p>
 <p>Fork the main repository on GitHub, then install this instead of the released
 version. First make a new virtualenv:</p>
-<div class="highlight-python"><div class="highlight"><pre>virtualenv --system-site-packages /some/where/xtas-work
+<div class="highlight-python"><div class="highlight"><pre><span></span>virtualenv --system-site-packages /some/where/xtas-work
 . /some/where/xtas-work/bin/activate
 </pre></div>
 </div>
 <p>Then, in the xtas source directory, issue:</p>
-<div class="highlight-python"><div class="highlight"><pre>pip install .
+<div class="highlight-python"><div class="highlight"><pre><span></span>pip install .
 </pre></div>
 </div>
 <p>When you make changes, issue this command to update the virtualenv:</p>
-<div class="highlight-python"><div class="highlight"><pre>pip install --upgrade --no-deps .
+<div class="highlight-python"><div class="highlight"><pre><span></span>pip install --upgrade --no-deps .
 </pre></div>
 </div>
 <p>To contribute code back, commit your changes to a separate branch.
 Push this branch to GitHub and do a pull request. Your code will be reviewed
 before pulling.</p>
-<p>In the case of new tasks, put them in either <tt class="docutils literal"><span class="pre">xtas/tasks/single.py</span></tt> or
-<tt class="docutils literal"><span class="pre">xtas/tasks/cluster.py</span></tt>, depending on the type of task. Follow the
+<p>In the case of new tasks, put them in either <code class="docutils literal"><span class="pre">xtas/tasks/single.py</span></code> or
+<code class="docutils literal"><span class="pre">xtas/tasks/cluster.py</span></code>, depending on the type of task. Follow the
 conventions laid out in the docstrings of the modules. All xtas code should
 conform to <a class="reference external" href="http://legacy.python.org/dev/peps/pep-0008/">PEP 8</a>, the style
 guide for the Python standard library. Use the <a class="reference external" href="http://pep8.readthedocs.org/en/latest/">pep8</a> and <a class="reference external" href="https://pypi.python.org/pypi/pyflakes">pyflakes</a> tools to check code for compliance.
@@ -211,14 +223,14 @@ functions.</p>
 <h2>Writing documentation<a class="headerlink" href="#writing-documentation" title="Permalink to this headline">¶</a></h2>
 <p>Make sure to document your tasks.  Documentation is primarily written in the
 form of docstrings, and we tend to follow the <a class="reference external" href="https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt">NumPy docstring conventions</a>.</p>
-<p>To tie docstrings into the HTML documentation, edit the <tt class="docutils literal"><span class="pre">api.rst</span></tt> file
-in the directory <tt class="docutils literal"><span class="pre">doc</span></tt>. To generate HTML, make sure you have Sphinx,
+<p>To tie docstrings into the HTML documentation, edit the <code class="docutils literal"><span class="pre">api.rst</span></code> file
+in the directory <code class="docutils literal"><span class="pre">doc</span></code>. To generate HTML, make sure you have Sphinx,
 numpydoc and Celery 3.1.10 or later:</p>
-<div class="highlight-python"><div class="highlight"><pre>pip install -U sphinx numpydoc celery sphinx_bootstrap_theme
+<div class="highlight-python"><div class="highlight"><pre><span></span>pip install -U sphinx numpydoc celery sphinx_bootstrap_theme
 </pre></div>
 </div>
-<p>then type <tt class="docutils literal"><span class="pre">make</span> <span class="pre">html</span></tt> inside the <tt class="docutils literal"><span class="pre">doc</span></tt> directory. HTML will be generated
-in <tt class="docutils literal"><span class="pre">doc/_build/html</span></tt>.</p>
+<p>then type <code class="docutils literal"><span class="pre">make</span> <span class="pre">html</span></code> inside the <code class="docutils literal"><span class="pre">doc</span></code> directory. HTML will be generated
+in <code class="docutils literal"><span class="pre">doc/_build/html</span></code>.</p>
 </div>
 </div>
 
@@ -242,7 +254,7 @@ in <tt class="docutils literal"><span class="pre">doc/_build/html</span></tt>.</
     </p>
     <p>
         &copy; Copyright 2013–2015 Netherlands eScience Center, University of Amsterdam.<br/>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.2.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.5.<br/>
     </p>
   </div>
 </footer>

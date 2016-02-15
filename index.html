@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
@@ -38,7 +38,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 
   </head>
-  <body>
+  <body role="document">
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -114,16 +114,26 @@
       
   <div class="jumbotron"><div class="section" id="xtas-the-extensible-text-analysis-suite">
 <h1>xtas, the eXtensible Text Analysis Suite<a class="headerlink" href="#xtas-the-extensible-text-analysis-suite" title="Permalink to this headline">¶</a></h1>
-<p>This is the manual for xtas, a distributed text analysis package
-based on Celery.
-xtas provides NLP functionality such as named-entity recognition, parsing,
-document clustering and topic models,
-through Python (synchronous/asynchronous) and REST APIs.</p>
-<p>xtas ties in with Elasticsearch.
-You can use ES to store documents, then enrich them using xtas
-The result of xtas analyses can go back into Elasticsearch,
-so you can easily implement semantic search:
-queries over named entities, sentiment analysis results, etc.</p>
+<p>xtas is a collection of natural language processing and text mining tools,
+brought together in a single software package
+with built-in distributed computing
+and support for the Elasticsearch document store.</p>
+<p>xtas functionality consists partly of wrappers for existing packages,
+with automatic installation of software and data;
+and partly of custom-built modules coming out of research.
+Currently offered are various parsers for Dutch and English
+(Alpino, CoreNLP, Frog, Semafor),
+named entity recognizers (Frog, Stanford and custom-built ones),
+a temporal expression tagger (Heideltime)
+and a sentiment tagger based on SentiWords.</p>
+<p>A basic installation of xtas works like a Python module.
+Built-in package management and a simple, uniform interface
+take away the hassle of installing, configuring and using
+many existing NLP tools.</p>
+<p>xtas&#8217;s open architecture makes it possible to include custom code,
+run this in a distributed fashion and have it communicate with Elasticsearch
+to provide document storage and retrieval.
+See <a class="reference internal" href="extending.html#extending"><span>Extending xtas</span></a> for details.</p>
         <a href="setup.html" class="btn btn-primary btn-lg">Setup</a>
         <a href="tutorial.html" class="btn btn-primary btn-lg">Tutorial</a>
         <a href="api.html" class="btn btn-primary btn-lg">API</a>
@@ -158,9 +168,10 @@ queries over named entities, sentiment analysis results, etc.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog/release notes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id1">3.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">3.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id3">3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id1">3.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">3.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id3">3.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id4">3.0</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently anticipated questions</a></li>
@@ -200,7 +211,7 @@ queries over named entities, sentiment analysis results, etc.</p>
     </p>
     <p>
         &copy; Copyright 2013–2015 Netherlands eScience Center, University of Amsterdam.<br/>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.2.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.5.<br/>
     </p>
   </div>
 </footer>

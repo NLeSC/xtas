@@ -204,13 +204,14 @@
 <span class="sd">    be applicable to other types of document as well, but uses a statistical</span>
 <span class="sd">    model trained on a corpus of user reviews of movies, all in English.</span>
 
-<span class="sd">    See ``sentiwords_tag`` for a more general, but less direct, way of</span>
-<span class="sd">    determining the opinion expressed in a text.</span>
-
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    p : float</span>
 <span class="sd">        The probability that the movie review ``doc`` is positive.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    sentiwords_tag: more generic sentiment expression tagger</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">._polarity</span> <span class="kn">import</span> <span class="n">classify</span>
     <span class="k">return</span> <span class="n">classify</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
@@ -323,6 +324,13 @@
 <span class="sd">        Output format. Either &quot;bag&quot; for a histogram (dict) of annotated token</span>
 <span class="sd">        span frequencies, or &quot;tokens&quot; a mixed list of strings and (list of</span>
 <span class="sd">        strings, polarity) pairs.</span>
+
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    movie_review_emotions: per-sentence fine-grained sentiment tagger</span>
+
+<span class="sd">    movie_review_polarity: figure out if a movie review is positive or negative</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">._sentiwords</span> <span class="kn">import</span> <span class="n">tag</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_tokenize_if_needed</span><span class="p">(</span><span class="n">fetch</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span>
