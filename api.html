@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API reference &mdash; xtas 3.3 documentation</title>
+    <title>API reference &mdash; xtas 3.4 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '3.3',
+        VERSION:     '3.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +30,7 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <link rel="top" title="xtas 3.3 documentation" href="index.html" />
+    <link rel="top" title="xtas 3.4 documentation" href="index.html" />
     <link rel="next" title="REST API" href="rest.html" />
     <link rel="prev" title="xtas tutorial" href="tutorial.html" />
 <meta charset='utf-8'>
@@ -52,7 +52,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           xtas</a>
-        <span class="navbar-text navbar-version pull-left"><b>3.3</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>3.4</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -348,8 +348,6 @@ be written in English.</p>
 <p>Determines whether the film review <code class="docutils literal"><span class="pre">doc</span></code> is positive or negative. Might
 be applicable to other types of document as well, but uses a statistical
 model trained on a corpus of user reviews of movies, all in English.</p>
-<p>See <code class="docutils literal"><span class="pre">sentiwords_tag</span></code> for a more general, but less direct, way of
-determining the opinion expressed in a text.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -362,6 +360,15 @@ determining the opinion expressed in a text.</p>
 </tr>
 </tbody>
 </table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><code class="xref py py-obj docutils literal"><span class="pre">movie_review_emotions</span></code></dt>
+<dd>per-sentence fine-grained sentiment tagger</dd>
+<dt><a class="reference internal" href="#xtas.tasks.single.sentiwords_tag" title="xtas.tasks.single.sentiwords_tag"><code class="xref py py-obj docutils literal"><span class="pre">sentiwords_tag</span></code></a></dt>
+<dd>more generic sentiment expression tagger</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="task">
@@ -423,6 +430,15 @@ strings, polarity) pairs.</p>
 </tr>
 </tbody>
 </table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><code class="xref py py-obj docutils literal"><span class="pre">movie_review_emotions</span></code></dt>
+<dd>per-sentence fine-grained sentiment tagger</dd>
+<dt><a class="reference internal" href="#xtas.tasks.single.movie_review_polarity" title="xtas.tasks.single.movie_review_polarity"><code class="xref py py-obj docutils literal"><span class="pre">movie_review_polarity</span></code></a></dt>
+<dd>figure out if a movie review is positive or negative</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="task">

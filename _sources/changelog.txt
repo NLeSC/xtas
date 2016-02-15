@@ -1,6 +1,17 @@
 Changelog/release notes
 =======================
 
+3.4
+---
+
+* Added: emotion classifier for film reviews (and maybe other English text).
+* Documentation updates.
+* Latent dirichlet allocation (LDA, topic modeling) is now performed using
+  scikit-learn instead of Gensim. This removes one dependency.
+* xtas now requires NLTK 3.1. The previously required version, 3.0a2,
+  conflicted with some versions of six, causing cryptic ImportErrors when
+  loading xtas in some setups.
+
 3.3
 ---
 
