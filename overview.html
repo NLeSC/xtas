@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Frequently anticipated questions &mdash; xtas 3.4 documentation</title>
+    <title>Architecture overview &mdash; xtas 3.4 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -31,7 +31,8 @@
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="xtas 3.4 documentation" href="index.html" />
-    <link rel="prev" title="Changelog/release notes" href="changelog.html" />
+    <link rel="next" title="Setting up xtas" href="setup.html" />
+    <link rel="prev" title="xtas, the eXtensible Text Analysis Suite" href="index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -68,14 +69,14 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview of xtas</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Architecture overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up xtas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">xtas tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rest.html">REST API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extending.html">Extending xtas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog/release notes</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Frequently anticipated questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently anticipated questions</a></li>
 </ul>
 </ul>
 </li>
@@ -85,7 +86,11 @@
               
                 
   <li>
-    <a href="changelog.html" title="Previous Chapter: Changelog/release notes"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm">&laquo; Changelog/rel...</span>
+    <a href="index.html" title="Previous Chapter: xtas, the eXtensible Text Analysis Suite"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm">&laquo; xtas, the eXt...</span>
+    </a>
+  </li>
+  <li>
+    <a href="setup.html" title="Next Chapter: Setting up xtas"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm">Setting up xtas &raquo;</span>
     </a>
   </li>
               
@@ -113,20 +118,61 @@
   <div class="row">
     <div class="col-md-12">
       
-  <div class="section" id="frequently-anticipated-questions">
-<h1>Frequently anticipated questions<a class="headerlink" href="#frequently-anticipated-questions" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="architecture-overview">
+<h1>Architecture overview<a class="headerlink" href="#architecture-overview" title="Permalink to this headline">¶</a></h1>
+<p>xtas can be used in one of three modes,
+characterized by the following combinations of API and execution model:</p>
 <ul class="simple">
-<li>If xtas downloads optional dependencies at runtime, where will it put those?</li>
+<li>Python, standalone</li>
+<li>Python, distributed</li>
+<li>REST, distributed</li>
 </ul>
-<p>By default, in <code class="docutils literal"><span class="pre">~/xtas_data</span></code>. You can override this by setting the
-<code class="docutils literal"><span class="pre">XTAS_DATA</span></code> environment variable.</p>
-<p>In addition, xtas uses NLTK extensively, and that will download resource files
-to <code class="docutils literal"><span class="pre">~/nltk_data</span></code>.</p>
-<ul class="simple">
-<li>I get <code class="docutils literal"><span class="pre">SystemError:</span> <span class="pre">error</span> <span class="pre">return</span> <span class="pre">without</span> <span class="pre">exception</span> <span class="pre">set</span></code> when starting a
-Celery worker</li>
-</ul>
-<p>Check if RabbitMQ is running and xtas is properly configured to talk to it.</p>
+<p>In the first mode, xtas is simply a Python library of NLP tasks
+that are called from your Python script or interactive interpreter,
+and they are executed synchronously on your local machine.</p>
+<p class="graphviz">
+<img src="_images/graphviz-f69e9f9acf03198532f6b9143c42409bcf0d3717.png" alt="digraph {
+    rankdir=LR
+    node [shape=rect, color=lightblue]
+
+    &quot;Python script&quot; -&gt; &quot;xtas API&quot;
+}" />
+</p>
+<p>In the second mode, xtas workers run on some cluster (or a big machine),
+and the local xtas library sends jobs to those workers
+rather than executing them locally.</p>
+<p class="graphviz">
+<img src="_images/graphviz-5fa8b8bb037184bbd7331278b07d660675a57430.png" alt="digraph {
+    rankdir=LR
+    node [shape=rect, color=lightblue]
+
+    q [label=&quot;Task queue (RabbitMQ)&quot;]
+
+    &quot;Python script&quot; -&gt; &quot;xtas API&quot;
+    &quot;xtas API&quot; -&gt; q
+    q -&gt; &quot;xtas worker 1&quot;
+    q -&gt; &quot;xtas worker N&quot;
+}" />
+</p>
+<p>In the final mode, your code communicates with xtas workers through a
+REST API that in turn communicates with the workers.</p>
+<p class="graphviz">
+<img src="_images/graphviz-1c36ec13febe971b90d6cfcfe28c5399c974fcbd.png" alt="digraph {
+    rankdir=LR
+    node [shape=rect, color=lightblue]
+
+    rest [label=&quot;xtas REST API&quot;]
+    q [label=&quot;Task queue (RabbitMQ)&quot;]
+
+    &quot;Program in any language&quot; -&gt; rest -&gt; q
+    q -&gt; &quot;xtas worker 1&quot;
+    q -&gt; &quot;xtas worker N&quot;
+}" />
+</p>
+<p>It follows that xtas consists of three parts:
+a Python library, a worker program, and a web server program.
+To get started, you only need the Python library and
+no workers need to be running.</p>
 </div>
 
 
@@ -142,7 +188,7 @@ Celery worker</li>
         <br/>
         
 <div id="sourcelink">
-  <a href="_sources/faq.txt"
+  <a href="_sources/overview.txt"
      rel="nofollow">Source</a>
 </div>
       
