@@ -32,6 +32,7 @@ sys.path.insert(0, os.path.abspath('..'))
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
+    'sphinx.ext.graphviz',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'celery.contrib.sphinx',
