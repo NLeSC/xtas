@@ -21,8 +21,14 @@ def clean_es():
         raise SkipTest("ElasticSearch host not found, skipping elastic tests")
     # check version number
     status, response = es.transport.perform_request("GET", "/")
-    version_number = response['version']['number']
-    if status != 200 or not (version_number.startswith("1.") and int(version_number.split(".")[1]) >= 2):
+    if status != 200:
+        raise Exception("Elasticsearch responded with status %d" % status)
+
+    # Only take the first two components to be robust against '1.4.0.Beta1'.
+    version = response['version']['number']
+    major, minor = map(int, version.split('.', 2)[:2])
+    # Lowest version that this code is tested against is 1.1.1.
+    if not (major == 2 or major == 1 and minor >= 1):
         raise SkipTest("Wrong version number or response: {status} "
                        + "/ {response}".format(**locals()))
     logging.info("deleting and recreating index {ES_TEST_INDEX}"
@@ -53,15 +59,17 @@ def test_query_batch():
     "Test getting multiple documents in a batch"
     from xtas.tasks.es import fetch_query_batch
     with clean_es() as es:
-        es.index(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE,
-                 body={"text": "test", "test": "batch"})
-        es.index(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE,
-                 body={"text": "test2", "test": "batch"})
-        es.index(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE,
-                 body={"test": "batch"})
+        for i in range(10):
+            es.index(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE,
+                     body={"text": "test", "test": "batch"})
+            es.index(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE,
+                     body={"text": "test2", "test": "batch"})
+            es.index(index=ES_TEST_INDEX, doc_type=ES_TEST_TYPE,
+                     body={"test": "batch"})
         client.indices.IndicesClient(es).flush()
         b = fetch_query_batch(ES_TEST_INDEX, ES_TEST_TYPE,
                               query={"term": {"test": "batch"}}, field="text")
+        assert_equal(len(b), 20)
         assert_equal(set(b), {"test", "test2"})
 
 

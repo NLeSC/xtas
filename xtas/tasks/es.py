@@ -4,6 +4,7 @@ from __future__ import absolute_import
 from datetime import datetime
 
 from elasticsearch import Elasticsearch, client, exceptions
+from elasticsearch.helpers import scan
 from six import iteritems
 
 from chardet import detect as chardetect
@@ -64,11 +65,14 @@ def fetch_query_batch(idx, typ, query, field='body'):
 
     Returns a list of field contents, with documents that don't have the
     required field silently filtered out.
+
+    Example
+    -------
+    >>> q = {"query_string": {"query": "hello"}}
+    >>> r = fetch_query_batch("20news", "post", q, field="text")
     """
-    r = _es().search(index=idx, doc_type=typ, body={'query': query},
-                     _source=[field])
-    r = (hit['_source'].get(field, None)
-         for hit in r['hits']['hits'])
+    r = scan(_es(), {'query': query}, index=idx, doc_type=typ)
+    r = (hit['_source'].get(field, None) for hit in r)
     return [hit for hit in r if hit is not None]
 
 CHECKED_MAPPINGS = set()
