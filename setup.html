@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Setting up xtas &mdash; xtas 3.4 documentation</title>
+    <title>Getting started &mdash; xtas 3.4 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -31,8 +31,8 @@
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="xtas 3.4 documentation" href="index.html" />
-    <link rel="next" title="xtas tutorial" href="tutorial.html" />
-    <link rel="prev" title="Overview of xtas" href="overview.html" />
+    <link rel="next" title="xtas + Elasticsearch tutorial" href="tutorial.html" />
+    <link rel="prev" title="xtas, the eXtensible Text Analysis Suite" href="index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -69,9 +69,9 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview of xtas</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Setting up xtas</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">xtas tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">xtas + Elasticsearch tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Architecture overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rest.html">REST API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extending.html">Extending xtas</a></li>
@@ -86,11 +86,11 @@
               
                 
   <li>
-    <a href="overview.html" title="Previous Chapter: Overview of xtas"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm">&laquo; Overview of xtas</span>
+    <a href="index.html" title="Previous Chapter: xtas, the eXtensible Text Analysis Suite"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm">&laquo; xtas, the eXt...</span>
     </a>
   </li>
   <li>
-    <a href="tutorial.html" title="Next Chapter: xtas tutorial"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm">xtas tutorial &raquo;</span>
+    <a href="tutorial.html" title="Next Chapter: xtas + Elasticsearch tutorial"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm">xtas + Elasti... &raquo;</span>
     </a>
   </li>
               
@@ -118,25 +118,16 @@
   <div class="row">
     <div class="col-md-12">
       
-  <div class="section" id="setting-up-xtas">
-<h1>Setting up xtas<a class="headerlink" href="#setting-up-xtas" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="getting-started">
+<span id="setup"></span><h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>xtas can be run locally or on a cluster; the <a class="reference internal" href="overview.html#overview"><span>Architecture overview</span></a> explains this
+in more detail. This guide shows first how to get xtas running locally,
+then how to run it as a distributed service.</p>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>Make sure you have <a class="reference external" href="http://www.rabbitmq.com/">RabbitMQ</a> running.
-Installation instructions for RabbitMQ can be found in various places;
-using your operating system&#8217;s package manager is usually the easiest option
-(e.g., <code class="docutils literal"><span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">rabbitmq-server</span></code>).
-Make sure you have Python 2.7 or newer.
-Some tasks also require a Java VM. xtas is primarily developed on Linux; OS X
-support is not regularly tested, but issues/patches are welcome. Windows is
-not supported.
-xtas can talk to <a class="reference external" href="http://www.elasticsearch.org/">Elasticsearch</a> and use if
-for document storage, but ES is not a hard dependency.</p>
-<p>TL;DR: <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">xtas</span></code>.</p>
-<p>Long story: get the install dependencies, Python, pip, NumPy, Java (JRE).
-On a Debian/Ubuntu/Linux Mint system, these can be installed with the package
-manager, in which case it&#8217;s a good idea to install other dependencies too
-(so <code class="docutils literal"><span class="pre">pip</span></code> has to do less work):</p>
+<p>xtas runs on Linux (patches to support OS X are welcome).
+It depends on Python 2.7, SciPy, the Java Runtime (JRE) and RabbitMQ.
+On a Debian/Ubuntu/Linux Mint system, these dependencies can be installed with:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span>sudo apt-get install libatlas-dev liblapack-dev rabbitmq-server \
     python-scipy openjdk-7-jre python-virtualenv build-essential \
     python-pip libxslt-dev
@@ -148,18 +139,11 @@ manager, in which case it&#8217;s a good idea to install other dependencies too
 </pre></div>
 </div>
 <p>(RabbitMQ is an <a class="reference external" href="https://fedoraproject.org/wiki/EPEL">EPEL</a> package.)</p>
-<p>For other systems, including Macs, getting SciPy through a Python distro
-such as <a class="reference external" href="http://continuum.io/downloads">Anaconda</a> saves you the trouble
-of setting up C, C++ and Fortran compilers.</p>
 <p>Next, set up a virtualenv for xtas:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span>virtualenv --system-site-packages /some/where
 . /some/where/bin/activate
 </pre></div>
 </div>
-<p>The option <code class="docutils literal"><span class="pre">--system-site-packages</span></code> makes sure the system-wide NumPy, SciPy,
-scikit-learn and NLTK are used, if they are pre-installed on the machine.
-If you don&#8217;t use this option, do make sure you <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">numpy</span></code>
-before trying anything else.</p>
 <p>Use <a class="reference external" href="https://pypi.python.org/pypi/pip/1.1">pip</a> to install xtas.
 To get the latest release:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span>pip install xtas
@@ -169,34 +153,54 @@ To get the latest release:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span>pip install git+https://github.com/NLeSC/xtas.git
 </pre></div>
 </div>
-<p>For installing from local source, see <a class="reference internal" href="extending.html"><em>Extending xtas</em></a>.</p>
+<p>For installing from local source (if you want to modify xtas),
+see <a class="reference internal" href="extending.html"><em>Extending xtas</em></a>.</p>
+<p>Try it out in a Python shell:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">xtas.tasks</span> <span class="kn">import</span> <span class="n">tokenize</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenize</span><span class="p">(</span><span class="s2">&quot;Hello, world!&quot;</span><span class="p">)</span>
+<span class="go">[u&#39;Hello&#39;, u&#39;,&#39;, u&#39;world&#39;, u&#39;!&#39;]</span>
+</pre></div>
 </div>
-<div class="section" id="getting-started">
-<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
-<p>You need to have RabbitMQ and Elasticsearch running. On Debian/Ubuntu,
-RabbitMQ can be installed with <code class="docutils literal"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">rabbitmq-server</span></code>.
-See the <a class="reference external" href="http://www.elasticsearch.org/">Elasticsearch website</a> for how to
-install that package if you don&#8217;t already have it.</p>
+<p>If you only want to use xtas as a library on your local machine, you&#8217;re done.
+Check the <a class="reference internal" href="api.html#api"><span>API reference</span></a> for what xtas can do.</p>
+</div>
+<div class="section" id="distributed-xtas">
+<h2>Distributed xtas<a class="headerlink" href="#distributed-xtas" title="Permalink to this headline">¶</a></h2>
+<p>To run xtas in distributed mode, you need to have RabbitMQ
+and, optionally, Elasticsearch running on some machine.
+xtas by default assumes that these are running locally on their standard ports.
+If they are not, run:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>python -m xtas.make_config
+</pre></div>
+</div>
+<p>and edit the generated configuration file, <code class="docutils literal"><span class="pre">xtas_config.py</span></code>,
+to point xtas to RabbitMQ <code class="docutils literal"><span class="pre">BROKER_URL</span></code> (see <a class="reference external" href="http://docs.celeryproject.org/en/latest/configuration.html">Celery configuration</a> for details)
+and Elasticsearch.
+Make sure this file is somewhere in your <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>
+(test this with <code class="docutils literal"><span class="pre">python</span> <span class="pre">-c</span> <span class="pre">'import</span> <span class="pre">xtas_config'</span></code>).</p>
 <p>Then start an xtas worker:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>python -m xtas.worker --loglevel=info
+<div class="highlight-python"><div class="highlight"><pre><span></span>python -m xtas.worker --loglevel=info &amp;
 </pre></div>
 </div>
-<p>Start the web frontend:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>python -m xtas.webserver
+<p>If you want to use the xtas REST API, also start the webserver:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>python -m xtas.webserver &amp;
 </pre></div>
 </div>
-<p>Verify that it works by visiting:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>http://localhost:5000/tasks
+<p>Verify that it works:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>curl http://localhost:5000/tasks | python -m json.tool
 </pre></div>
 </div>
 <p>You should see a list of supported tasks.</p>
 <p>Now to perform some actual work, make sure Elasticsearch is populated with
 documents, and visit a URL such as</p>
 <blockquote>
-<div><a class="reference external" href="http://localhost:5000/run_es/morphy/blog/post/1/body">http://localhost:5000/run_es/morphy/blog/post/1/body</a></div></blockquote>
-<p>This runs the Morphy morphological analyzer on the &#8220;body&#8221; field of &#8220;post&#8221; 1
-in ES index &#8220;blog&#8221;. After some time, the results from Morphy are written to
-this document, but in a field called &#8220;xtas_results&#8221;.</p>
+<div><a class="reference external" href="http://localhost:5000/run_es/morphy/20news/post/1/text">http://localhost:5000/run_es/morphy/20news/post/1/text</a></div></blockquote>
+<p>This runs the Morphy morphological analyzer on the &#8220;text&#8221; field of &#8220;post&#8221; 1
+in ES index &#8220;20news&#8221;. After some time, the results from Morphy are written to
+a child document of this post, that can be obtained using:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>curl http://localhost:9200/20news/post__morphy/1?parent=1
+</pre></div>
+</div>
 <p>You can now run the unittest suite using:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span>python setup.py test
 </pre></div>
@@ -205,20 +209,11 @@ this document, but in a field called &#8220;xtas_results&#8221;.</p>
 running worker process and Elasticsearch. Running the tests first is a good
 idea, because it will fetch some dependencies (e.g. NLTK models) that will
 otherwise be fetched on demand.</p>
+<p>To learn more about using xtas as a distributed text analysis engine,
+see the <a class="reference internal" href="tutorial.html#tutorial"><span>xtas + Elasticsearch tutorial</span></a>.</p>
 </div>
-<div class="section" id="configuring">
-<h2>Configuring<a class="headerlink" href="#configuring" title="Permalink to this headline">¶</a></h2>
-<p>To override the built-in xtas configuration (which assumes that you&#8217;re in the
-Amsterdam timezone, have Elasticsearch at <code class="docutils literal"><span class="pre">localhost:9200</span></code>, etc.), run:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>python -m xtas.make_config
-</pre></div>
-</div>
-<p>to generate a file called <code class="docutils literal"><span class="pre">xtas_config.py</span></code> in the current directory. Change
-this file as needed, make sure it is in the <code class="docutils literal"><span class="pre">PYTHONPATH</span></code> (<em>not</em> in the
-<code class="docutils literal"><span class="pre">xtas/</span></code> directory) and re-start the worker and webserver.</p>
-</div>
-<div class="section" id="running-as-a-daemon">
-<h2>Running as a daemon<a class="headerlink" href="#running-as-a-daemon" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="running-as-a-service">
+<h2>Running as a service<a class="headerlink" href="#running-as-a-service" title="Permalink to this headline">¶</a></h2>
 <p>xtas can be run as a service on Linux. See the directory <code class="docutils literal"><span class="pre">init.d</span></code> in the
 xtas source distribution for example init scripts.</p>
 </div>

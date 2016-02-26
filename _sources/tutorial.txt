@@ -1,8 +1,10 @@
-xtas tutorial
-=============
+.. _tutorial:
+
+xtas + Elasticsearch tutorial
+=============================
 
 Assuming you've properly configured and started xtas as described in the
-README, here's how to do interesting work with it.
+section :ref:`setup`, here's how to do interesting work with it.
 
 First, you need a document collection. If you don't have one already, download
 the 20newsgroups dataset::

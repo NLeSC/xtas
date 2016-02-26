@@ -31,8 +31,8 @@
     <script type="text/javascript" src="_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="top" title="xtas 3.4 documentation" href="index.html" />
-    <link rel="next" title="Setting up xtas" href="setup.html" />
-    <link rel="prev" title="xtas, the eXtensible Text Analysis Suite" href="index.html" />
+    <link rel="next" title="API reference" href="api.html" />
+    <link rel="prev" title="xtas + Elasticsearch tutorial" href="tutorial.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -69,9 +69,9 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">xtas + Elasticsearch tutorial</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Architecture overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up xtas</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">xtas tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rest.html">REST API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extending.html">Extending xtas</a></li>
@@ -86,11 +86,11 @@
               
                 
   <li>
-    <a href="index.html" title="Previous Chapter: xtas, the eXtensible Text Analysis Suite"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm">&laquo; xtas, the eXt...</span>
+    <a href="tutorial.html" title="Previous Chapter: xtas + Elasticsearch tutorial"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm">&laquo; xtas + Elasti...</span>
     </a>
   </li>
   <li>
-    <a href="setup.html" title="Next Chapter: Setting up xtas"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm">Setting up xtas &raquo;</span>
+    <a href="api.html" title="Next Chapter: API reference"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm">API reference &raquo;</span>
     </a>
   </li>
               
@@ -119,7 +119,7 @@
     <div class="col-md-12">
       
   <div class="section" id="architecture-overview">
-<h1>Architecture overview<a class="headerlink" href="#architecture-overview" title="Permalink to this headline">¶</a></h1>
+<span id="overview"></span><h1>Architecture overview<a class="headerlink" href="#architecture-overview" title="Permalink to this headline">¶</a></h1>
 <p>xtas can be used in one of three modes,
 characterized by the following combinations of API and execution model:</p>
 <ul class="simple">
@@ -129,50 +129,65 @@ characterized by the following combinations of API and execution model:</p>
 </ul>
 <p>In the first mode, xtas is simply a Python library of NLP tasks
 that are called from your Python script or interactive interpreter,
-and they are executed synchronously on your local machine.</p>
+and they are executed synchronously on your local machine.
+Tasks are the functions listed in the <a class="reference internal" href="api.html#api"><span>API reference</span></a>.</p>
 <p class="graphviz">
-<img src="_images/graphviz-f69e9f9acf03198532f6b9143c42409bcf0d3717.png" alt="digraph {
+<object data="_images/graphviz-f69e9f9acf03198532f6b9143c42409bcf0d3717.svg" type="image/svg+xml">
+            <p class="warning">digraph {
     rankdir=LR
     node [shape=rect, color=lightblue]
 
     &quot;Python script&quot; -&gt; &quot;xtas API&quot;
-}" />
+}</p></object>
 </p>
 <p>In the second mode, xtas workers run on some cluster (or a big machine),
-and the local xtas library sends jobs to those workers
-rather than executing them locally.</p>
+and the local xtas library sends tasks to those workers
+rather than executing them locally.
+Tasks are submitted by calling tasks asynchronously:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">xtas</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">guess_language</span><span class="o">.</span><span class="n">apply_async</span><span class="p">([</span><span class="s1">&#39;Welke taal zou dit zijn?&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span>
+<span class="go">&lt;AsyncResult: 8b774f33-512e-41fe-90fa-33c09a7fc9c2&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">[&#39;nl&#39;, 0.999999995851766]</span>
+</pre></div>
+</div>
+<p>Tasks are distributed using <a class="reference external" href="http://www.celeryproject.org">Celery</a>,
+a Python wrapper around the RabbitMQ task queuing middleware.</p>
 <p class="graphviz">
-<img src="_images/graphviz-5fa8b8bb037184bbd7331278b07d660675a57430.png" alt="digraph {
+<object data="_images/graphviz-83341bbbd341920be4df9afc532abf2b8c34db60.svg" type="image/svg+xml">
+            <p class="warning">digraph {
     rankdir=LR
     node [shape=rect, color=lightblue]
 
-    q [label=&quot;Task queue (RabbitMQ)&quot;]
+    q [label=&quot;Task queue (Celery)&quot;]
 
     &quot;Python script&quot; -&gt; &quot;xtas API&quot;
     &quot;xtas API&quot; -&gt; q
     q -&gt; &quot;xtas worker 1&quot;
     q -&gt; &quot;xtas worker N&quot;
-}" />
+}</p></object>
 </p>
 <p>In the final mode, your code communicates with xtas workers through a
 REST API that in turn communicates with the workers.</p>
 <p class="graphviz">
-<img src="_images/graphviz-1c36ec13febe971b90d6cfcfe28c5399c974fcbd.png" alt="digraph {
+<object data="_images/graphviz-087530766884abf13e111b8c33493d9b094b83af.svg" type="image/svg+xml">
+            <p class="warning">digraph {
     rankdir=LR
     node [shape=rect, color=lightblue]
 
     rest [label=&quot;xtas REST API&quot;]
-    q [label=&quot;Task queue (RabbitMQ)&quot;]
+    q [label=&quot;Task queue (Celery)&quot;]
 
     &quot;Program in any language&quot; -&gt; rest -&gt; q
     q -&gt; &quot;xtas worker 1&quot;
     q -&gt; &quot;xtas worker N&quot;
-}" />
+}</p></object>
 </p>
 <p>It follows that xtas consists of three parts:
 a Python library, a worker program, and a web server program.
-To get started, you only need the Python library and
-no workers need to be running.</p>
+To <a class="reference internal" href="setup.html#setup"><span>get started</span></a>, you only need the Python library and
+no workers need to be running.
+The web server is not need to use xtas from Python.</p>
 </div>
 
 
