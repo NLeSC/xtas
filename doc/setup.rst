@@ -1,27 +1,19 @@
-Setting up xtas
+.. _setup:
+
+Getting started
 ===============
+
+xtas can be run locally or on a cluster; the :ref:`overview` explains this
+in more detail. This guide shows first how to get xtas running locally,
+then how to run it as a distributed service.
 
 
 Installation
 ------------
 
-Make sure you have `RabbitMQ <http://www.rabbitmq.com/>`_ running.
-Installation instructions for RabbitMQ can be found in various places;
-using your operating system's package manager is usually the easiest option
-(e.g., ``apt-get install rabbitmq-server``).
-Make sure you have Python 2.7 or newer.
-Some tasks also require a Java VM. xtas is primarily developed on Linux; OS X
-support is not regularly tested, but issues/patches are welcome. Windows is
-not supported.
-xtas can talk to `Elasticsearch <http://www.elasticsearch.org/>`_ and use if
-for document storage, but ES is not a hard dependency.
-
-TL;DR: ``pip install xtas``.
-
-Long story: get the install dependencies, Python, pip, NumPy, Java (JRE).
-On a Debian/Ubuntu/Linux Mint system, these can be installed with the package
-manager, in which case it's a good idea to install other dependencies too
-(so ``pip`` has to do less work)::
+xtas runs on Linux (patches to support OS X are welcome).
+It depends on Python 2.7, SciPy, the Java Runtime (JRE) and RabbitMQ.
+On a Debian/Ubuntu/Linux Mint system, these dependencies can be installed with::
 
     sudo apt-get install libatlas-dev liblapack-dev rabbitmq-server \
         python-scipy openjdk-7-jre python-virtualenv build-essential \
@@ -34,19 +26,10 @@ For CentOS/Fedora/Red Hat-style systems (this list is incomplete)::
 
 (RabbitMQ is an `EPEL <https://fedoraproject.org/wiki/EPEL>`_ package.)
 
-For other systems, including Macs, getting SciPy through a Python distro
-such as `Anaconda <http://continuum.io/downloads>`_ saves you the trouble
-of setting up C, C++ and Fortran compilers.
-
 Next, set up a virtualenv for xtas::
 
     virtualenv --system-site-packages /some/where
     . /some/where/bin/activate
-
-The option ``--system-site-packages`` makes sure the system-wide NumPy, SciPy,
-scikit-learn and NLTK are used, if they are pre-installed on the machine.
-If you don't use this option, do make sure you ``pip install numpy``
-before trying anything else.
 
 Use `pip <https://pypi.python.org/pypi/pip/1.1>`_ to install xtas.
 To get the latest release::
@@ -57,39 +40,60 @@ To get the bleeding edge version from GitHub::
 
     pip install git+https://github.com/NLeSC/xtas.git
 
-For installing from local source, see :doc:`extending`.
+For installing from local source (if you want to modify xtas),
+see :doc:`extending`.
+
+Try it out in a Python shell::
+
+    >>> from xtas.tasks import tokenize
+    >>> tokenize("Hello, world!")
+    [u'Hello', u',', u'world', u'!']
+
+If you only want to use xtas as a library on your local machine, you're done.
+Check the :ref:`api` for what xtas can do.
 
 
-Getting started
----------------
+Distributed xtas
+----------------
 
-You need to have RabbitMQ and Elasticsearch running. On Debian/Ubuntu,
-RabbitMQ can be installed with ``sudo apt-get install rabbitmq-server``.
-See the `Elasticsearch website <http://www.elasticsearch.org/>`_ for how to
-install that package if you don't already have it.
+To run xtas in distributed mode, you need to have RabbitMQ
+and, optionally, Elasticsearch running on some machine.
+xtas by default assumes that these are running locally on their standard ports.
+If they are not, run::
+
+    python -m xtas.make_config
+
+and edit the generated configuration file, ``xtas_config.py``,
+to point xtas to RabbitMQ ``BROKER_URL`` (see `Celery configuration
+<http://docs.celeryproject.org/en/latest/configuration.html>`_ for details)
+and Elasticsearch.
+Make sure this file is somewhere in your ``PYTHONPATH``
+(test this with ``python -c 'import xtas_config'``).
 
 Then start an xtas worker::
 
-    python -m xtas.worker --loglevel=info
+    python -m xtas.worker --loglevel=info &
 
-Start the web frontend::
+If you want to use the xtas REST API, also start the webserver::
 
-    python -m xtas.webserver
+    python -m xtas.webserver &
 
-Verify that it works by visiting::
+Verify that it works::
 
-    http://localhost:5000/tasks
+    curl http://localhost:5000/tasks | python -m json.tool
 
 You should see a list of supported tasks.
 
 Now to perform some actual work, make sure Elasticsearch is populated with
 documents, and visit a URL such as
 
-    http://localhost:5000/run_es/morphy/blog/post/1/body
+    http://localhost:5000/run_es/morphy/20news/post/1/text
 
-This runs the Morphy morphological analyzer on the "body" field of "post" 1
-in ES index "blog". After some time, the results from Morphy are written to
-this document, but in a field called "xtas_results".
+This runs the Morphy morphological analyzer on the "text" field of "post" 1
+in ES index "20news". After some time, the results from Morphy are written to
+a child document of this post, that can be obtained using::
+
+    curl http://localhost:9200/20news/post__morphy/1?parent=1
 
 You can now run the unittest suite using::
 
@@ -100,22 +104,12 @@ running worker process and Elasticsearch. Running the tests first is a good
 idea, because it will fetch some dependencies (e.g. NLTK models) that will
 otherwise be fetched on demand.
 
-
-Configuring
------------
-
-To override the built-in xtas configuration (which assumes that you're in the
-Amsterdam timezone, have Elasticsearch at ``localhost:9200``, etc.), run::
-
-    python -m xtas.make_config
-
-to generate a file called ``xtas_config.py`` in the current directory. Change
-this file as needed, make sure it is in the ``PYTHONPATH`` (*not* in the
-``xtas/`` directory) and re-start the worker and webserver.
+To learn more about using xtas as a distributed text analysis engine,
+see the :ref:`tutorial`.
 
 
-Running as a daemon
--------------------
+Running as a service
+--------------------
 
 xtas can be run as a service on Linux. See the directory ``init.d`` in the
 xtas source distribution for example init scripts.

@@ -2,6 +2,8 @@
 # Can be overridden by an xtas_config module in the PYTHONPATH, with the same
 # general structure as this module.
 
+# See http://docs.celeryproject.org/en/latest/configuration.html for the
+# allowed options in this dict.
 CELERY = dict(
     BROKER_URL='amqp://',
     CELERY_RESULT_BACKEND='amqp://',
@@ -18,6 +20,8 @@ CELERY = dict(
     #CELERY_ALWAYS_EAGER=True,
 )
 
+# See https://elasticsearch-py.readthedocs.org/en/latest/api.html#elasticsearch.Elasticsearch
+# for the allowed options.
 ELASTICSEARCH = [
     {"host": "localhost", "port": 9200},
     # add more hosts here

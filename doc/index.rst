@@ -34,8 +34,8 @@ See :ref:`extending` for details.
 
 .. raw:: html
 
-		<a href="setup.html" class="btn btn-primary btn-lg">Setup</a>
-		<a href="tutorial.html" class="btn btn-primary btn-lg">Tutorial</a>
+		<a href="setup.html" class="btn btn-primary btn-lg">Getting started</a>
+		<a href="overview.html" class="btn btn-primary btn-lg">Overview</a>
 		<a href="api.html" class="btn btn-primary btn-lg">API</a>
 	</div>
 
@@ -45,9 +45,9 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   overview
    setup
    tutorial
+   overview
    api
    rest
    extending
