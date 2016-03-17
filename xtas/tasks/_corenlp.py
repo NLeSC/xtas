@@ -1,15 +1,5 @@
 """
-Wrapper around the CoreNLP parser
-
-The module expects CORENLP_HOME to point to the CoreNLP installation dir.
-
-If run with all annotators, it requires around 3G of memory,
-and it will keep the process in memory indefinitely.
-
-See: http://nlp.stanford.edu/software/corenlp.shtml#Download
-
-Tested with
-http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip
+Wrapper around the CoreNLP toolkit.
 """
 
 import collections
@@ -28,6 +18,9 @@ from corenlp_xml.document import Document
 from six import iteritems
 
 from unidecode import unidecode
+
+from .._downloader import _download_zip
+
 
 log = logging.getLogger(__name__)
 
@@ -130,21 +123,32 @@ def parse(text, annotators=None, **options):
     return s.parse(text, **options)
 
 
+# Stanford CoreNLP 3.4.1. Later versions require Java 8.
+_URL = 'http://nlp.stanford.edu/software/stanford-corenlp-full-2014-08-27.zip'
+
+
+def _get_corenlp():
+    """Returns the directory where CoreNLP lives.
+
+    Will download CoreNLP if necessary. Checks $CORENLP_HOME as well as
+    $XTAS_DATA to be backward compatible.
+    """
+    corenlp_home = os.environ.get("CORENLP_HOME")
+    return corenlp_home or _download_zip(_URL, name='Stanford CoreNLP')
+
+
 def get_corenlp_version():
     "Return the corenlp version pointed at by CORENLP_HOME, or None"
-    corenlp_home = os.environ.get("CORENLP_HOME")
-    if corenlp_home:
-        for fn in os.listdir(corenlp_home):
-            m = re.match("stanford-corenlp-([\d.]+)-models.jar", fn)
-            if m:
-                return m.group(1)
+    corenlp_home = _get_corenlp()
+    for fn in os.listdir(corenlp_home):
+        m = re.match("stanford-corenlp-([\d.]+)-models.jar", fn)
+        if m:
+            return m.group(1)
 
 
 def get_command(annotators=None, memory=None):
-    "Return the system (shell) call to run corenlp"
-    corenlp_home = os.environ.get("CORENLP_HOME")
-    if not corenlp_home:
-        raise Exception("CORENLP_HOME not set")
+    """Return the system (shell) call to run corenlp."""
+    corenlp_home = _get_corenlp()
     cmd = 'java'
     if memory:
         cmd += ' -Xmx{memory}'.format(**locals())

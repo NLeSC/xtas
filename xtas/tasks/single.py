@@ -462,14 +462,10 @@ def alpino(doc, output="raw"):
 def corenlp(doc, output='raw'):
     """Wrapper around the Stanford CoreNLP parser.
 
-    Expects ``$CORENLP_HOME`` to point to the CoreNLP installation dir.
+    CoreNLP is downloaded automatically.
 
     If run with all annotators, it requires around 3G of memory,
     and it will keep the process in memory indefinitely.
-
-    Tested with `CoreNLP 2014-01-04
-    <http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip>`_
-    (see http://nlp.stanford.edu/software/corenlp.shtml).
 
     Parameters
     ----------
@@ -491,10 +487,7 @@ def corenlp(doc, output='raw'):
 def corenlp_lemmatize(doc, output='raw'):
     """Wrapper around the Stanford CoreNLP lemmatizer.
 
-    Expects ``$CORENLP_HOME`` to point to the CoreNLP installation dir.
-
-    Tested with `CoreNLP 2014-01-04
-    <http://nlp.stanford.edu/software/stanford-corenlp-full-2014-01-04.zip>`_.
+    CoreNLP is downloaded automatically.
 
     Parameters
     ----------

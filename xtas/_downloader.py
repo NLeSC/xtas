@@ -16,7 +16,21 @@ def _download_zip(url, name=None, check_dir=None):
     """Download and unzip zip file from url to $XTAS_DATA.
 
     Does nothing if $XTAS_DATA/check_dir exists.
+
+    Parameters
+    ----------
+    url : string
+        URL of resource.
+    name : string
+        Used by the logger, to display "Downloading [name]".
+    check_dir : string
+        Name of directory to which the resource is unzipped.
+        Derived from the URL by default.
     """
+    if check_dir is None:
+        check_dir = os.path.basename(url)
+        if check_dir.endswith('.zip'):
+            check_dir = check_dir[:-4]
     if name is None:
         name = url
     home = _make_data_home()

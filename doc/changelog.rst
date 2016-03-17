@@ -1,6 +1,11 @@
 Changelog/release notes
 =======================
 
+3.5
+---
+
+* Stanford CoreNLP is now downloaded automatically.
+
 3.4
 ---
 
