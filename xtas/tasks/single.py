@@ -192,9 +192,9 @@ def stanford_ner_tag(doc, output="tokens"):
         its own rules.
 
     output : string, optional
-        Output format. "tokens" gives a list of (token, nerclass) triples,
+        Output format. "tokens" gives a list of (token, nerclass) pairs,
         similar to the IO format but without the "I-". "names" returns a list
-        of (name, class pairs); since Stanford NER does not distinguish between
+        of (name, class) pairs; since Stanford NER does not distinguish between
         start and continuation of name spans, the reconstruction of full names
         is heuristic.
 
