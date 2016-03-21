@@ -19,7 +19,7 @@ if __name__ == '__main__':
     args = docopt(__doc__)
 
     with open(join(dirname(__file__), '..', '_defaultconfig.py')) as default:
-        print("Generating configuration file at %r" % args['-o'])
+        print("Generating configuration file at %s" % args['-o'])
         # XXX in Python 3, we can make this safer by opening with 'x'
         with open(args['-o'], 'w') as out:
             copyfileobj(default, out)
