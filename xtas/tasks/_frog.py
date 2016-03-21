@@ -45,7 +45,7 @@ def call_frog(text):
         text = text + "\n"
     if not isinstance(text, unicode):
         text = unicode(text)
-    text = unidecode(text).encode("utf-8")
+    text = unidecode(text)
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((FROG_HOST, FROG_PORT))
