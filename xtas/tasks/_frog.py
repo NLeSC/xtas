@@ -66,21 +66,22 @@ def parse_frog(lines):
     Result is a sequence of dicts representing the tokens
     """
     sid = 0
-    for i, l in enumerate(lines):
-        if not l:
+    for i, line in enumerate(lines):
+        if not line:
             # end of sentence marker
             sid += 1
         else:
-            print(l.strip())
-            parts = l.split("\t")
+            print(line.strip())
+            parts = line.split("\t")
             tid, token, lemma, morph, pos, conf, ne, _, parent, rel = parts
             if rel:
                 rel = (rel, int(parent) - 1)
-            r = dict(id=i, sentence=sid, word=token, lemma=lemma,
-                     pos=pos, pos_confidence=float(conf),
-                     rel=rel)
+            result = dict(id=i, sentence=sid, word=token, lemma=lemma,
+                          pos=pos, pos_confidence=float(conf),
+                          rel=rel)
             if ne != 'O':
-                r["ne"] = ne.split('_', 1)[0][2:]   # NER label from BIO tags
+                # NER label from BIO tags
+                result["ne"] = ne.split('_', 1)[0][2:]
             yield r
 
 
