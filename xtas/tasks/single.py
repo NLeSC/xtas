@@ -412,15 +412,13 @@ def dbpedia_spotlight(doc, lang='en', conf=0.5, supp=0, api_url=None):
     except (spotlight.SpotlightException, TypeError) as e:
         return {'error': e.message}
 
-    # Return a list of annotation dictionaries
-    annotations = []
-    for annotation in spotlight_resp:
-        # Ignore annotations without disambiguation candidates
-        if u'resource' in annotation:
-            # Always return a list of resources, also for single candidates
-            if isinstance(annotation[u'resource'], dict):
-                annotation[u'resource'] = [annotation[u'resource']]
-            annotations.append(annotation)
+    def ensure_resource_list(annotation):
+        if not isinstance(annotation[u'resource'], list):
+            annotation[u'resource'] = [annotation[u'resource']]
+        return annotation
+
+    annotations = [ensure_resource_list(annot)
+                   for annot in spotlight_resp if u'resource' in annot]
 
     return annotations
 
