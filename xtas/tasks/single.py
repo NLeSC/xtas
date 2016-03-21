@@ -255,15 +255,15 @@ def sentiwords_tag(doc, output="bag"):
 
     tagged = pipe(doc, fetch, _tokenize_if_needed, tag)
     if output == "bag":
-        d = {}
+        counts = {}
         for ngram, polarity in tagged:
             if polarity == 0:
                 continue
-            if ngram in d:
-                d[ngram][1] += 1
+            if ngram in counts:
+                counts[ngram][1] += 1
             else:
-                d[ngram] = [polarity, 1]
-        return d
+                counts[ngram] = [polarity, 1]
+        return counts
 
     elif output == "tokens":
         return [ngram if polarity == 0 else (ngram, polarity)
