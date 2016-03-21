@@ -353,7 +353,7 @@ def frog(doc, output='raw'):
     """
     from ._frog import call_frog, parse_frog, frog_to_saf
     if output not in ('raw', 'tokens', 'saf'):
-        raise ValueError("Uknown output: {output}, "
+        raise ValueError("Unknown output: {output}, "
                          "please choose either raw, tokens, or saf"
                          .format(**locals()))
     result = pipe(doc, fetch, call_frog)
