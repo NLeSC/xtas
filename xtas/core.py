@@ -24,7 +24,8 @@ app = Celery('xtas', include=['xtas.tasks'])
 
 
 def configure(config, import_error="raise", unknown_key="raise"):
-    """Configure xtas.
+    """Configure xtas. Settings made here override defaults and settings
+    made in the configuration file.
 
     Parameters
     ----------
@@ -51,8 +52,8 @@ def configure(config, import_error="raise", unknown_key="raise"):
 
     unknown_key : string
         Action to take when a member not matching the ones listed above is
-        encountered (except when its name starts with an underscore).
-        Either "log", "raise" or "ignore".
+        encountered in the config argument (except when its name starts
+        with an underscore). Either "log", "raise" or "ignore".
     """
 
     members = {'CELERY', 'ELASTICSEARCH', 'EXTRA_MODULES'}
