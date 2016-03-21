@@ -396,7 +396,7 @@ def dbpedia_spotlight(doc, lang='en', conf=0.5, supp=0, api_url=None):
         if lang not in ports_by_language:
             raise ValueError("Not a valid language code: %r" % lang)
 
-        api_url = server + ':' + ports_by_language['lang'] + '/rest'
+        api_url = server + ':' + str(ports_by_language[lang]) + '/rest'
 
     api_url += "/candidates"
 
@@ -423,6 +423,13 @@ def dbpedia_spotlight(doc, lang='en', conf=0.5, supp=0, api_url=None):
     return annotations
 
 
+def _output_func(output, saf_func):
+    try:
+        return {"raw": identity, "saf": saf_func}[output]
+    except KeyError:
+        raise ValueError("Unknown output format %r" % output)
+
+
 @app.task
 def alpino(doc, output="raw"):
     """Wrapper around the Alpino (dependency) parser for Dutch.
@@ -445,11 +452,7 @@ def alpino(doc, output="raw"):
     """
     from ._alpino import tokenize, parse_raw, interpret_parse
 
-    try:
-        transf = {"raw": identity, "saf": interpret_parse}[output]
-    except KeyError:
-        raise ValueError("Unknown output format %r" % output)
-
+    transf = _output_func(output, interpret_parse)
     return pipe(doc, fetch, tokenize, parse_raw, transf)
 
 
@@ -470,12 +473,7 @@ def corenlp(doc, output='raw'):
     """
     from ._corenlp import parse, stanford_to_saf
 
-    try:
-        transf = {"raw": identity, "saf": stanford_to_saf}[output]
-    except KeyError:
-        raise ValueError("Unknown output format %r" % output)
-
-    return pipe(doc, fetch, parse, transf)
+    return pipe(doc, fetch, parse, _output_func(output, stanford_to_saf))
 
 
 @app.task
@@ -492,12 +490,7 @@ def corenlp_lemmatize(doc, output='raw'):
     """
     from ._corenlp import parse, stanford_to_saf
 
-    try:
-        transf = {"raw": identity, "saf": stanford_to_saf}[output]
-    except KeyError:
-        raise ValueError("Unknown output format %r" % output)
-
-    return pipe(doc, fetch, parse, transf)
+    return pipe(doc, fetch, parse, _output_func(output, stanford_to_saf))
 
 
 @app.task
