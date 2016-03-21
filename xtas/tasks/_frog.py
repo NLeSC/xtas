@@ -39,7 +39,7 @@ _POSMAP = {"VZ": "P",
 def call_frog(text):
     """
     Call the frog parser on the given host and port with the given text
-    Returns a file object containing the output lines.
+    Is a generator over the output lines.
     """
     if not text.endswith("\n"):
         text = text + "\n"
@@ -62,7 +62,7 @@ def call_frog(text):
 def parse_frog(lines):
     """
     Interpret the output of the frog parser.
-    Input should be a sequence of lines (i.e. the output of call_frog)
+    Input should be an iterable of lines (i.e. the output of call_frog)
     Result is a sequence of dicts representing the tokens
     """
     sid = 0
