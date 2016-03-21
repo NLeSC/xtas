@@ -377,28 +377,30 @@ def dbpedia_spotlight(doc, lang='en', conf=0.5, supp=0, api_url=None):
     This task uses a Python client for DBp Spotlight:
     https://github.com/aolieman/pyspotlight
     """
-    text = fetch(doc)
-
-    endpoints_by_language = {
-        'en': "http://spotlight.sztaki.hu:2222/rest",
-        'de': "http://spotlight.sztaki.hu:2226/rest",
-        'nl': "http://spotlight.sztaki.hu:2232/rest",
-        'fr': "http://spotlight.sztaki.hu:2225/rest",
-        'it': "http://spotlight.sztaki.hu:2230/rest",
-        'ru': "http://spotlight.sztaki.hu:2227/rest",
-        'es': "http://spotlight.sztaki.hu:2231/rest",
-        'pt': "http://spotlight.sztaki.hu:2228/rest",
-        'hu': "http://spotlight.sztaki.hu:2229/rest",
-        'tr': "http://spotlight.sztaki.hu:2235/rest"
-    }
-
-    if lang not in endpoints_by_language and not api_url:
-        raise ValueError("Not a valid language code: %r" % lang)
 
     if api_url is None:
-        api_url = endpoints_by_language[lang]
+        server = "http://spotlight.sztaki.hu"
+
+        ports_by_language = {
+            'en': 2222,
+            'fr': 2225,
+            'de': 2226,
+            'ru': 2227,
+            'pt': 2228,
+            'hu': 2229,
+            'it': 2230,
+            'es': 2231,
+            'nl': 2232,
+            'tr': 2235
+        }
+        if lang not in ports_by_language:
+            raise ValueError("Not a valid language code: %r" % lang)
+
+        api_url = server + ':' + ports_by_language['lang'] + '/rest'
 
     api_url += "/candidates"
+
+    text = fetch(doc)
 
     try:
         spotlight_resp = spotlight.candidates(
