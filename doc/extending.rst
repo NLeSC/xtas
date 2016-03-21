@@ -5,7 +5,7 @@ Extending xtas
 
 This is a short guide to extending xtas to suit specific needs
 and (optionally) contributing code back.
-It describes how to write now tasks and tie them in with the package.
+It describes how to write new tasks and tie them in with the package.
 
 
 Writing new tasks
@@ -20,7 +20,7 @@ First, install Pattern::
     pip install pattern
 
 Now define an xtas task that uses Pattern to process a French text.
-Put the following a file, say, ``pattern_tasks.py``::
+Put the following in a file, say, ``pattern_tasks.py``::
 
     import pattern.fr
     from xtas.core import app
@@ -71,14 +71,15 @@ Only built-in tasks have their name abbreviated to not include the module name.
 
 .. note::
    The webserver will currently assume your task is a single-document one,
-   rather than a batch task. This is a known defect.
+   rather than a batch task. This is a `known defect
+   <https://github.com/NLeSC/xtas/issues/40>`_.
 
 
 Contributing code
 -----------------
 
-If you have code that is reusable for others, and you want and are legally
-capable of distributing it, then we're happy to consider it for inclusion in
+If you have code that is reusable for others, and you want to and are legally
+able to distribute it, then we're happy to consider it for inclusion in
 xtas. Make sure you have copyright to the code you write or your employer
 gives you permission to contribute under the terms of the Apache License
 (``LICENSE.txt`` in the main source directory).
