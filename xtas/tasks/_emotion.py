@@ -28,8 +28,13 @@ def download():
     path = os.path.join(data_home, "movie_review_emotions.txt")
     if not os.path.exists(path):
         tmp = NamedTemporaryFile(prefix=data_home, delete=False)
-        for part in ["train.txt", "test.txt"]:
-            copyfileobj(urlopen(_BASE_URL + part), tmp)
+        try:
+            for part in ["train.txt", "test.txt"]:
+                copyfileobj(urlopen(_BASE_URL + part), tmp)
+        except:
+            tmp.close()
+            os.remove(tmp)
+            raise
         tmp.close()
         move(tmp.name, path)
     return path
