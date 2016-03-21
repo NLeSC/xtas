@@ -98,7 +98,7 @@ def frog_to_saf(tokens):
     """
     Convert frog tokens into a new SAF document
     """
-    tokens = [add_pos1(token) for token in tokens]
+    tokens = map(add_pos1, tokens)
     module = {'module': "frog",
               "started": datetime.datetime.now().isoformat()}
     return {"header": {'format': "SAF",
