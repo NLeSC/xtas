@@ -10,20 +10,18 @@ _SENTI_PATH = os.path.join(os.path.dirname(__file__), "sentiwords.txt")
 
 #@worker_process_init.connect
 def load():
-    max_len = 0           # max n-gram length
+    max_len = 0           # max n-gram length minus one
     sentiment = {}
-    with open(_SENTI_PATH) as f:
-        for ln in f:
-            if ln.startswith('#'):
+    with open(_SENTI_PATH) as sentiwords_file:
+        for line in sentiwords_file:
+            if line.startswith('#'):
                 continue
 
-            w, prior = ln.rsplit('\t', 1)
+            word, prior = line.split('\t')
             prior = float(prior)
-            if prior == 0:
-                continue
 
-            max_len = max(max_len, w.count(' '))
-            sentiment[w] = prior
+            max_len = max(max_len, word.count(' '))
+            sentiment[word] = prior
 
     global _TABLE
     global _MAX_LEN
@@ -35,20 +33,15 @@ load()
 
 
 def tag(words):
-    def try_position(k):
+    def longest_ngram_at(k):
         for j in xrange(_MAX_LEN, 0, -1):
-            ngram = ' '.join(words[i:i+j])
-            try:
+            ngram = ' '.join(words[k:k+j])
+            if ngram in _TABLE:
                 return j, ngram, _TABLE[ngram]
-            except KeyError:
-                pass
+        return 1, words[i], 0
 
     i = 0
     while i < len(words):
-        try:
-            skip, ngram, polarity = try_position(i)
-            yield ngram, polarity
-            i += skip
-        except TypeError:
-            yield words[i], 0
-            i += 1
+        skip, ngram, polarity = longest_ngram_at(i)
+        yield ngram, polarity
+        i += skip
