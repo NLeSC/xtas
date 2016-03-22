@@ -33,20 +33,15 @@ load()
 
 
 def tag(words):
-    def try_position(k):
+    def longest_ngram_at(k):
         for j in xrange(_MAX_LEN, 0, -1):
             ngram = ' '.join(words[k:k+j])
-            try:
+            if ngram in _TABLE:
                 return j, ngram, _TABLE[ngram]
-            except KeyError:
-                pass
+        return 1, words[i], 0
 
     i = 0
     while i < len(words):
-        try:
-            skip, ngram, polarity = try_position(i)
-            yield ngram, polarity
-            i += skip
-        except TypeError:
-            yield words[i], 0
-            i += 1
+        skip, ngram, polarity = longest_ngram_at(i)
+        yield ngram, polarity
+        i += skip
