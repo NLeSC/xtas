@@ -9,13 +9,16 @@ The to_conll and add_frames method also convert 'Penn' style
 trees to conll format, which requires CORENLP_HOME to point
 to a CoreNLP installation dir.
 
-This module runs semafor in 'interactive' mode, which is added
-on the interactive_mode branch of vanatteveldt/semafor.
+This module runs semafor in 'interactive' mode, which is
+not available in the stable SEMAFOR v2.1. Instead, install
+from the latest source from
 
-git clone -b interactive_mode https://github.com/vanatteveldt/semafor
+git clone https://github.com/Noahs-ARK/semafor
 
-See: https://github.com/sammthomson/semafor
-(and: http://nlp.stanford.edu/software/corenlp.shtml
+Note that this requires Maven 3 to build.
+
+See: http://www.ark.cs.cmu.edu/SEMAFOR
+See: http://nlp.stanford.edu/software/corenlp.shtml
 """
 
 from __future__ import absolute_import
