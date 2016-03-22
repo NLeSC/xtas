@@ -17,10 +17,8 @@ def load():
             if line.startswith('#'):
                 continue
 
-            word, prior = line.rsplit('\t', 1)
+            word, prior = line.split('\t')
             prior = float(prior)
-            if prior == 0:
-                continue
 
             max_len = max(max_len, word.count(' '))
             sentiment[word] = prior
