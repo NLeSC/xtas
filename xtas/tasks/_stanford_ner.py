@@ -44,7 +44,7 @@ def tag(doc, format):
     # problem.
 
     toks = nltk.word_tokenize(doc)
-    text = ' '.join(t.encode('utf-8') for t in toks)
+    text = u' '.join(toks).encode('utf-8')
 
     server.stdin.write(text)
     server.stdin.write('\n')
