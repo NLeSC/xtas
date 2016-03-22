@@ -82,7 +82,7 @@ def parse_frog(lines):
             if ne != 'O':
                 # NER label from BIO tags
                 result["ne"] = ne.split('_', 1)[0][2:]
-            yield r
+            yield result
 
 
 def add_pos1(token):
