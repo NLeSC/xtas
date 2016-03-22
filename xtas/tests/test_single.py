@@ -41,10 +41,13 @@ def test_movie_review_polarity():
 
 
 def test_sentiwords():
-    bag = sentiwords_tag("I'd like a cold beer.")
-    assert_true(isinstance(bag, dict))
-    assert_in("like", bag)
-    assert_in("beer", bag)
+    bag = sentiwords_tag("Is this a good good test?")
+    words = set(["is", "this", "a", "good", "test"])
+    for word in bag:
+        assert_in(word, words)
+        score, count = bag[word]
+        assert_true(score != 0)     # We don't report on neutral terms.
+        assert_greater(count, 0)
 
     tokens = sentiwords_tag("bla a fortiori the foo quuxes a priori the baz",
                             output="tokens")
