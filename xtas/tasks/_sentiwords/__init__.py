@@ -10,7 +10,7 @@ _SENTI_PATH = os.path.join(os.path.dirname(__file__), "sentiwords.txt")
 
 #@worker_process_init.connect
 def load():
-    max_len = 0           # max n-gram length
+    max_len = 0           # max n-gram length minus one
     sentiment = {}
     with open(_SENTI_PATH) as sentiwords_file:
         for line in sentiwords_file:
