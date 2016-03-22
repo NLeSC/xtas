@@ -43,11 +43,11 @@ def _features(sentence, i):
 
 
 def _train_ner_model():
-    X_train, y_train, lengths_train = load_conll(_download_training_data(),
+    x_train, y_train, lengths_train = load_conll(_download_training_data(),
                                                  _features)
 
     clf = StructuredPerceptron()
-    clf.fit(X_train, y_train, lengths_train)
+    clf.fit(x_train, y_train, lengths_train)
     return clf
 
 
