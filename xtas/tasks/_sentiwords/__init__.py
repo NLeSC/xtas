@@ -12,18 +12,18 @@ _SENTI_PATH = os.path.join(os.path.dirname(__file__), "sentiwords.txt")
 def load():
     max_len = 0           # max n-gram length
     sentiment = {}
-    with open(_SENTI_PATH) as f:
-        for ln in f:
-            if ln.startswith('#'):
+    with open(_SENTI_PATH) as sentiwords_file:
+        for line in sentiwords_file:
+            if line.startswith('#'):
                 continue
 
-            w, prior = ln.rsplit('\t', 1)
+            word, prior = line.rsplit('\t', 1)
             prior = float(prior)
             if prior == 0:
                 continue
 
-            max_len = max(max_len, w.count(' '))
-            sentiment[w] = prior
+            max_len = max(max_len, word.count(' '))
+            sentiment[word] = prior
 
     global _TABLE
     global _MAX_LEN
