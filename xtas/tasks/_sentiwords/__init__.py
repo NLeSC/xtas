@@ -35,7 +35,7 @@ load()
 def tag(words):
     def try_position(k):
         for j in xrange(_MAX_LEN, 0, -1):
-            ngram = ' '.join(words[i:i+j])
+            ngram = ' '.join(words[k:k+j])
             try:
                 return j, ngram, _TABLE[ngram]
             except KeyError:
