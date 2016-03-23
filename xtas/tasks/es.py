@@ -29,13 +29,13 @@ def es_document(idx, typ, id, field):
     return {'index': idx, 'type': typ, 'id': id, 'field': field}
 
 
-def _is_es_document(obj):
+def is_es_document(obj):
     """Returns true iff obj is an es_document
     """
     return isinstance(obj, dict) and set(obj.keys()) == set(_ES_DOC_FIELDS)
 
 
-def _es_address(es_doc):
+def es_address(es_doc):
     """Returns the index, type, id and field of es_doc as a list
     """
     return [es_doc[dictfield] for dictfield in _ES_DOC_FIELDS]
@@ -58,8 +58,8 @@ def fetch(doc):
     content : string
         Document contents.
     """
-    if _is_es_document(doc):
-        idx, typ, id, field = _es_address(doc)
+    if is_es_document(doc):
+        idx, typ, id, field = es_address(doc)
         return _es().get_source(index=idx, doc_type=typ, id=id)[field]
     elif isinstance(doc, unicode):
         return doc
