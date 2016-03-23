@@ -98,22 +98,23 @@ def big_kmeans(docs, k, batch_size=1000, n_features=(2 ** 20),
 
     docs = tosequence(docs)
 
-    v = HashingVectorizer(input="content", n_features=n_features, norm="l2")
-    km = MiniBatchKMeans(n_clusters=k)
+    vectorizer = HashingVectorizer(input="content",
+                                   n_features=n_features, norm="l2")
+    kmeans = MiniBatchKMeans(n_clusters=k)
 
     labels = []
     for batch in toolz.partition_all(batch_size, docs):
         batch = map(fetch, docs)
-        batch = v.transform(batch)
-        y = km.fit_predict(batch)
+        batch = vectorizer.transform(batch)
+        y = kmeans.fit_predict(batch)
         if single_pass:
             labels.extend(y.tolist())
 
     if not single_pass:
         for batch in toolz.partition_all(batch_size, docs):
             batch = map(fetch, docs)
-            batch = v.transform(batch)
-            labels.extend(km.predict(batch).tolist())
+            batch = vectorizer.transform(batch)
+            labels.extend(kmeans.predict(batch).tolist())
 
     return group_clusters(docs, labels)
 
