@@ -200,14 +200,14 @@ def get_single_result(taskname, idx, typ, id):
 
 
 def fetch_documents_by_task(idx, typ, query, taskname, full=True):
-    """Query the task, return the documents"""
+    """Return documents with results for the given task"""
     child_type = _taskname_to_child_type(taskname, typ)
     query = {"has_child": {'type': child_type, "query": query}}
     return fetch_query_details_batch(idx, typ, query, full)
 
 
 def fetch_results_by_document(idx, typ, query, taskname):
-    """Query the document, return the results of the task"""
+    """Return results of the given task for documents matching query"""
     child_type = _taskname_to_child_type(taskname, typ)
     query = {"has_parent": {'type': typ, "query": query}}
     return fetch_query_details_batch(idx, child_type, query, full=False)
