@@ -104,7 +104,7 @@ def big_kmeans(docs, k, batch_size=1000, n_features=(2 ** 20),
 
     labels = []
     for batch in toolz.partition_all(batch_size, docs):
-        batch = map(fetch, docs)
+        batch = map(fetch, batch)
         batch = vectorizer.transform(batch)
         y = kmeans.fit_predict(batch)
         if single_pass:
@@ -112,7 +112,7 @@ def big_kmeans(docs, k, batch_size=1000, n_features=(2 ** 20),
 
     if not single_pass:
         for batch in toolz.partition_all(batch_size, docs):
-            batch = map(fetch, docs)
+            batch = map(fetch, batch)
             batch = vectorizer.transform(batch)
             labels.extend(kmeans.predict(batch).tolist())
 
