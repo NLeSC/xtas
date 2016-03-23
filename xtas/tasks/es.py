@@ -95,12 +95,12 @@ def fetch_query_details_batch(idx, typ, query, full=True, tasknames=None):
       If full=False, only the documents are returned, not their results.
     One can restrict the tasks requested in tasknames.
     """
-    r = _es().search(index=idx, doc_type=typ, body={'query': query})
-    r = [[hit['_id'], hit] for hit in r['hits']['hits']]
+    es_result = _es().search(index=idx, doc_type=typ, body={'query': query})
+    hits = [[hit['_id'], hit] for hit in es_result['hits']['hits']]
     if not full and not tasknames:
-        return r
+        return hits
 
-    # for full documents: make sure also the children are returnedi
+    # for full documents: make sure also the children are returned
     if not tasknames:
         tasknames = get_tasks_per_index(idx, typ)
 
@@ -108,10 +108,10 @@ def fetch_query_details_batch(idx, typ, query, full=True, tasknames=None):
     for taskname in tasknames:
         results = fetch_results_by_document(idx, typ, query, taskname)
         for id_child, hit_child in results:
-            for id_r, hit_r in r:
-                if hit_r['_id'] == id_child:
-                    hit_r[taskname] = hit_child['_source']['data']
-    return r
+            for hit_id, hit_doc in hits:
+                if hit_doc['_id'] == id_child:
+                    hit_doc[taskname] = hit_child['_source']['data']
+    return hits
 
 
 def _check_parent_mapping(idx, child_type, parent_type):
