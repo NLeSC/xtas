@@ -83,9 +83,8 @@ def fetch_query_batch(idx, typ, query, field='body'):
     >>> q = {"query_string": {"query": "hello"}}
     >>> r = fetch_query_batch("20news", "post", q, field="text")
     """
-    r = scan(_es(), {'query': query}, index=idx, doc_type=typ)
-    r = (hit['_source'].get(field, None) for hit in r)
-    return [hit for hit in r if hit is not None]
+    hits = scan(_es(), {'query': query}, index=idx, doc_type=typ)
+    return [hit['_source'][field] for hit in hits if field in hit['_source']]
 
 CHECKED_MAPPINGS = set()
 
