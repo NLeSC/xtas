@@ -30,7 +30,7 @@ def es_document(idx, typ, id, field):
 
 
 def is_es_document(obj):
-    """Returns true iff obj is an es_document
+    """Returns True iff obj is an es_document
     """
     return isinstance(obj, dict) and set(obj.keys()) == set(_ES_DOC_FIELDS)
 
