@@ -22,34 +22,42 @@ def pipeline(doc, pipeline, store_final=True, store_intermediate=False,
     @param store_final: if True, store the final result
     @param store_intermediate: if True, store all intermediate results as well
     """
-    # form basic pipeline by resolving task dictionaries to task objects
-    tasks = [_get_task(t) for t in pipeline]
 
+    tasks = map(_get_task, pipeline)
     if is_es_document(doc):
         idx, typ, id, field = es_address(doc)
-        chain = []
-        input = None
-        # Check cache for existing documents
-        # Iterate over tasks in reverse order, check cached result, and
-        # otherwise prepend task (and cache store command) to chain
-        for i in range(len(tasks), 0, -1):
-            taskname = "__".join(t.task for t in tasks[:i])
-            input = get_single_result(taskname, idx, typ, id)
-            if input:
-                break
-            if (i == len(tasks) and store_final) or store_intermediate:
-                chain.insert(0, store_single.s(taskname, idx, typ, id))
-            chain.insert(0, tasks[i-1])
-        if not chain:  # final result was cached, good!
-            return input
-        elif input is None:
-            input = fetch(doc)
-    else:
-        # the doc is a string, so we can't use caching
-        chain = tasks
-        input = doc
 
-    chain = celery.chain(*chain).delay(input)
+        def result_name(task_i):
+            "Results are named after the task that created them"
+            return "__".join(t.task for t in tasks[:(task_i + 1)])
+
+        last_cached_result = None
+        # we always have doc, which is result -1, the input to task 0
+        last_cached_i = -1
+        for task_i in reversed(range(0, len(tasks))):
+            last_cached_result = get_single_result(result_name(task_i),
+                                                   idx, typ, id)
+            if last_cached_result:
+                last_cached_i = task_i
+                break
+
+        if last_cached_i == -1:
+            doc = fetch(doc)
+        else:
+            doc = last_cached_result
+
+        new_tasks = []
+        for task_i in range(last_cached_i + 1, len(tasks)):
+            new_tasks.append(tasks[task_i])
+            if (task_i == len(tasks) and store_final) or store_intermediate:
+                new_tasks.append(store_single.s(result_name(task_i),
+                                                idx, typ, id))
+        tasks = new_tasks
+
+    if not tasks:
+        return doc
+
+    chain = celery.chain(*tasks).delay(doc)
     if block:
         return chain.get()
     else:
