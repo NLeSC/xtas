@@ -13,7 +13,7 @@ def pipeline(doc, pipeline, store_final=True, store_intermediate=False,
              block=True):
     """
     Get the result for a given document.
-    Pipeline should be a list of dicts, with members task and argument
+    Pipeline should be a list of dicts, with members module and arguments
     e.g. [{"module" : "tokenize"},
           {"module" : "pos_tag", "arguments" : {"model" : "nltk"}}]
     @param block: if True, it will block and return the actual result.
