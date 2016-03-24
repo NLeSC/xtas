@@ -60,7 +60,7 @@ def run_task(taskname):
         kwargs = request.json.get('arguments', {})
         return task.delay(data, **kwargs).id + "\n"
 
-    abort(404)  # XXX this is not the right error code
+    abort(415)  # Unsupported Media Type
 
 
 @app.route("/run_es/<taskname>/<index>/<type>/<id>/<field>")
