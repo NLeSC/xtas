@@ -29,6 +29,18 @@ def es_document(idx, typ, id, field):
     return {'index': idx, 'type': typ, 'id': id, 'field': field}
 
 
+def is_es_document(obj):
+    """Returns True iff obj is an es_document
+    """
+    return isinstance(obj, dict) and set(obj.keys()) == set(_ES_DOC_FIELDS)
+
+
+def es_address(es_doc):
+    """Returns the index, type, id and field of es_doc as a list
+    """
+    return [es_doc[dictfield] for dictfield in _ES_DOC_FIELDS]
+
+
 def fetch(doc):
     """Fetch document (if necessary).
 
@@ -46,8 +58,8 @@ def fetch(doc):
     content : string
         Document contents.
     """
-    if isinstance(doc, dict) and set(doc.keys()) == set(_ES_DOC_FIELDS):
-        idx, typ, id, field = [doc[k] for k in _ES_DOC_FIELDS]
+    if is_es_document(doc):
+        idx, typ, id, field = es_address(doc)
         return _es().get_source(index=idx, doc_type=typ, id=id)[field]
     elif isinstance(doc, unicode):
         return doc
@@ -71,9 +83,8 @@ def fetch_query_batch(idx, typ, query, field='body'):
     >>> q = {"query_string": {"query": "hello"}}
     >>> r = fetch_query_batch("20news", "post", q, field="text")
     """
-    r = scan(_es(), {'query': query}, index=idx, doc_type=typ)
-    r = (hit['_source'].get(field, None) for hit in r)
-    return [hit for hit in r if hit is not None]
+    hits = scan(_es(), {'query': query}, index=idx, doc_type=typ)
+    return [hit['_source'][field] for hit in hits if field in hit['_source']]
 
 CHECKED_MAPPINGS = set()
 
@@ -84,12 +95,12 @@ def fetch_query_details_batch(idx, typ, query, full=True, tasknames=None):
       If full=False, only the documents are returned, not their results.
     One can restrict the tasks requested in tasknames.
     """
-    r = _es().search(index=idx, doc_type=typ, body={'query': query})
-    r = [[hit['_id'], hit] for hit in r['hits']['hits']]
+    es_result = _es().search(index=idx, doc_type=typ, body={'query': query})
+    hits = [[hit['_id'], hit] for hit in es_result['hits']['hits']]
     if not full and not tasknames:
-        return r
+        return hits
 
-    # for full documents: make sure also the children are returnedi
+    # for full documents: make sure also the children are returned
     if not tasknames:
         tasknames = get_tasks_per_index(idx, typ)
 
@@ -97,10 +108,10 @@ def fetch_query_details_batch(idx, typ, query, full=True, tasknames=None):
     for taskname in tasknames:
         results = fetch_results_by_document(idx, typ, query, taskname)
         for id_child, hit_child in results:
-            for id_r, hit_r in r:
-                if hit_r['_id'] == id_child:
-                    hit_r[taskname] = hit_child['_source']['data']
-    return r
+            for hit_id, hit_doc in hits:
+                if hit_doc['_id'] == id_child:
+                    hit_doc[taskname] = hit_child['_source']['data']
+    return hits
 
 
 def _check_parent_mapping(idx, child_type, parent_type):
@@ -189,14 +200,14 @@ def get_single_result(taskname, idx, typ, id):
 
 
 def fetch_documents_by_task(idx, typ, query, taskname, full=True):
-    """Query the task, return the documents"""
+    """Return documents with results for the given task"""
     child_type = _taskname_to_child_type(taskname, typ)
     query = {"has_child": {'type': child_type, "query": query}}
     return fetch_query_details_batch(idx, typ, query, full)
 
 
 def fetch_results_by_document(idx, typ, query, taskname):
-    """Query the document, return the results of the task"""
+    """Return results of the given task for documents matching query"""
     child_type = _taskname_to_child_type(taskname, typ)
     query = {"has_parent": {'type': typ, "query": query}}
     return fetch_query_details_batch(idx, child_type, query, full=False)

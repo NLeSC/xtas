@@ -4,7 +4,8 @@ Pipelining with partial caching
 
 import celery
 
-from xtas.tasks.es import _ES_DOC_FIELDS, get_single_result, store_single, fetch
+from xtas.tasks.es import is_es_document, es_address
+from xtas.tasks.es import get_single_result, store_single, fetch
 from xtas.core import app
 
 
@@ -24,8 +25,8 @@ def pipeline(doc, pipeline, store_final=True, store_intermediate=False,
     # form basic pipeline by resolving task dictionaries to task objects
     tasks = [_get_task(t) for t in pipeline]
 
-    if isinstance(doc, dict) and set(doc.keys()) == set(_ES_DOC_FIELDS):
-        idx, typ, id, field = [doc[k] for k in _ES_DOC_FIELDS]
+    if is_es_document(doc):
+        idx, typ, id, field = es_address(doc)
         chain = []
         input = None
         # Check cache for existing documents
