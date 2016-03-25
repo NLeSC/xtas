@@ -12,7 +12,6 @@ ES_TEST_TYPE = "unittest_doc"
 @contextmanager
 def clean_es():
     "provide a clean elasticsearch instance for unittests"
-    es = Elasticsearch()
     if not ES_TEST_INDEX:
         raise SkipTest("ES_TEST_INDEX not given, skipping elastic tests")
     es = Elasticsearch()
