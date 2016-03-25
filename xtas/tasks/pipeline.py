@@ -23,7 +23,7 @@ def pipeline(doc, pipeline, store_final=True, store_intermediate=False,
     @param store_intermediate: if True, store all intermediate results as well
     """
 
-    tasks = map(_get_task, pipeline)
+    tasks = [_get_task(t) for t in pipeline]
     if is_es_document(doc):
         idx, typ, id, field = es_address(doc)
 
