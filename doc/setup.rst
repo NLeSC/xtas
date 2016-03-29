@@ -11,7 +11,7 @@ then how to run it as a distributed service.
 Installation
 ------------
 
-xtas runs on Linux (patches to support OS X are welcome).
+xtas runs on Linux.
 It depends on Python 2.7, SciPy, the Java Runtime (JRE) and RabbitMQ.
 On a Debian/Ubuntu/Linux Mint system, these dependencies can be installed with::
 
