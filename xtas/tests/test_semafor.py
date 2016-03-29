@@ -21,7 +21,7 @@ def _check_semafor():
     if not os.environ.get("SEMAFOR_HOME"):
         raise SkipTest("Cannot find SEMAFOR_HOME")
     if not os.environ.get("MALT_MODEL_DIR"):
-        raise SkipTest("Cannot find CORENLP_HOME")
+        raise SkipTest("Cannot find MALT_MODEL_DIR")
 
 
 def test_to_conll():
