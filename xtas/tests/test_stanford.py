@@ -1,24 +1,25 @@
 # coding: utf-8
 
-from nose.tools import assert_equal, assert_true
+from nose.tools import assert_true
 
 from xtas.tasks import stanford_ner_tag
 
 
 def test_stanford_ner():
-    # From Wikipedia front page, 10 Feb 2014.
-    phrase = ("Academy Award-winning actor Philip Seymour Hoffman"
-              " dies at the age of 46.")
+    # From Wikipedia front page, 29 March 2016
+    phrase = ("Benjamin Franklin Tilley was an officer in the United States"
+              " Navy and the first acting governor of of what is now"
+              " American Samoa")
 
     ne = stanford_ner_tag(phrase)
     for token, tag in ne:
         assert_true(isinstance(token, basestring))
-        assert_true(tag in ["O", "PERSON"])
+        assert_true(tag in ["O", "PERSON", "ORGANIZATION", "LOCATION"])
 
     names = stanford_ner_tag(phrase, output="names")
-    # Stanford doesn't pick up "Academy Award". This is not our fault.
-    # (XXX divise a better test.)
-    assert_equal(names, [("Philip Seymour Hoffman", "PERSON")])
+    assert_true(("Benjamin Franklin Tilley", "PERSON") in names)
+    assert_true(("United States Navy", "ORGANIZATION") in names)
+    assert_true(("American Samoa", "LOCATION") in names)
 
 
 def test_stanford_ner_encoding():
