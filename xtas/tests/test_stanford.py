@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from nose.tools import assert_true
+from nose.tools import assert_in, assert_true
 
 from xtas.tasks import stanford_ner_tag
 
@@ -17,9 +17,9 @@ def test_stanford_ner():
         assert_true(tag in ["O", "PERSON", "ORGANIZATION", "LOCATION"])
 
     names = stanford_ner_tag(phrase, output="names")
-    assert_true(("Benjamin Franklin Tilley", "PERSON") in names)
-    assert_true(("United States Navy", "ORGANIZATION") in names)
-    assert_true(("American Samoa", "LOCATION") in names)
+    assert_in(("Benjamin Franklin Tilley", "PERSON"), names)
+    assert_in(("United States Navy", "ORGANIZATION"), names)
+    assert_in(("American Samoa", "LOCATION"), names)
 
 
 def test_stanford_ner_encoding():
