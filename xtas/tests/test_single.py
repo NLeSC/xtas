@@ -103,7 +103,6 @@ def test_nlner_conll():
 
     # nlner_conll is not entirely deterministic, so we have to strip off the
     # classes. (It tends to confuse PER and MISC.)
-    # XXX Should we fix some random seed?
     tagged = nlner_conll(text)
     tagged = [(term, tag[0]) for term, tag in expected]
     assert_equal(tagged, expected)
