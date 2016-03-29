@@ -172,8 +172,10 @@ def stem_snowball(doc, language):
     morphy: smarter approach to stemming (lemmatization), but only for English.
     """
     from Stemmer import Stemmer
-    tokens = pipe(doc, fetch, _tokenize_if_needed)
-    return Stemmer(language).stemWords(tokens)
+    # Build the Stemmer before fetching to force an exception for invalid
+    # languages.
+    stem = Stemmer(language).stemWords
+    return pipe(doc, fetch, _tokenize_if_needed, stem)
 
 
 @app.task
