@@ -65,7 +65,7 @@ def test_tokenize():
 def test_dbpedia_spotlight():
     en_text = (u"Will the efforts of artists like Moby"
                u" help to preserve the Arctic?")
-    nl_text = (u"Ik kan me iets herrinneren over de burgemeester van"
+    nl_text = (u"Ik kan me iets herinneren over de burgemeester van"
                u" Amstelveen en het achterwerk van M\xe1xima."
                u" Verder was Koningsdag een zwart gat.")
 
