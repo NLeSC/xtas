@@ -111,10 +111,10 @@ def test_nlner_conll():
 def test_movie_review_emotions():
     text = "Saw is a scary film."
 
-    sent, emo = zip(*movie_review_emotions(text))
+    result = movie_review_emotions(text)
+    assert_equal(len(result), 1)
 
     # We tend to get ('Fear', 'Joy', 'Love') or ('Fear', 'Love') for this
     # sentence.
-    assert_equal(len(sent), 1)
-    assert_equal(len(emo), 1)
-    assert_in('Fear', emo[0])
+    sent, emo = result[0]
+    assert_in('Fear', emo)
