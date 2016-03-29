@@ -208,9 +208,9 @@ def stanford_ner_tag(doc, output="tokens"):
         its own rules.
 
     output : string, optional
-        Output format. "tokens" gives a list of (token, nerclass) triples,
+        Output format. "tokens" gives a list of (token, nerclass) pairs,
         similar to the IO format but without the "I-". "names" returns a list
-        of (name, class pairs); since Stanford NER does not distinguish between
+        of (name, class) pairs; since Stanford NER does not distinguish between
         start and continuation of name spans, the reconstruction of full names
         is heuristic.
 
@@ -271,15 +271,15 @@ def sentiwords_tag(doc, output="bag"):
 
     tagged = pipe(doc, fetch, _tokenize_if_needed, tag)
     if output == "bag":
-        d = {}
+        counts = {}
         for ngram, polarity in tagged:
             if polarity == 0:
                 continue
-            if ngram in d:
-                d[ngram][1] += 1
+            if ngram in counts:
+                counts[ngram][1] += 1
             else:
-                d[ngram] = [polarity, 1]
-        return d
+                counts[ngram] = [polarity, 1]
+        return counts
 
     elif output == "tokens":
         return [ngram if polarity == 0 else (ngram, polarity)
@@ -369,7 +369,7 @@ def frog(doc, output='raw'):
     """
     from ._frog import call_frog, parse_frog, frog_to_saf
     if output not in ('raw', 'tokens', 'saf'):
-        raise ValueError("Uknown output: {output}, "
+        raise ValueError("Unknown output: {output}, "
                          "please choose either raw, tokens, or saf"
                          .format(**locals()))
     result = pipe(doc, fetch, call_frog)
@@ -393,28 +393,30 @@ def dbpedia_spotlight(doc, lang='en', conf=0.5, supp=0, api_url=None):
     This task uses a Python client for DBp Spotlight:
     https://github.com/aolieman/pyspotlight
     """
-    text = fetch(doc)
-
-    endpoints_by_language = {
-        'en': "http://spotlight.sztaki.hu:2222/rest",
-        'de': "http://spotlight.sztaki.hu:2226/rest",
-        'nl': "http://spotlight.sztaki.hu:2232/rest",
-        'fr': "http://spotlight.sztaki.hu:2225/rest",
-        'it': "http://spotlight.sztaki.hu:2230/rest",
-        'ru': "http://spotlight.sztaki.hu:2227/rest",
-        'es': "http://spotlight.sztaki.hu:2231/rest",
-        'pt': "http://spotlight.sztaki.hu:2228/rest",
-        'hu': "http://spotlight.sztaki.hu:2229/rest",
-        'tr': "http://spotlight.sztaki.hu:2235/rest"
-    }
-
-    if lang not in endpoints_by_language and not api_url:
-        raise ValueError("Not a valid language code: %r" % lang)
 
     if api_url is None:
-        api_url = endpoints_by_language[lang]
+        server = "http://spotlight.sztaki.hu"
+
+        ports_by_language = {
+            'en': 2222,
+            'fr': 2225,
+            'de': 2226,
+            'ru': 2227,
+            'pt': 2228,
+            'hu': 2229,
+            'it': 2230,
+            'es': 2231,
+            'nl': 2232,
+            'tr': 2235
+        }
+        if lang not in ports_by_language:
+            raise ValueError("Not a valid language code: %r" % lang)
+
+        api_url = server + ':' + str(ports_by_language[lang]) + '/rest'
 
     api_url += "/candidates"
+
+    text = fetch(doc)
 
     try:
         spotlight_resp = spotlight.candidates(
@@ -426,17 +428,22 @@ def dbpedia_spotlight(doc, lang='en', conf=0.5, supp=0, api_url=None):
     except (spotlight.SpotlightException, TypeError) as e:
         return {'error': e.message}
 
-    # Return a list of annotation dictionaries
-    annotations = []
-    for annotation in spotlight_resp:
-        # Ignore annotations without disambiguation candidates
-        if u'resource' in annotation:
-            # Always return a list of resources, also for single candidates
-            if isinstance(annotation[u'resource'], dict):
-                annotation[u'resource'] = [annotation[u'resource']]
-            annotations.append(annotation)
+    def ensure_resource_list(annotation):
+        if not isinstance(annotation[u'resource'], list):
+            annotation[u'resource'] = [annotation[u'resource']]
+        return annotation
+
+    annotations = [ensure_resource_list(annot)
+                   for annot in spotlight_resp if u'resource' in annot]
 
     return annotations
+
+
+def _output_func(output, saf_func):
+    try:
+        return {"raw": identity, "saf": saf_func}[output]
+    except KeyError:
+        raise ValueError("Unknown output format %r" % output)
 
 
 @app.task
@@ -461,11 +468,7 @@ def alpino(doc, output="raw"):
     """
     from ._alpino import tokenize, parse_raw, interpret_parse
 
-    try:
-        transf = {"raw": identity, "saf": interpret_parse}[output]
-    except KeyError:
-        raise ValueError("Unknown output format %r" % output)
-
+    transf = _output_func(output, interpret_parse)
     return pipe(doc, fetch, tokenize, parse_raw, transf)
 
 
@@ -486,12 +489,7 @@ def corenlp(doc, output='raw'):
     """
     from ._corenlp import parse, stanford_to_saf
 
-    try:
-        transf = {"raw": identity, "saf": stanford_to_saf}[output]
-    except KeyError:
-        raise ValueError("Unknown output format %r" % output)
-
-    return pipe(doc, fetch, parse, transf)
+    return pipe(doc, fetch, parse, _output_func(output, stanford_to_saf))
 
 
 @app.task
@@ -508,12 +506,7 @@ def corenlp_lemmatize(doc, output='raw'):
     """
     from ._corenlp import parse, stanford_to_saf
 
-    try:
-        transf = {"raw": identity, "saf": stanford_to_saf}[output]
-    except KeyError:
-        raise ValueError("Unknown output format %r" % output)
-
-    return pipe(doc, fetch, parse, transf)
+    return pipe(doc, fetch, parse, _output_func(output, stanford_to_saf))
 
 
 @app.task
