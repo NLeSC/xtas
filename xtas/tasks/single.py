@@ -64,7 +64,7 @@ def guess_language(doc, output="best"):
     except KeyError:
         raise ValueError("invalid parameter value output=%r" % output)
 
-    return func(fetch(doc))
+    return pipe(doc, fetch, func)
 
 
 @app.task
@@ -99,8 +99,8 @@ def morphy(doc):
     # XXX Results will be better if we do POS tagging first, but then we
     # need to map Penn Treebank tags to WordNet tags.
     nltk_download('wordnet')
-    return map(nltk.WordNetLemmatizer().lemmatize,
-               _tokenize_if_needed(fetch(doc)))
+    tokens = pipe(doc, fetch, _tokenize_if_needed)
+    return map(nltk.WordNetLemmatizer().lemmatize, tokens)
 
 
 @app.task
@@ -125,7 +125,7 @@ def movie_review_emotions(doc):
     """
     from ._emotion import classify
     nltk_download('punkt')
-    sentences = nltk.sent_tokenize(doc)
+    sentences = pipe(doc, fetch, nltk.sent_tokenize)
     return list(zip(sentences, classify(sentences)))
 
 
@@ -149,7 +149,7 @@ def movie_review_polarity(doc):
     sentiwords_tag: more generic sentiment expression tagger
     """
     from ._polarity import classify
-    return classify(doc)
+    return pipe(doc, fetch, classify)
 
 
 def _tokenize_if_needed(s):
@@ -170,9 +170,7 @@ def nlner_conll(doc):
     stanford_ner_tag: NER tagger for English.
     """
     from ._nl_conll_ner import ner
-    doc = fetch(doc)
-    doc = _tokenize_if_needed(doc)
-    return ner(doc)
+    return pipe(doc, fetch, _tokenize_if_needed, ner)
 
 
 @app.task
@@ -188,7 +186,10 @@ def stem_snowball(doc, language):
     morphy: smarter approach to stemming (lemmatization), but only for English.
     """
     from Stemmer import Stemmer
-    return Stemmer(language).stemWords(_tokenize_if_needed(doc))
+    # Build the Stemmer before fetching to force an exception for invalid
+    # languages.
+    stem = Stemmer(language).stemWords
+    return pipe(doc, fetch, _tokenize_if_needed, stem)
 
 
 @app.task
@@ -223,8 +224,7 @@ def stanford_ner_tag(doc, output="tokens"):
     nlner_conll: NER tagger for Dutch.
     """
     from ._stanford_ner import tag
-    doc = fetch(doc)
-    return tag(doc, output)
+    return tag(fetch(doc), output)
 
 
 @app.task
@@ -268,9 +268,8 @@ def sentiwords_tag(doc, output="bag"):
     movie_review_polarity: figure out if a movie review is positive or negative
     """
     from ._sentiwords import tag
-    doc = _tokenize_if_needed(fetch(doc))
 
-    tagged = tag(doc)
+    tagged = pipe(doc, fetch, _tokenize_if_needed, tag)
     if output == "bag":
         d = {}
         for ngram, polarity in tagged:
@@ -296,9 +295,8 @@ def tokenize(doc):
 
     Uses the NLTK function word_tokenize.
     """
-    text = fetch(doc)
     nltk_download('punkt')
-    return nltk.word_tokenize(text)
+    return pipe(doc, fetch, nltk.word_tokenize)
 
 
 @app.task
@@ -316,10 +314,10 @@ def semanticize(doc, lang='en'):
     derive prior polarities from SentiWordNet". Proc. EMNLP, pp. 1259-1269.
 
     """
-    text = fetch(doc)
 
     if not lang.isalpha():
         raise ValueError("not a valid language: %r" % lang)
+    text = fetch(doc)
     url = 'http://semanticize.uva.nl/api/%s?%s' % (lang,
                                                    urlencode({'text': text}))
     return json.loads(urlopen(url).read())['links']
@@ -374,8 +372,7 @@ def frog(doc, output='raw'):
         raise ValueError("Uknown output: {output}, "
                          "please choose either raw, tokens, or saf"
                          .format(**locals()))
-    text = fetch(doc)
-    result = call_frog(text)
+    result = pipe(doc, fetch, call_frog)
     if output == 'raw':
         return list(result)
     if output in ('tokens', 'saf'):
