@@ -79,7 +79,7 @@ def test_tokenize():
 def test_dbpedia_spotlight():
     en_text = (u"Will the efforts of artists like Moby"
                u" help to preserve the Arctic?")
-    nl_text = (u"Ik kan me iets herrinneren over de burgemeester van"
+    nl_text = (u"Ik kan me iets herinneren over de burgemeester van"
                u" Amstelveen en het achterwerk van M\xe1xima."
                u" Verder was Koningsdag een zwart gat.")
 
@@ -117,7 +117,6 @@ def test_nlner_conll():
 
     # nlner_conll is not entirely deterministic, so we have to strip off the
     # classes. (It tends to confuse PER and MISC.)
-    # XXX Should we fix some random seed?
     tagged = nlner_conll(text)
     tagged = [(term, tag[0]) for term, tag in expected]
     assert_equal(tagged, expected)
@@ -126,10 +125,10 @@ def test_nlner_conll():
 def test_movie_review_emotions():
     text = "Saw is a scary film."
 
-    sent, emo = zip(*movie_review_emotions(text))
+    result = movie_review_emotions(text)
+    assert_equal(len(result), 1)
 
     # We tend to get ('Fear', 'Joy', 'Love') or ('Fear', 'Love') for this
     # sentence.
-    assert_equal(len(sent), 1)
-    assert_equal(len(emo), 1)
-    assert_in('Fear', emo[0])
+    sent, emo = result[0]
+    assert_in('Fear', emo)
