@@ -192,10 +192,3 @@ POSMAP = {"pronoun": 'O',
           'sbar': '?',
           '--': '?',
           }
-
-
-if __name__ == '__main__':
-    import sys
-    import json
-    p = parse_text(" ".join(sys.argv[1:]))
-    print(json.dumps(p, indent=2))
