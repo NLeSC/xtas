@@ -82,8 +82,8 @@ def configure(config, import_error="raise", unknown_key="raise"):
             else:
                 logger.warn(msg)
 
-    app.config_from_object(config.get('CELERY', 'xtas._defaultconfig.CELERY')) #
-    es = config.get('ELASTICSEARCH', _defaultconfig.ELASTICSEARCH) #
+    app.config_from_object(config.get('CELERY', _defaultconfig.CELERY))
+    es = config.get('ELASTICSEARCH', _defaultconfig.ELASTICSEARCH)
     _config['ELASTICSEARCH'] = es
     logger.info('Using Elasticsearch at %s' % es)
 
