@@ -92,7 +92,7 @@ def call_semafor(conll_str):
         return Semafor._singleton.call_semafor(conll_str)
 
 
-def to_conll(tree):
+def to_conll(tree): #
     """
     Convert a parse tree from Penn (?) to conll
     """
