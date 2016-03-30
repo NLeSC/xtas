@@ -30,7 +30,7 @@ from six.moves.urllib.request import urlopen
 
 from cytoolz import identity, pipe
 import nltk
-import spotlight
+import spotlight #
 
 from .es import fetch
 from ..core import app
@@ -234,7 +234,7 @@ def pos_tag(tokens, model='nltk'):
     Currently only does English using the default model in NLTK.
 
     Expects a list of tokens.
-    """
+    """ #
     if model != 'nltk':
         raise ValueError("unknown POS tagger %r" % model)
     nltk_download('averaged_perceptron_tagger')
@@ -282,7 +282,7 @@ def sentiwords_tag(doc, output="bag"):
         return counts
 
     elif output == "tokens":
-        return [ngram if polarity == 0 else (ngram, polarity)
+        return [ngram if polarity == 0 else (ngram, polarity)   #
                 for ngram, polarity in tagged]
 
     else:
@@ -319,8 +319,8 @@ def semanticize(doc, lang='en'):
         raise ValueError("not a valid language: %r" % lang)
     text = fetch(doc)
     url = 'http://semanticize.uva.nl/api/%s?%s' % (lang,
-                                                   urlencode({'text': text}))
-    return json.loads(urlopen(url).read())['links']
+                                                   urlencode({'text': text})) #
+    return json.loads(urlopen(url).read())['links'] #
 
 
 @app.task
@@ -392,7 +392,7 @@ def dbpedia_spotlight(doc, lang='en', conf=0.5, supp=0, api_url=None):
     See http://spotlight.dbpedia.org/ for details.
     This task uses a Python client for DBp Spotlight:
     https://github.com/aolieman/pyspotlight
-    """
+    """ #
 
     if api_url is None:
         server = "http://spotlight.sztaki.hu"
@@ -493,7 +493,7 @@ def corenlp(doc, output='raw'):
 
 
 @app.task
-def corenlp_lemmatize(doc, output='raw'):
+def corenlp_lemmatize(doc, output='raw'): #
     """Wrapper around the Stanford CoreNLP lemmatizer.
 
     CoreNLP is downloaded automatically.
