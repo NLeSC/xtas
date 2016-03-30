@@ -13,12 +13,10 @@
 # limitations under the License.
 
 """
-Wrapper around the RUG Alpino Dependency parser
+Wrapper around the RUG Alpino dependency parser.
 
-The module expects ALPINO_HOME to point at the alpino installation dir
-
-The module needs the dependencies end_hook, which seems to be missing in the
-'sicstus' builds. The download link below works as of 2014-05-07:
+The module expects ALPINO_HOME to point to the Alpino installation dir.
+It was tested with the following version of Alpino:
 
 http://www.let.rug.nl/vannoord/alp/Alpino/binary/versions/Alpino-x86_64-linux-glibc2.5-20214.tar.gz
 
@@ -26,10 +24,11 @@ See: http://www.let.rug.nl/vannoord/alp/Alpino
 """
 
 
-import subprocess
+import datetime
 import logging
 import os
-import datetime
+import re
+import subprocess
 
 log = logging.getLogger(__name__)
 
@@ -85,11 +84,10 @@ def interpret_parse(parse):
                          'format-version': "0.0",
                          'processed': [module]
                          }}
-    tokens = {}  # {sid, offset: token}
+    tokens = {}  # {(sid, offset): token}
 
     def get_token(sid, token_tuple):
         t = interpret_token(*token_tuple)
-        print(t)
         if (sid, t['offset']) in tokens:
             return tokens[sid, t['offset']]
         else:
@@ -106,15 +104,36 @@ def interpret_parse(parse):
         func, rel = line[7].split("/")
         return dict(child=child['id'], parent=parent['id'], relation=rel)
 
-    dependencies = [get_dep(line.decode("utf-8").strip().split("|"))
-                    for line in parse.split("\n") if line.strip()]
+    def get_deps(lines):
+        for line in lines:
+            # At some point, Alpino's dependencies end_hook started producing
+            # "top" nodes, which we don't want in our output.
+            if not line or line[0] == 'top':
+                continue
+
+            assert len(line) == 16
+            sid = int(line[-1])
+            parent = get_token(sid, line[:7])
+            child = get_token(sid, line[8:15])
+            func, rel = line[7].split("/")
+            yield dict(child=child['id'], parent=parent['id'], relation=rel)
+
+    lines = (line.decode("utf-8").strip().split("|")
+             for line in parse.splitlines())
+    dependencies = list(get_deps(lines))
 
     return dict(header=header, dependencies=dependencies,
                 tokens=list(tokens.values()))
 
 
+
 def interpret_token(lemma, word, begin, _end, major_pos, _pos2, pos):
-    "Convert to raw alpino token into a 'saf' dict"
+    "Convert raw alpino token into a 'saf' dict"
+
+    # Turn POS tags like "[stype=declarative]:verb" into just "verb" to
+    # simulate the behavior of older Alpinos.
+    pos = re.sub(r'^\[[^]]*\]:', '', pos)
+
     if pos == "denk_ik":  # is this a bug or a feature?
         major, minor = "verb", None
     elif "(" in pos:

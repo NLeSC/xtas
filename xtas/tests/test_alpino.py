@@ -16,6 +16,7 @@
 Test the Alpino parser functions and task.
 """
 
+import json
 import os
 import os.path
 from unittest import SkipTest
@@ -28,11 +29,13 @@ from xtas.tasks.single import alpino
 
 
 _SENT = "Toob is dik"
-_TOK_IS = "ben|is|1|2|verb|verb(copula)|verb(unacc,sg_heeft,copula)"
-_TOK_TOOB = "Toob|Toob|0|1|name|name(PER)|proper_name(both,PER)"
-_TOK_DIK = "dik|dik|2|3|adj|adj|adjective(no_e(adv))"
-_PARSE = ("{ben}|hd/predc|{dik}|1\n{ben}|hd/su|{toob}|1"
-          .format(ben=_TOK_IS, dik=_TOK_DIK, toob=_TOK_TOOB))
+_TOK_TOP = "top|top|0|0|top|top|top"
+_TOK_IS = ("ben|is|1|2|verb|verb(copula)|"
+           + "[stype=declarative]:verb(unacc,sg_heeft,copula)")
+_TOK_TOOB = "Toob|Toob|0|1|name|name(PER)|[rnum=sg]:proper_name(sg,PER)"
+_TOK_DIK = "dik|dik|2|3|adj|adj|[]:adjective(no_e(adv))"
+_PARSE = ("{top}|top/hd|{ben}|1\n{ben}|hd/predc|{dik}|1\n{ben}|hd/su|{toob}|1"
+          .format(ben=_TOK_IS, dik=_TOK_DIK, toob=_TOK_TOOB, top=_TOK_TOP))
 
 
 def _check_alpino():
@@ -62,7 +65,7 @@ def test_interpret_token():
     actual = interpret_token(*_TOK_TOOB.split("|"))
     expected = {'lemma': 'Toob', 'word': 'Toob', 'offset': 0,
                 'pos': 'name', 'pos1': 'M',
-                'pos_major': 'proper_name', 'pos_minor': 'both,PER'}
+                'pos_major': 'proper_name', 'pos_minor': 'sg,PER'}
     assert_equal(actual, expected)
 
 
@@ -70,6 +73,9 @@ def test_interpret_parse():
     saf = interpret_parse(_PARSE)
     assert_equal({t['lemma'] for t in saf['tokens']}, {"Toob", "ben", "dik"})
     assert_equal(len(saf['dependencies']), 2)
+
+    # Must be serializable.
+    json.dumps(saf)
 
 
 def test_alpino_task():
@@ -84,7 +90,7 @@ def test_alpino_unicode():
     "Test what happens with non-ascii characters in input"
     _check_alpino()
     text = u"Bjarnfre\xf0arson leeft"
-    # tokenize should convery to utf-8 and only add final line break
+    # tokenize should convert to utf-8 and only add final line break
     assert_equal(tokenize(text).decode("utf-8"), text + "\n")
     saf = alpino(text, output='saf')
     assert_equal({t['lemma'] for t in saf['tokens']},

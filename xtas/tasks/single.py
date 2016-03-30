@@ -460,6 +460,7 @@ def alpino(doc, output="raw"):
     ----------
     output : string
         If 'raw', returns the raw output from Alpino itself.
+        The exact format may depend on the Alpino version.
         If 'saf', returns a SAF dictionary.
 
     References
