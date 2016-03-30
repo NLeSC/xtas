@@ -96,14 +96,6 @@ def interpret_parse(parse):
             t['id'] = len(tokens)
             return t
 
-    def get_dep(line):
-        sid = int(line[-1])
-        assert len(line) == 16
-        parent = get_token(sid, line[:7])
-        child = get_token(sid, line[8:15])
-        func, rel = line[7].split("/")
-        return dict(child=child['id'], parent=parent['id'], relation=rel)
-
     def get_deps(lines):
         for line in lines:
             # At some point, Alpino's dependencies end_hook started producing
