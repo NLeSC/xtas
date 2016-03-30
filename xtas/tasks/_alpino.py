@@ -33,7 +33,7 @@ import datetime
 
 log = logging.getLogger(__name__)
 
-CMD_PARSE = ["bin/Alpino", "end_hook=dependencies", "-parse"]
+CMD_PARSE = ["bin/Alpino", "end_hook=dependencies", "-parse"] #
 CMD_TOKENIZE = ["Tokenization/tok"]
 
 
@@ -78,7 +78,7 @@ def parse_raw(tokens):
     return parse
 
 
-def interpret_parse(parse):
+def interpret_parse(parse): #
     module = {'module': "alpino",
               "started": datetime.datetime.now().isoformat()}
     header = {"header": {'format': "SAF",
@@ -113,7 +113,7 @@ def interpret_parse(parse):
                 tokens=list(tokens.values()))
 
 
-def interpret_token(lemma, word, begin, _end, major_pos, _pos2, pos):
+def interpret_token(lemma, word, begin, _end, major_pos, _pos2, pos): #
     "Convert to raw alpino token into a 'saf' dict"
     if pos == "denk_ik":  # is this a bug or a feature?
         major, minor = "verb", None
@@ -175,7 +175,7 @@ POSMAP = {"pronoun": 'O',
           }
 
 
-if __name__ == '__main__':
+if __name__ == '__main__': #
     import sys
     import json
     p = parse_text(" ".join(sys.argv[1:]))
