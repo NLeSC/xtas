@@ -52,7 +52,7 @@ def tag(doc, format): #
     # in s.sendall(text). E.g. presumably the euro-sign:
     # UnicodeEncodeError: 'ascii' codec can't encode character u'\u20ac' in
     # position 460: ordinal not in range(128)
-
+#
     # nltk.word_tokenize(doc) returns a list [u'xyz', ..]. Using ' '.join()
     # results in the above error. Encoding each list item first fixes the
     # problem.
