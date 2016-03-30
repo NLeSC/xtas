@@ -44,7 +44,7 @@ server = Popen(['java', '-mx1000m', '-cp', classpath, 'NERServer', model],
                stdin=PIPE, stdout=PIPE)
 
 
-def tag(doc, format):
+def tag(doc, format): #
     if format not in ["tokens", "names"]:
         raise ValueError("unknown format %r" % format)
 
