@@ -38,6 +38,6 @@ if app.debug:
     print("Serving tasks:")
     pprint(list(taskq.tasks.keys()))
 http_server = HTTPServer(WSGIContainer(app))
-http_server.bind(args['--port'], address=args['--host'])
+http_server.bind(args['--port'], address=args['--host']) #
 http_server.start(int(args['--threads']))
 IOLoop.instance().start()
