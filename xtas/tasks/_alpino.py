@@ -18,7 +18,7 @@ Wrapper around the RUG Alpino dependency parser.
 The module expects ALPINO_HOME to point to the Alpino installation dir.
 It was tested with the following version of Alpino:
 
-http://www.let.rug.nl/vannoord/alp/Alpino/binary/versions/Alpino-x86_64-linux-glibc2.5-20214.tar.gz
+http://www.let.rug.nl/vannoord/alp/Alpino/binary/binary/Alpino-x86_64-Linux-glibc-2.19-20908-sicstus.tar.gz
 
 See: http://www.let.rug.nl/vannoord/alp/Alpino
 """
