@@ -190,7 +190,7 @@ def lda(docs, k):
 
 @app.task
 def parsimonious_wordcloud(docs, w=.5, k=10):
-    """Fit a parsimonious language model to terms in docs."""
+    """Fit a parsimonious language model to terms in docs.""" #
     from weighwords import ParsimoniousLM
 
     model = ParsimoniousLM(docs, w=w)
