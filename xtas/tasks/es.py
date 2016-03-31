@@ -169,10 +169,14 @@ def fetch_query_details_batch(idx, typ, query, full=True, tasknames=None):
     hit will have one additional key-value pair whose key is the name of the
     task, and whose value is the result of the task.
     """
+
+    # since ES terminology is a bit confusing: a result here is a pair
+    # (id, hit) where id is an ES document id, and hit is a dict with
+    # keys _index, _type, _id, _score and _source.
     es_result = _es().search(index=idx, doc_type=typ, body={'query': query})
-    hits = [[hit['_id'], hit] for hit in es_result['hits']['hits']]
+    results = [[hit['_id'], hit] for hit in es_result['hits']['hits']]
     if not full and not tasknames:
-        return hits
+        return results
 
     # for full documents: make sure also the children are returned
     if not tasknames:
@@ -180,12 +184,12 @@ def fetch_query_details_batch(idx, typ, query, full=True, tasknames=None):
 
     # HACK: one additional query per taskname!
     for taskname in tasknames:
-        results = fetch_results_by_document(idx, typ, query, taskname)
-        for id_child, hit_child in results:
-            for hit_id, hit_doc in hits:
-                if hit_doc['_id'] == id_child:
-                    hit_doc[taskname] = hit_child['_source']['data']
-    return hits
+        child_results = fetch_results_by_document(idx, typ, query, taskname)
+        for child_id, child_hit in child_results:
+            for doc_id, doc_hit in results:
+                if doc_id == child_id:
+                    doc_hit[taskname] = child_hit['_source']['data']
+    return results
 
 
 def _check_parent_mapping(idx, child_type, parent_type):
