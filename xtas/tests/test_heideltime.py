@@ -1,11 +1,14 @@
 import xml.etree.ElementTree as etree
 
+from nose import SkipTest
 from nose.tools import assert_equal
 
 from xtas.tasks import heideltime
 
 
 def test_heideltime():
+    raise SkipTest("Heideltime needs TreeTagger installed")
+
     example = "Lunch at 12:00pm & New Year on January 1st."
 
     timeml = heideltime(example, output="timeml")
