@@ -105,9 +105,9 @@ def to_conll(tree):
     with tempfile.NamedTemporaryFile() as f:
         f.write(xml)
         f.flush()
-        cmd = ('java -cp "{classpath}" {javaclass} -conllx -treeFile {f.name}'
-               .format(**locals()))
-        return subprocess.check_output(cmd, shell=True)
+        cmd = ['java', '-cp', classpath, javaclass, '-conllx',
+               '-treeFile', f.name]
+        return subprocess.check_output(cmd, shell=False)
 
 
 def add_frames(saf_article):
