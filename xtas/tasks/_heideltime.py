@@ -39,7 +39,12 @@ with open(join(_heideltime_dir, 'config.props')) as config_in:
 _jar = join(_heideltime_dir, 'de.unihd.dbs.heideltime.standalone.jar')
 
 
-def call_heideltime(doc, language):
+def call_heideltime(doc, language, output):
+    """Implementation of tasks.heideltime; see there for documentation."""
+    output = output.lower()
+    if output not in ["timeml", "dicts", "values"]:
+        raise ValueError("unknown output format %r" % output)
+
     with tempfile.NamedTemporaryFile(prefix='xtas-heideltime') as f:
         f.write(doc.encode('utf-8') if isinstance(doc, unicode) else doc)
         f.flush()
@@ -47,7 +52,15 @@ def call_heideltime(doc, language):
                                        '-c', _config_props,
                                        '-l', language, '-pos', 'treetagger',
                                        f.name])
-    out = etree.fromstring(out.replace('&', '&amp;'))
-    out = [x.attrib['value'] for x in out.findall('TIMEX3')]
+
+    # Heideltime doesn't always escape its ampersands correctly.
+    out = out.replace('&', '&amp;')
+
+    if output != "timeml":
+        out = etree.fromstring(out).findall("TIMEX3")
+        if output == "dicts":
+            out = [dict(timex.items()) for timex in out]
+        else:
+            out = [timex.attrib['value'] for timex in out]
 
     return out

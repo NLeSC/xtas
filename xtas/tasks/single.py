@@ -68,16 +68,34 @@ def guess_language(doc, output="best"):
 
 
 @app.task
-def heideltime(doc, language='english'):
+def heideltime(doc, language='english', output='values'):
     """Runs the Heideltime temporal tagger on the document doc.
 
-    Returns the text of doc with temporal expressions marked up in the TIMEX
-    format.
+    Parameters
+    ----------
+    doc : document
+
+    language : string
+        Name of the language of doc. Must be a language string understood by
+        Heideltime.
+
+    output : string
+        Output format. Heideltime produces a TimeML representation of the text
+        of doc; this is returned nearly as-is when ``output == "timeml"``
+        (except that some invalid XML from Heideltime is fixed).
+
+        The TimeML representation contains <TIMEX3> tags that mark time and
+        date expressions. These are extracted and parsed into dictionaries
+        of the form ``{"tid": 1, "type": "date", "value": "5 December"}``
+        when ``output == "dicts"``. The tids are Heideltime-internal
+        identifiers, kept for reference.
+
+        When ``output == "values"`` (the default), only the values of the
+        previously described dicts are returned.
     """
     from ._heideltime import call_heideltime
 
-    # TODO Add an option to parse the TIMEX XML format.
-    return call_heideltime(fetch(doc), language)
+    return call_heideltime(fetch(doc), language, output)
 
 
 @app.task
