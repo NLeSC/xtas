@@ -31,6 +31,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
+    """Return a version string if / is requested."""
     pyver = sys.version_info
     text = "xtas web server\n"
     if app.debug:
@@ -96,6 +97,7 @@ def run_task_on_es(taskname, index, type, id, field):
 
 @app.route('/result/<jobid>')
 def result(jobid):
+    """Return a requested result, waiting for it if necessary."""
     return json.dumps(celery.result.AsyncResult(jobid).get()) + "\n"
 
 
