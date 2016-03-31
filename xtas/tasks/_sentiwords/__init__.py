@@ -24,6 +24,7 @@ _SENTI_PATH = os.path.join(os.path.dirname(__file__), "sentiwords.txt")
 
 #@worker_process_init.connect
 def load():
+    """Loads SentiWords file and builds lookup table from it."""
     max_len = 0           # max n-gram length minus one
     sentiment = {}
     with open(_SENTI_PATH) as sentiwords_file:
@@ -47,6 +48,21 @@ load()
 
 
 def tag(words):
+    """Add polarity tags to a list of words.
+
+    This function uses the SentiWords lexicon to add prior polarity tags to
+    the given list of words.
+
+    Parameters
+    ----------
+    words: sequence of strings, each containing one word
+
+    Returns
+    -------
+    This function generates (ngram, polarity) pairs, where ngram is one or
+    more concatenated words, and polarity is the prior polarity, in the
+    range [-1, 1]. The concatenated ngrams together equal the original text.
+    """
     def longest_ngram_at(k):
         for j in xrange(_MAX_LEN, 0, -1):
             ngram = ' '.join(words[k:k+j])
