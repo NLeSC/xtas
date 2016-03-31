@@ -6,4 +6,5 @@ include README.rst
 include requirements.txt
 
 include xtas/tasks/_sentiwords/sentiwords.txt
+include xtas/tests/config.props
 include xtas/tests/test_corenlp.xml
