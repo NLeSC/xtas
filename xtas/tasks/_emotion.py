@@ -64,7 +64,7 @@ class GridSearch(GridSearchCV):
         return super(GridSearch, self).predict(X)
 
 
-data_train = [ln.rsplit(None, 1) for ln in open(download())]
+data_train = [ln.rsplit(None, 1) for ln in open(download())] #
 X_train, Y_train = zip(*data_train)
 del data_train
 
