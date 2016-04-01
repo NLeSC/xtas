@@ -190,7 +190,34 @@ def lda(docs, k):
 
 @app.task
 def parsimonious_wordcloud(docs, w=.5, k=10):
-    """Fit a parsimonious language model to terms in docs."""
+    """Fit parsimonious language models to docs.
+
+    A parsimonious language model shows which words "stand out" in each
+    document when compared to the full set. These words are the ones you
+    might want to display in a word cloud.
+
+    This function fits a background model to all of docs, then fits individual
+    models to each document in turn using the background model.
+
+    Parameters
+    ----------
+    docs : list
+        List of documents.
+
+    w : float
+        Weight assigned to the document terms when fitting individual models,
+        relative to the background model. Should be a number between 0
+        (background model only) and 1 (background model disabled).
+
+    k : integer
+        Number of terms to return per document.
+
+    Returns
+    -------
+    terms : list of list of (string, float)
+        For each document in docs, a top-k list of most probable words and
+        their log-probabilities.
+    """
     from weighwords import ParsimoniousLM
 
     model = ParsimoniousLM(docs, w=w)
