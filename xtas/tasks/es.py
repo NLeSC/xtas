@@ -37,6 +37,22 @@ def es_document(idx, typ, id, field):
     """Returns a handle on a field in a document living in the ES store.
 
     This does not fetch the document, or even check that it exists.
+
+    Parameters
+    ----------
+    idx : string
+        ElasticSearch index.
+    typ : string
+        ElasticSearch type.
+    id : string
+        ElasticSearch document id.
+    field : string
+        Name of field.
+
+    Returns
+    -------
+    An object of unspecified type representing the given field in the given
+    document.
     """
     # Returns a dict instead of a custom object to ensure JSON serialization
     # works.
@@ -44,13 +60,21 @@ def es_document(idx, typ, id, field):
 
 
 def is_es_document(obj):
-    """Returns True iff obj is an es_document
-    """
+    """Returns True iff obj is an es_document."""
     return isinstance(obj, dict) and set(obj.keys()) == set(_ES_DOC_FIELDS)
 
 
 def es_address(es_doc):
-    """Returns the index, type, id and field of es_doc as a list
+    """Returns the index, type, id and field of es_doc as a list.
+
+    Parameters
+    ----------
+    es_doc : document handle created with es_document
+
+    Returns
+    -------
+    A list of strings containing four objects, in order, the index, type,
+    id and field of the document.
     """
     return [es_doc[dictfield] for dictfield in _ES_DOC_FIELDS]
 
@@ -92,6 +116,21 @@ def fetch_query_batch(idx, typ, query, field='body'):
     Returns a list of field contents, with documents that don't have the
     required field silently filtered out.
 
+    Parameters
+    ----------
+    idx : string
+        ElasticSearch index.
+    typ : string
+        ElasticSearch type.
+    id : string
+        ElasticSearch document id.
+    field : string
+        Name of field.
+
+    Returns
+    -------
+    List of objects of whichever type were stored in the given field.
+
     Example
     -------
     >>> q = {"query_string": {"query": "hello"}}
@@ -105,27 +144,53 @@ CHECKED_MAPPINGS = set()
 
 def fetch_query_details_batch(idx, typ, query, full=True, tasknames=None):
     """Fetch all documents and their results matching query
-      and return them as a list.
-      If full=False, only the documents are returned, not their results.
-    One can restrict the tasks requested in tasknames.
+        and return them as a list.
+
+    Parameters
+    ----------
+    idx : string
+        ElasticSearch index.
+    typ : string
+        ElasticSearch type.
+    query : ElasticSearch query object
+        ElasticSearch query describing the desired documents.
+    full : bool
+        Whether to return only the document (False) or the document and
+        also any attached results (True).
+    tasknames : list of string
+        Return the document and the results of these tasks if available.
+        Overrides full, i.e. if any task names are given, these are
+        returned, even if full equals False.
+
+    Returns
+    -------
+    Returns a list of (doc_id, ElasticSearch hit), one tuple for each document
+    matching the query. If full is True or tasknames has been specified, each
+    hit will have one additional key-value pair whose key is the name of the
+    task, and whose value is the result of the task.
     """
+
+    # since ES terminology is a bit confusing: a result here is a pair
+    # (id, hit) where id is an ES document id, and hit is a dict with
+    # keys _index, _type, _id, _score and _source.
     es_result = _es().search(index=idx, doc_type=typ, body={'query': query})
-    hits = [[hit['_id'], hit] for hit in es_result['hits']['hits']]
+    results = [[hit['_id'], hit] for hit in es_result['hits']['hits']]
     if not full and not tasknames:
-        return hits
+        return results
 
     # for full documents: make sure also the children are returned
     if not tasknames:
         tasknames = get_tasks_per_index(idx, typ)
 
     # HACK: one additional query per taskname!
+    res_index = {doc_id: res_i for res_i, doc_id in enumerate([r[0] for r in results])}
     for taskname in tasknames:
-        results = fetch_results_by_document(idx, typ, query, taskname)
-        for id_child, hit_child in results:
-            for hit_id, hit_doc in hits:
-                if hit_doc['_id'] == id_child:
-                    hit_doc[taskname] = hit_child['_source']['data']
-    return hits
+        child_results = fetch_results_by_document(idx, typ, query, taskname)
+        for child_id, child_hit in child_results:
+            res_i = res_index[child_id]
+            results[res_i][1][taskname] = child_hit['_source']['data']
+
+    return results
 
 
 def _check_parent_mapping(idx, child_type, parent_type):
@@ -146,7 +211,25 @@ def _check_parent_mapping(idx, child_type, parent_type):
 
 @app.task
 def store_single(data, taskname, idx, typ, id):
-    """Store the data as a child document."""
+    """Store the data as a child document.
+
+    Parameters
+    ----------
+    data : object
+        Some JSON-serializable object to store.
+    taskname : string
+        Name of the task that created the data.
+    idx : string
+        The ElasticSearch index to store the data under.
+    typ : string
+        The ElasticSearch type of the data.
+    id : string
+        The id of the parent document to store the data under.
+
+    Returns
+    -------
+    Returns the data argument, unchanged.
+    """
     child_type = _taskname_to_child_type(taskname, typ)
     _check_parent_mapping(idx, child_type, typ)
     now = datetime.now().isoformat()
