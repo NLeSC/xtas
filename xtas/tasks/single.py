@@ -249,9 +249,18 @@ def stanford_ner_tag(doc, output="tokens"):
 def pos_tag(tokens, model='nltk'):
     """Perform part-of-speech (POS) tagging for English.
 
-    Currently only does English using the default model in NLTK.
+    Parameters
+    ----------
+    tokens : list of string
+        A list of tokens.
+    model : string
+        Name of tagger model to use. Currently only accepts 'nltk', which is
+        the default model for English POS tagging in NLTK.
 
-    Expects a list of tokens.
+    Returns
+    -------
+    tagged : list of (string, string)
+        List of (token, pos tag) pairs.
     """
     if model != 'nltk':
         raise ValueError("unknown POS tagger %r" % model)
