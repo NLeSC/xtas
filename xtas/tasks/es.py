@@ -183,12 +183,13 @@ def fetch_query_details_batch(idx, typ, query, full=True, tasknames=None):
         tasknames = get_tasks_per_index(idx, typ)
 
     # HACK: one additional query per taskname!
+    res_index = {doc_id: res_i for res_i, doc_id in enumerate([r[0] for r in results])}
     for taskname in tasknames:
         child_results = fetch_results_by_document(idx, typ, query, taskname)
         for child_id, child_hit in child_results:
-            for doc_id, doc_hit in results:
-                if doc_id == child_id:
-                    doc_hit[taskname] = child_hit['_source']['data']
+            res_i = res_index[child_id]
+            results[res_i][1][taskname] = child_hit['_source']['data']
+
     return results
 
 
