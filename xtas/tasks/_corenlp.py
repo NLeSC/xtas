@@ -33,7 +33,7 @@ from six import iteritems
 
 from unidecode import unidecode
 
-from .._downloader import _download_zip
+from .._downloader import download_zip
 
 
 log = logging.getLogger(__name__)
@@ -148,7 +148,7 @@ def _get_corenlp():
     $XTAS_DATA to be backward compatible.
     """
     corenlp_home = os.environ.get("CORENLP_HOME")
-    return corenlp_home or _download_zip(_URL, name='Stanford CoreNLP')
+    return corenlp_home or download_zip(_URL, name='Stanford CoreNLP')
 
 
 def get_corenlp_version():

@@ -22,7 +22,7 @@ from subprocess import Popen, PIPE
 
 import nltk
 
-from .._downloader import _download_zip
+from .._downloader import download_zip
 
 
 logger = logging.getLogger(__name__)
@@ -34,8 +34,8 @@ STANFORD_NER = (
 
 
 # Download and start server at import, not call time. Import is done lazily.
-ner_dir = _download_zip(STANFORD_NER, name="Stanford NER",
-                        check_dir="stanford-ner-2014-01-04")
+ner_dir = download_zip(STANFORD_NER, name="Stanford NER",
+                       check_dir="stanford-ner-2014-01-04")
 jar = os.path.join(ner_dir, 'stanford-ner.jar')
 model = os.path.join(ner_dir,
                      'classifiers/english.all.3class.distsim.crf.ser.gz')

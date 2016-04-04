@@ -27,7 +27,7 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
-from .._downloader import _make_data_home, _progress
+from .._downloader import make_data_home, progress
 
 
 MODEL = None
@@ -42,13 +42,13 @@ TRAINING_DATA = (
 def download():
     # TODO figure out the license on this one, maybe make the user perform
     # some action.
-    data_dir = os.path.join(_make_data_home(), 'movie_reviews')
+    data_dir = os.path.join(make_data_home(), 'movie_reviews')
     training_dir = os.path.join(data_dir, 'txt_sentoken')
 
     if not os.path.exists(training_dir):
         with NamedTemporaryFile() as temp:
             print("Downloading %r" % TRAINING_DATA)
-            urlretrieve(TRAINING_DATA, temp.name, reporthook=_progress)
+            urlretrieve(TRAINING_DATA, temp.name, reporthook=progress)
             with tarfile.open(temp.name) as tar:
                 tar.extractall(path=data_dir)
 
@@ -93,7 +93,7 @@ def train(param_search=False):
 def classify(doc):
     global MODEL
     if MODEL is None:
-        model_path = os.path.join(_make_data_home("movie_reviews"),
+        model_path = os.path.join(make_data_home("movie_reviews"),
                                   "classifier")
         try:
             MODEL = load(model_path)

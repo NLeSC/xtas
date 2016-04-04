@@ -28,7 +28,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.svm import LinearSVC
 
-from .._downloader import _make_data_home
+from .._downloader import make_data_home
 
 
 __all__ = ['classify']
@@ -38,7 +38,7 @@ _BASE_URL = "https://raw.githubusercontent.com/NLeSC/spudisc-emotion-classificat
 
 
 def download():
-    data_home = _make_data_home() + os.path.sep
+    data_home = make_data_home() + os.path.sep
     path = os.path.join(data_home, "movie_review_emotions.txt")
     if not os.path.exists(path):
         tmp = NamedTemporaryFile(prefix=data_home, delete=False)
