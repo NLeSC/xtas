@@ -74,7 +74,7 @@ class StanfordCoreNLP(object):
 
     def start_corenlp(self):
         cmd = get_command(memory=self.memory, annotators=self.annotators)
-        log.warn("Starting corenlp: {cmd}".format(**locals()))
+        log.info("Starting corenlp: {cmd}".format(**locals()))
         self.corenlp_process = subprocess.Popen(cmd, shell=True,
                                                 stdin=subprocess.PIPE,
                                                 stdout=subprocess.PIPE,
@@ -83,7 +83,7 @@ class StanfordCoreNLP(object):
         self.read_thread = threading.Thread(target=self.read_output_lines)
         self.read_thread.daemon = True
         self.read_thread.start()
-        log.warn("Waiting for prompt")
+        log.debug("Waiting for prompt")
         self.communicate(input=None, wait_for_output=False)
 
     def read_output_lines(self):
@@ -95,9 +95,9 @@ class StanfordCoreNLP(object):
             self.out.write(chars)
 
     def communicate(self, input, wait_for_output=True):
-        log.warn("Sending {} bytes to corenlp".format(input and len(input)))
+        log.debug("Sending {} bytes to corenlp".format(input and len(input)))
         if self.corenlp_process.poll() is not None:
-            logging.warn("CoreNLP process died, respawning")
+            logging.info("CoreNLP process died, respawning")
             self.start_corenlp()
         with self.lock:
             self.out = io.BytesIO()
@@ -107,7 +107,7 @@ class StanfordCoreNLP(object):
                 self.corenlp_process.stdin.flush()
 
             # wait until we get a prompt
-            logging.warn("Waiting for NLP>")
+            logging.debug("Waiting for NLP>")
             err_buffer = io.BytesIO()
             while True:
                 char = self.corenlp_process.stderr.read(1)
