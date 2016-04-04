@@ -1,14 +1,14 @@
 #!/bin/bash
 #
-# xtas-web xTAS web server
+# xtas-web xtas REST server
 # Init script for xtas-web for CentOS 6.5.
 # It may be compatible with other RedHat-based distributions.
 # Init script developed by 904Labs.com.
 #
 # chkconfig: 2345 86 90
-# description: xTas is an extensible text analysis suite,\
+# description: xtas is an extensible text analysis suite,\
 #              developed by the University of Amsterdam \
-#              and the Netherlands e-Science Centre.
+#              and the Netherlands eScience Center.
 # processname: /home/xtas/xtas/bin/python -m xtas.web
 #
 ### BEGIN INIT INFO
@@ -16,7 +16,7 @@
 # Required-Start:    $network rabbitmq-server frog xtas
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Description:       xTas, the extensible text analysis suite (web server)
+# Description:       xtas, the extensible text analysis suite (REST server)
 ### END INIT INFO
 
 # Source function library.
@@ -31,7 +31,7 @@ PYTHONPATH_SYSTEM=/usr/local/lib/python2.7/site-packages/
 LOG_XTAS=/home/xtas/logs/xtas-web
 XTAS_USER="xtas"
 LOCK_FILE_XTAS=/var/lock/subsys/xtas-web
-HOST="YOUR_HOST"
+ADDRESS="YOUR_HOST"
 PORT=5476
 
 test -x $VIRTUALENV_PROG || exit 0
@@ -45,7 +45,7 @@ start() {
 	$START_PROG \
 		--user $XTAS_USER \
 		PYTHONPATH=$PYTHONPATH_XTAS:$PYTHONPATH_SYSTEM \
-		$PYTHON -m xtas.webserver --host $HOST --port $PORT \
+		$PYTHON -m xtas.webserver --address $ADDRESS --port $PORT \
 			> $LOG_XTAS.log \
 			2> $LOG_XTAS.err \
 			0<&- &

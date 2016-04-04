@@ -20,7 +20,7 @@ Usage:
 Options:
   -h, --help         show this help message and exit
   --debug            Enable debugging mode.
-  --host=HOST        Host to listen on [default: 127.0.0.1].
+  --address=ADDRESS  Address to listen on [default: 127.0.0.1].
   --port=PORT        Port to listen on [default: 5000].
   --threads=THREADS  Number of threads [default: 5].
 
@@ -52,6 +52,6 @@ if app.debug:
     print("Serving tasks:")
     pprint(list(taskq.tasks.keys()))
 http_server = HTTPServer(WSGIContainer(app))
-http_server.bind(args['--port'], address=args['--host'])
+http_server.bind(args['--port'], address=args['--address'])
 http_server.start(int(args['--threads']))
 IOLoop.instance().start()
