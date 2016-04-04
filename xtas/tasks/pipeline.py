@@ -12,15 +12,28 @@ from xtas.core import app
 def pipeline(doc, pipeline, store_final=True, store_intermediate=False,
              block=True):
     """
-    Get the result for a given document.
-    Pipeline should be a list of dicts, with members module and arguments
-    e.g. [{"module" : "tokenize"},
-          {"module" : "pos_tag", "arguments" : {"model" : "nltk"}}]
-    @param block: if True, it will block and return the actual result.
-                  If False, it will return an AsyncResult unless the result was
-                  cached, in which case it returns the result immediately (!)
-    @param store_final: if True, store the final result
-    @param store_intermediate: if True, store all intermediate results as well
+    Apply a sequence of operations to a document and return the result.
+
+    Parameters
+    ----------
+    doc : es_document or string
+        The document to process, either as a string, or a result of es_document().
+
+    pipeline : list of dicts
+        A list of dicts, each with members "module" and "arguments", e.g.
+        [{"module" : "tokenize"},
+         {"module" : "pos_tag", "arguments" : {"model" : "nltk"}}]
+
+    store_final : bool
+        If True, store the final result in ElasticSearch.
+
+    store_intermediate : bool
+        If True, store all intermediate results as well.
+
+    block : bool
+        If True, block, and return the result when it arrives.
+        If False, return the result directly if it's available immediately,
+        otherwise return an AsyncResult.
     """
 
     tasks = [_get_task(t) for t in pipeline]
