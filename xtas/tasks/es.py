@@ -139,7 +139,7 @@ def fetch_query_batch(idx, typ, query, field='body'):
     hits = scan(_es(), {'query': query}, index=idx, doc_type=typ)
     return [hit['_source'][field] for hit in hits if field in hit['_source']]
 
-CHECKED_MAPPINGS = set() #
+CHECKED_MAPPINGS = set()
 
 
 def fetch_query_details_batch(idx, typ, query, full=True, tasknames=None):
