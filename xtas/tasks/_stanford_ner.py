@@ -45,17 +45,12 @@ server = Popen(['java', '-mx1000m', '-cp', classpath, 'NERServer', model],
 
 
 def tag(doc, format):
+    """Implementation of tasks.single.stanford_ner_tag.
+
+    Expects doc to be a string; for format and return value, see public API.
+    """
     if format not in ["tokens", "names"]:
         raise ValueError("unknown format %r" % format)
-
-    # If the doc contains unicode characters, a UnicodeEncodeError was thrown
-    # in s.sendall(text). E.g. presumably the euro-sign:
-    # UnicodeEncodeError: 'ascii' codec can't encode character u'\u20ac' in
-    # position 460: ordinal not in range(128)
-
-    # nltk.word_tokenize(doc) returns a list [u'xyz', ..]. Using ' '.join()
-    # results in the above error. Encoding each list item first fixes the
-    # problem.
 
     toks = nltk.word_tokenize(doc)
     text = u' '.join(toks).encode('utf-8')
