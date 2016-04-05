@@ -43,7 +43,7 @@ def _vectorizer(**kwargs):
     return TfidfVectorizer(**kwargs)
 
 
-def group_clusters(docs, labels):
+def _group_clusters(docs, labels):
     """Group docs by their cluster labels."""
     return [zip(*cluster)[1]
             for cluster in itervalues(toolz.groupby(operator.itemgetter(0),
@@ -90,7 +90,7 @@ def kmeans(docs, k, lsa=None):
                                MiniBatchKMeans(n_clusters=k))
 
     labels = kmeans.fit(fetch(d) for d in docs).steps[-1][1].labels_
-    return group_clusters(docs, labels)
+    return _group_clusters(docs, labels)
 
 
 @app.task
@@ -130,7 +130,7 @@ def big_kmeans(docs, k, batch_size=1000, n_features=(2 ** 20),
             batch = vectorizer.transform(batch)
             labels.extend(kmeans.predict(batch).tolist())
 
-    return group_clusters(docs, labels)
+    return _group_clusters(docs, labels)
 
 
 @app.task
