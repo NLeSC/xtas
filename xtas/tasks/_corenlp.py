@@ -41,7 +41,7 @@ log = logging.getLogger(__name__)
 _CORENLP_VERSION = None
 
 
-class StanfordCoreNLP(object):
+class _StanfordCoreNLP(object):
 
     _singletons = {}  # annotators : object
 
@@ -70,23 +70,23 @@ class StanfordCoreNLP(object):
         self.annotators = annotators
         self.memory = memory
         _CORENLP_VERSION = get_corenlp_version()
-        self.start_corenlp()
+        self._start_corenlp()
 
-    def start_corenlp(self):
-        cmd = get_command(memory=self.memory, annotators=self.annotators)
+    def _start_corenlp(self):
+        cmd = _get_command(memory=self.memory, annotators=self.annotators)
         log.info("Starting corenlp: {cmd}".format(**locals()))
         self.corenlp_process = subprocess.Popen(cmd, shell=True,
                                                 stdin=subprocess.PIPE,
                                                 stdout=subprocess.PIPE,
                                                 stderr=subprocess.PIPE)
         self.lock = threading.Lock()
-        self.read_thread = threading.Thread(target=self.read_output_lines)
+        self.read_thread = threading.Thread(target=self._read_output_lines)
         self.read_thread.daemon = True
         self.read_thread.start()
         log.debug("Waiting for prompt")
-        self.communicate(input=None, wait_for_output=False)
+        self._communicate(input=None, wait_for_output=False)
 
-    def read_output_lines(self):
+    def _read_output_lines(self):
         "intended to be run as background thread to collect parser output"
         while True:
             chars = self.corenlp_process.stdout.readline()
@@ -94,11 +94,11 @@ class StanfordCoreNLP(object):
                 break
             self.out.write(chars)
 
-    def communicate(self, input, wait_for_output=True):
+    def _communicate(self, input, wait_for_output=True):
         log.debug("Sending {} bytes to corenlp".format(input and len(input)))
         if self.corenlp_process.poll() is not None:
             logging.info("CoreNLP process died, respawning")
-            self.start_corenlp()
+            self._start_corenlp()
         with self.lock:
             self.out = io.BytesIO()
             if input:
@@ -129,11 +129,11 @@ class StanfordCoreNLP(object):
         if isinstance(text, bytes):
             text = text.decode("ascii")
         text = re.sub("\s+", " ", unidecode(text))
-        return self.communicate(text + "\n")
+        return self._communicate(text + "\n")
 
 
 def parse(text, annotators=None, **options):
-    s = StanfordCoreNLP.get_singleton(annotators, **options)
+    s = _StanfordCoreNLP.get_singleton(annotators, **options)
     return s.parse(text, **options)
 
 
@@ -160,7 +160,7 @@ def get_corenlp_version():
             return m.group(1)
 
 
-def get_command(annotators=None, memory=None):
+def _get_command(annotators=None, memory=None):
     """Return the system (shell) call to run corenlp."""
     corenlp_home = _get_corenlp()
     cmd = 'java'
@@ -198,7 +198,7 @@ def stanford_to_saf(xml_bytes):
                                sentence=sent.id,
                                offset=t.character_offset_begin,
                                lemma=t.lemma, word=t.word,
-                               pos=t.pos, pos1=POSMAP[t.pos])
+                               pos=t.pos, pos1=_POSMAP[t.pos])
                           for t in sent.tokens]
 
         saf['entities'] += [{'tokens': [tokens[sent.id, t.id]], 'type': t.ner}
@@ -223,49 +223,49 @@ def stanford_to_saf(xml_bytes):
     # remove default and empty elements
     return {k: v for (k, v) in iteritems(saf) if v != []}
 
-POSMAP = {'CC': 'C',
-          'CD': 'Q',
-          'DT': 'D',
-          'EX': '?',
-          'FW': 'N',
-          'IN': 'P',
-          'JJ': 'A',
-          'JJR': 'A',
-          'JJS': 'A',
-          'LS': 'C',
-          'MD': 'V',
-          'NN': 'N',
-          'NNS': 'N',
-          'NNP': 'M',
-          'NNPS': 'M',
-          'PDT': 'D',
-          'POS': 'O',
-          'PRP': 'O',
-          'PRP$': 'O',
-          'RB': 'B',
-          'RBR': 'B',
-          'RBS': 'B',
-          'RP': 'R',
-          'SYM': '.',
-          'TO': '?',
-          'UH': '!',
-          'VB': 'V',
-          'VBD': 'V',
-          'VBG': 'V',
-          'VBN': 'V',
-          'VBP': 'V',
-          'VBZ': 'V',
-          'WDT': 'D',
-          'WP': 'O',
-          'WP$': 'O',
-          'WRB': 'B',
-          ',': '.',
-          '.': '.',
-          ':': '.',
-          '``': '.',
-          '$': '.',
-          "''": '.',
-          "#": '.',
-          '-LRB-': '.',
-          '-RRB-': '.',
-          }
+_POSMAP = {'CC': 'C',
+           'CD': 'Q',
+           'DT': 'D',
+           'EX': '?',
+           'FW': 'N',
+           'IN': 'P',
+           'JJ': 'A',
+           'JJR': 'A',
+           'JJS': 'A',
+           'LS': 'C',
+           'MD': 'V',
+           'NN': 'N',
+           'NNS': 'N',
+           'NNP': 'M',
+           'NNPS': 'M',
+           'PDT': 'D',
+           'POS': 'O',
+           'PRP': 'O',
+           'PRP$': 'O',
+           'RB': 'B',
+           'RBR': 'B',
+           'RBS': 'B',
+           'RP': 'R',
+           'SYM': '.',
+           'TO': '?',
+           'UH': '!',
+           'VB': 'V',
+           'VBD': 'V',
+           'VBG': 'V',
+           'VBN': 'V',
+           'VBP': 'V',
+           'VBZ': 'V',
+           'WDT': 'D',
+           'WP': 'O',
+           'WP$': 'O',
+           'WRB': 'B',
+           ',': '.',
+           '.': '.',
+           ':': '.',
+           '``': '.',
+           '$': '.',
+           "''": '.',
+           "#": '.',
+           '-LRB-': '.',
+           '-RRB-': '.',
+           }
