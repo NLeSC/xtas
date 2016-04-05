@@ -22,17 +22,17 @@ from unittest import SkipTest
 
 from nose.tools import assert_equal
 
-from xtas.tasks._frog import (FROG_HOST, FROG_PORT, call_frog, frog_to_saf,
+from xtas.tasks._frog import (_FROG_HOST, _FROG_PORT, call_frog, frog_to_saf,
                               parse_frog)
 
 
 def _check_frog():
     s = socket.socket()
     try:
-        s.connect((FROG_HOST, FROG_PORT))
+        s.connect((_FROG_HOST, _FROG_PORT))
     except:
         logging.exception("Unable to connect to {}:{}, skipping tests"
-                          .format(FROG_HOST, FROG_PORT))
+                          .format(_FROG_HOST, _FROG_PORT))
         raise SkipTest("Cannot connect to frog, skipping tests")
 
     logging.info("Frog is alive!")

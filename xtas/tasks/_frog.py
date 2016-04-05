@@ -30,7 +30,7 @@ _FROG_PORT = os.environ.get('XTAS_FROG_PORT', 9887)
 try:
     _FROG_PORT = int(_FROG_PORT)
 except Exception as e:
-    logging.warn("$FROG_PORT not recognized as port number, using %d: %r"
+    logging.warn("$XTAS_FROG_PORT not recognized as port number, using %d: %r"
                  % (_FROG_PORT, e))
 
 _POSMAP = {"VZ": "P",
@@ -62,7 +62,7 @@ def call_frog(text):
     text = unidecode(text)
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((FROG_HOST, FROG_PORT))
+    s.connect((_FROG_HOST, _FROG_PORT))
     s.sendall(text)
     s.shutdown(socket.SHUT_WR)
     for line in s.makefile('r'):
