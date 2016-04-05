@@ -39,7 +39,7 @@ TRAINING_DATA = (
 )
 
 
-def download():
+def download(): #
     # TODO figure out the license on this one, maybe make the user perform
     # some action.
     data_dir = os.path.join(_make_data_home(), 'movie_reviews')
@@ -55,7 +55,7 @@ def download():
     return training_dir
 
 
-def train(param_search=False):
+def train(param_search=False): #
     data = load_files(download())
     y = [data.target_names[t] for t in data.target]
 
@@ -68,7 +68,7 @@ def train(param_search=False):
                                         strip_accents='unicode'),
                         LogisticRegression(random_state=623, C=5000))
 
-    if param_search:
+    if param_search: #
         params = {'tfidf__ngram_range': [(1, 1), (1, 2)],
                   'lr__C': [1000, 5000, 10000]}
 
@@ -90,7 +90,7 @@ def train(param_search=False):
         return clf.fit(data.data, y)
 
 
-def classify(doc):
+def classify(doc): #
     global MODEL
     if MODEL is None:
         model_path = os.path.join(_make_data_home("movie_reviews"),
@@ -99,7 +99,7 @@ def classify(doc):
             MODEL = load(model_path)
         except (IOError, OSError) as e:
             if e.errno == errno.ENOENT:
-                MODEL = train()
+                MODEL = train() #
                 dump(MODEL, model_path, compress=9)
             else:
                 raise
