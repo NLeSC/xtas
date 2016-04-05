@@ -20,7 +20,7 @@ import subprocess
 import tempfile
 import xml.etree.ElementTree as etree
 
-from .._downloader import _download_zip, _make_data_home
+from .._downloader import download_zip, make_data_home
 
 
 def _set_treetagger_home(heideltime_dir):
@@ -43,7 +43,7 @@ def _set_treetagger_home(heideltime_dir):
                                                      delete=False)
             for line in config_in:
                 if line.startswith('treeTaggerHome = SET ME'):
-                    home = join(_make_data_home(), 'treetagger')
+                    home = join(make_data_home(), 'treetagger')
                     line = 'treeTaggerHome = %s\n' % home
                 config_out.write(line)
 
@@ -72,7 +72,7 @@ def _initialize():
 
     _zip = 'https://github.com/HeidelTime/heideltime/releases/download/VERSION2.1/heideltime-standalone-2.1.zip'
 
-    _heideltime_dir = _download_zip(url=_zip, name='Heideltime',
+    _heideltime_dir = download_zip(url=_zip, name='Heideltime',
                                     check_dir='heideltime-standalone')
     _config_props = _set_treetagger_home(_heideltime_dir)
     _jar = join(_heideltime_dir, 'de.unihd.dbs.heideltime.standalone.jar')

@@ -27,36 +27,36 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
-from .._downloader import _make_data_home, _progress
+from .._downloader import make_data_home, progress
 
 
-MODEL = None
+_MODEL = None
 
 
-TRAINING_DATA = (
+_TRAINING_DATA = (
     'http://www.cs.cornell.edu/people/pabo/movie-review-data'
     '/review_polarity.tar.gz'
 )
 
 
-def download():
+def _download():
     # TODO figure out the license on this one, maybe make the user perform
     # some action.
-    data_dir = os.path.join(_make_data_home(), 'movie_reviews')
+    data_dir = os.path.join(make_data_home(), 'movie_reviews')
     training_dir = os.path.join(data_dir, 'txt_sentoken')
 
     if not os.path.exists(training_dir):
         with NamedTemporaryFile() as temp:
-            print("Downloading %r" % TRAINING_DATA)
-            urlretrieve(TRAINING_DATA, temp.name, reporthook=_progress)
+            print("Downloading %r" % _TRAINING_DATA)
+            urlretrieve(_TRAINING_DATA, temp.name, reporthook=progress)
             with tarfile.open(temp.name) as tar:
                 tar.extractall(path=data_dir)
 
     return training_dir
 
 
-def train(param_search=False):
-    data = load_files(download())
+def _train(param_search=False):
+    data = load_files(_download())
     y = [data.target_names[t] for t in data.target]
 
     # The random state on the LR estimator is fixed to the most arbitrary value
@@ -91,17 +91,17 @@ def train(param_search=False):
 
 
 def classify(doc):
-    global MODEL
-    if MODEL is None:
-        model_path = os.path.join(_make_data_home("movie_reviews"),
+    global _MODEL
+    if _MODEL is None:
+        model_path = os.path.join(make_data_home("movie_reviews"),
                                   "classifier")
         try:
-            MODEL = load(model_path)
+            _MODEL = load(model_path)
         except (IOError, OSError) as e:
             if e.errno == errno.ENOENT:
-                MODEL = train()
-                dump(MODEL, model_path, compress=9)
+                _MODEL = _train()
+                dump(_MODEL, model_path, compress=9)
             else:
                 raise
 
-    return MODEL.predict_proba(doc)[0, 1]   # first sample, second class
+    return _MODEL.predict_proba(doc)[0, 1]   # first sample, second class

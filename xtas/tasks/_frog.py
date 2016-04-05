@@ -25,13 +25,13 @@ import socket
 
 from unidecode import unidecode
 
-FROG_HOST = "localhost"
-FROG_PORT = os.environ.get('XTAS_FROG_PORT', 9887)
+_FROG_HOST = "localhost"
+_FROG_PORT = os.environ.get('XTAS_FROG_PORT', 9887)
 try:
-    FROG_PORT = int(FROG_PORT)
+    _FROG_PORT = int(_FROG_PORT)
 except Exception as e:
     logging.warn("$FROG_PORT not recognized as port number, using %d: %r"
-                 % (FROG_PORT, e))
+                 % (_FROG_PORT, e))
 
 _POSMAP = {"VZ": "P",
            "N": "N",
@@ -98,7 +98,7 @@ def parse_frog(lines):
             yield result
 
 
-def add_pos1(token):
+def _add_pos1(token):
     """
     Adds a 'pos1' element to a frog token.
     """
@@ -111,7 +111,7 @@ def frog_to_saf(tokens):
     """
     Convert frog tokens into a new SAF document
     """
-    tokens = [add_pos1(token) for token in tokens]
+    tokens = [_add_pos1(token) for token in tokens]
     module = {'module': "frog",
               "started": datetime.datetime.now().isoformat()}
     return {"header": {'format': "SAF",

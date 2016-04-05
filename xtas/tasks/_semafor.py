@@ -45,7 +45,7 @@ import subprocess
 import tempfile
 
 
-class Semafor(object):
+class _Semafor(object):
     def __init__(self):
         self.start_semafor()
 
@@ -87,9 +87,9 @@ def call_semafor(conll_str):
     Call semafor on the given conll_str using a thread-safe singleton instance
     """
     with _SINGLETON_LOCK:
-        if not hasattr(Semafor, '_singleton'):
-            Semafor._singleton = Semafor()
-        return Semafor._singleton.call_semafor(conll_str)
+        if not hasattr(_Semafor, 'singleton'):
+            _Semafor.singleton = _Semafor()
+        return _Semafor.singleton.call_semafor(conll_str)
 
 
 def to_conll(tree):

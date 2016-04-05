@@ -23,11 +23,11 @@ from six import iteritems
 
 from chardet import detect as chardetect
 
-from ..core import app, _config
+from ..core import app, config
 
 
 def _es():
-    return Elasticsearch(hosts=_config['ELASTICSEARCH'])
+    return Elasticsearch(hosts=config['ELASTICSEARCH'])
 
 
 _ES_DOC_FIELDS = ('index', 'type', 'id', 'field')

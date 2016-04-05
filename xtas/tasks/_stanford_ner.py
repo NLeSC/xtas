@@ -22,26 +22,26 @@ from subprocess import Popen, PIPE
 
 import nltk
 
-from .._downloader import _download_zip
+from .._downloader import download_zip
 
 
 logger = logging.getLogger(__name__)
 
 
-STANFORD_NER = (
+_STANFORD_NER = (
     '''http://nlp.stanford.edu/software/stanford-ner-2014-01-04.zip'''
 )
 
 
 # Download and start server at import, not call time. Import is done lazily.
-ner_dir = _download_zip(STANFORD_NER, name="Stanford NER",
-                        check_dir="stanford-ner-2014-01-04")
-jar = os.path.join(ner_dir, 'stanford-ner.jar')
-model = os.path.join(ner_dir,
+_ner_dir = download_zip(_STANFORD_NER, name="Stanford NER",
+                       check_dir="stanford-ner-2014-01-04")
+_jar = os.path.join(_ner_dir, 'stanford-ner.jar')
+_model = os.path.join(_ner_dir,
                      'classifiers/english.all.3class.distsim.crf.ser.gz')
-classpath = '%s:%s' % (jar, os.path.dirname(__file__))
-server = Popen(['java', '-mx1000m', '-cp', classpath, 'NERServer', model],
-               stdin=PIPE, stdout=PIPE)
+_classpath = '%s:%s' % (_jar, os.path.dirname(__file__))
+_server = Popen(['java', '-mx1000m', '-cp', _classpath, 'NERServer', _model],
+                stdin=PIPE, stdout=PIPE)
 
 
 def tag(doc, format):
@@ -55,11 +55,11 @@ def tag(doc, format):
     toks = nltk.word_tokenize(doc)
     text = u' '.join(toks).encode('utf-8')
 
-    server.stdin.write(text)
-    server.stdin.write('\n')
+    _server.stdin.write(text)
+    _server.stdin.write('\n')
 
     tagged = [token.rsplit('/', 1)
-              for token in server.stdout.readline().split()]
+              for token in _server.stdout.readline().split()]
 
     if format == "tokens":
         return tagged
