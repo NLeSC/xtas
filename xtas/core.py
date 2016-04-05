@@ -27,14 +27,16 @@ from celery import Celery
 from . import _defaultconfig
 
 
-__all__ = ['app', 'configure']
+__all__ = ['app', 'configure', 'get_config']
 
 
-config = {}
+_config = {}
 
 logger = logging.getLogger(__name__)
 
 app = Celery('xtas', include=['xtas.tasks'])
+
+_CONFIG_KEYS = frozenset(['CELERY', 'ELASTICSEARCH', 'EXTRA_MODULES'])
 
 
 def configure(config, import_error="raise", unknown_key="raise"):
@@ -70,10 +72,8 @@ def configure(config, import_error="raise", unknown_key="raise"):
         with an underscore). Either "log", "raise" or "ignore".
     """
 
-    members = {'CELERY', 'ELASTICSEARCH', 'EXTRA_MODULES'}
-
     if unknown_key != 'ignore':
-        unknown_keys = set(config.keys()) - members
+        unknown_keys = set(config.keys()) - _CONFIG_KEYS
         if unknown_keys:
             msg = ("unknown keys %r found on config object %r"
                    % (unknown_keys, config))
@@ -82,12 +82,14 @@ def configure(config, import_error="raise", unknown_key="raise"):
             else:
                 logger.warn(msg)
 
-    app.config_from_object(config.get('CELERY', _defaultconfig.CELERY))
-    es = config.get('ELASTICSEARCH', _defaultconfig.ELASTICSEARCH)
-    config['ELASTICSEARCH'] = es
-    logger.info('Using Elasticsearch at %s' % es)
+    celery_conf = config.get('CELERY', _defaultconfig.CELERY)
+    app.config_from_object(celery_conf)
 
-    for m in config.get('EXTRA_MODULES', []):
+    es = config.get('ELASTICSEARCH', _defaultconfig.ELASTICSEARCH)
+    logger.info('Using Elasticsearch with configuration %r' % es)
+
+    extra = config.get('EXTRA_MODULES', [])
+    for m in extra:
         try:
             importlib.import_module(m)
         except ImportError as e:
@@ -95,6 +97,25 @@ def configure(config, import_error="raise", unknown_key="raise"):
                 raise
             elif import_error == 'log':
                 logger.warn(str(e))
+
+    _config['CELERY'] = celery_conf
+    _config['ELASTICSEARCH'] = es
+    _config['EXTRA_MODULES'] = extra
+
+
+def get_config(key):
+    """Get part of the xtas configuration.
+
+    Parameters
+    ----------
+    key : string
+        Either ``CELERY``, ``ELASTICSEARCH`` or ``EXTRA_MODULES``.
+        See ``xtas.core.configure`` for the meaning of these.
+    """
+    if key not in _CONFIG_KEYS:
+        raise ValueError("key should be one of %r, got %r"
+                         % (list(_CONFIG_KEYS), key))
+    return _config.get(key)
 
 
 try:
