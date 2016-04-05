@@ -37,7 +37,7 @@ __all__ = ['classify']
 _BASE_URL = "https://raw.githubusercontent.com/NLeSC/spudisc-emotion-classification/master/"
 
 
-def download():
+def _download():
     data_home = make_data_home() + os.path.sep
     path = os.path.join(data_home, "movie_review_emotions.txt")
     if not os.path.exists(path):
@@ -54,28 +54,26 @@ def download():
     return path
 
 
-class GridSearch(GridSearchCV):
+class _GridSearch(GridSearchCV):
     """Wrapper around GridSearchCV; workaround for scikit-learn issue #3484."""
 
     def decision_function(self, X):
-        return super(GridSearch, self).decision_function(X)
+        return super(_GridSearch, self).decision_function(X)
 
     def predict(self, X):
-        return super(GridSearch, self).predict(X)
+        return super(_GridSearch, self).predict(X)
 
+def _create_classifier():
+    data_train = [ln.rsplit(None, 1) for ln in open(_download())]
+    X_train, Y_train = zip(*data_train)
+    del data_train
 
-data_train = [ln.rsplit(None, 1) for ln in open(download())]
-X_train, Y_train = zip(*data_train)
-del data_train
+    mlb = MultiLabelBinarizer()
+    Y_train = [set(s.split('_')) - {'None'} for s in Y_train]
+    Y_train = mlb.fit_transform(Y_train)
 
-mlb = MultiLabelBinarizer()
-Y_train = [set(s.split('_')) - {'None'} for s in Y_train]
-Y_train = mlb.fit_transform(Y_train)
-
-
-def train_grid_search():
     clf = make_pipeline(TfidfVectorizer(sublinear_tf=True, use_idf=False),
-                        LinearSVC(dual=False))
+                            LinearSVC(dual=False))
     # XXX class_weight="auto" causes a lot of deprecation warnings, but it
     # still fares better than the new class_weight="balanced" heuristic.
     # n_jobs=-1 causes nosetests to hang so that is disabled for now.
@@ -84,16 +82,15 @@ def train_grid_search():
               'linearsvc__class_weight': ["auto", None],
               'linearsvc__C': [.01, .1, 1, 10, 100, 1000],
               'linearsvc__penalty': ['l1', 'l2'],
-              }
-    clf = OneVsRestClassifier(GridSearch(clf, params, scoring='f1',
-                                         verbose=1, cv=5))
-    return clf.fit(X_train, Y_train)
+             }
+    clf = OneVsRestClassifier(_GridSearch(clf, params, scoring='f1',
+                                              verbose=1, cv=5))
+    return clf.fit(X_train, Y_train), mlb
 
 
-clf = train_grid_search()
-del X_train, Y_train
+_clf, _mlb = _create_classifier()
 
 
 def classify(sentences):
-    y = clf.predict(sentences)
-    return mlb.inverse_transform(y)
+    y = _clf.predict(sentences)
+    return _mlb.inverse_transform(y)
