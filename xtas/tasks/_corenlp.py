@@ -26,12 +26,11 @@ import re
 import subprocess
 import threading
 import time
+import unicodedata
 
 from corenlp_xml.document import Document
 
 from six import iteritems
-
-from unidecode import unidecode
 
 from .._downloader import download_zip
 
@@ -126,9 +125,10 @@ class _StanfordCoreNLP(object):
 
     def parse(self, text):
         """Call the server and return the raw results."""
-        if isinstance(text, bytes):
-            text = text.decode("ascii")
-        text = re.sub("\s+", " ", unidecode(text))
+        if not isinstance(text, bytes):
+            text = unicodedata.normalize('NFKD', text)
+            text = text.encode('ascii', errors='ignore')
+        text = re.sub("\s+", " ", text)
         return self._communicate(text + "\n")
 
 

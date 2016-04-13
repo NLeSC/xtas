@@ -57,7 +57,7 @@ def test_lemmatize():
 
 def test_lemmatize_unicode():
     _check_corenlp()
-    lines = parse(u"\u0540\u0578\u057e\u056b\u056f hit C\xe9sar",
+    lines = parse(u"H\xf6v\xedk hit C\xe9sar",
                   annotators=['tokenize', 'ssplit', 'pos', 'lemma'])
     saf = stanford_to_saf(lines)
     assert_equal({t['lemma'] for t in saf['tokens']},

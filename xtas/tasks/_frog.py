@@ -23,8 +23,6 @@ import logging
 import os
 import socket
 
-from unidecode import unidecode
-
 _FROG_HOST = "localhost"
 _FROG_PORT = os.environ.get('XTAS_FROG_PORT', 9887)
 try:
@@ -59,7 +57,6 @@ def call_frog(text):
         text = text + "\n"
     if not isinstance(text, unicode):
         text = unicode(text)
-    text = unidecode(text)
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((_FROG_HOST, _FROG_PORT))
