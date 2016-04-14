@@ -52,6 +52,7 @@ Copyright © 2014 Trento RISE and FBK
 All rights reserved.
 
 Modified for xtas to save space:
+
 - took the (unweighted) mean over POS tags per word
 - removed all words with zero (mean) score.
 
