@@ -115,8 +115,8 @@ Python dependencies
 
 xtas uses (links to) a number of Python libraries. These are not distributed
 with xtas, but installed by pip when you install xtas. As of writing, these
-dependencies are distributed under the MIT, New BSD, and Apache License v2.0
-permissive open source licenses, and in some cases under the GNU Lesser
-General Public License v2.1. See requirements.txt and requirements3.txt for
-the package names.
+dependencies are distributed under the MIT, New BSD, 2-clause NetBSD and
+Apache License v2.0 permissive open source licenses, and in some cases
+under the GNU Lesser General Public License v2.1. See requirements.txt and
+requirements3.txt for the package names.
 
