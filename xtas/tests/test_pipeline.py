@@ -33,12 +33,16 @@ def test_pipeline():
     assert_equal(result, expected)
     with eager_celery():
         # do we get correct result from pipeline?
+        r = pipeline(s, [{"task": tokenize},
+                         {"task": pos_tag, "arguments": {"model": "nltk"}}])
+        assert_equal(r, expected)
+        # is the old syntax still supported?
         r = pipeline(s, [{"module": tokenize},
                          {"module": pos_tag, "arguments": {"model": "nltk"}}])
         assert_equal(r, expected)
         # can we specify modules by name?
-        r = pipeline(s, [{"module": "xtas.tasks.single.tokenize"},
-                         {"module": "xtas.tasks.single.pos_tag",
+        r = pipeline(s, [{"task": "xtas.tasks.single.tokenize"},
+                         {"task": "xtas.tasks.single.pos_tag",
                           "arguments": {"model": "nltk"}}])
         assert_equal(r, expected)
 

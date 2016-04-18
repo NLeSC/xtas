@@ -3,6 +3,7 @@ Pipelining with partial caching
 """
 
 import celery
+import warnings
 
 from xtas.tasks.es import is_es_document, es_address
 from xtas.tasks.es import get_single_result, store_single, fetch
@@ -20,9 +21,10 @@ def pipeline(doc, pipeline, store_final=True, store_intermediate=False,
         The document to process, either as a string, or a result of es_document().
 
     pipeline : list of dicts
-        A list of dicts, each with members "module" and "arguments", e.g.
-        [{"module" : "tokenize"},
-         {"module" : "pos_tag", "arguments" : {"model" : "nltk"}}]
+        A list of dicts, each with members "task" and "arguments", e.g.
+        [{"task" : "tokenize"},
+         {"task" : "pos_tag", "arguments" : {"model" : "nltk"}}]
+        Using "module" instead of "task" is now obsolete, but still supported.
 
     store_final : bool
         If True, store the final result in ElasticSearch.
@@ -78,8 +80,12 @@ def pipeline(doc, pipeline, store_final=True, store_intermediate=False,
 
 
 def _get_task(task_dict):
-    "Create a celery task object from a dictionary with module and arguments"
-    task = task_dict['module']
+    "Create a celery task object from a dictionary with task name and arguments"
+    if 'task' not in task_dict and 'module' in task_dict:
+        warnings.warn('The "module" key is deprecated,'
+            ' please use "task" instead.', DeprecationWarning, stacklevel=2)
+        task_dict['task'] = task_dict['module']
+    task = task_dict['task']
     if isinstance(task, (str, unicode)):
         task = app.tasks[task]
     args = task_dict.get('arguments')
