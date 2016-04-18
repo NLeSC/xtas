@@ -52,6 +52,9 @@ Try it out in a Python shell::
 If you only want to use xtas as a library on your local machine, you're done.
 Check the :ref:`api` for what xtas can do.
 
+Note that xtas will download, install and run several free, open source
+programs on your computer as needed. See LICENSE.rst for (legal) details.
+
 
 Distributed xtas
 ----------------
