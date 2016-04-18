@@ -175,11 +175,12 @@ def _tokenize_if_needed(s):
 
 
 @app.task
-def nlner_conll(doc):
+def nlner_conll(doc, **kwargs):
     """Baseline NER tagger for Dutch, based on the CoNLL'02 dataset.
 
     See http://www.clips.uantwerpen.be/conll2002/ner/ for the dataset and
-    its license.
+    its license. Add a parameter conll2002_project=True if you accept the
+    license.
 
     See also
     --------
@@ -187,6 +188,13 @@ def nlner_conll(doc):
 
     stanford_ner_tag: NER tagger for English.
     """
+
+    if 'conll2002_project' not in kwargs or not kwargs['conll2002_project']:
+        raise RuntimeError("This functionality is only available to the"
+            " CoNLL'02 project. Please use nlner_conll(doc,"
+            " conll2002_project=True) if you are doing research"
+            " in the context of the shared CoNLL-2002 shared task.")
+
     from ._nl_conll_ner import ner
     return pipe(doc, fetch, _tokenize_if_needed, ner)
 
