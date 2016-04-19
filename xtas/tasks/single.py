@@ -189,7 +189,9 @@ def nlner_conll(doc, **kwargs):
     stanford_ner_tag: NER tagger for English.
     """
 
-    if not kwargs.get('conll2002_project', False):
+    if not (kwargs.get('conll2002_project', False) or
+            kwargs.get('unittest', False)
+           ):
         raise RuntimeError("This functionality is only available to the"
             " CoNLL'02 project. Please use nlner_conll(doc,"
             " conll2002_project=True) if you are doing research"
