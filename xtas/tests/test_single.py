@@ -117,7 +117,7 @@ def test_nlner_conll():
 
     # nlner_conll is not entirely deterministic, so we have to strip off the
     # classes. (It tends to confuse PER and MISC.)
-    tagged = nlner_conll(text)
+    tagged = nlner_conll(text, unittest=True)
     tagged = [(term, tag[0]) for term, tag in expected]
     assert_equal(tagged, expected)
 
@@ -125,7 +125,7 @@ def test_nlner_conll():
 def test_movie_review_emotions():
     text = "Saw is a scary film."
 
-    result = movie_review_emotions(text)
+    result = movie_review_emotions(text, unittest=True)
     assert_equal(len(result), 1)
 
     # We tend to get ('Fear', 'Joy', 'Love') or ('Fear', 'Love') for this

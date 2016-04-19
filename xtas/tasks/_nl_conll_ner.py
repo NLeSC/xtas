@@ -35,6 +35,14 @@ def _download_training_data():
                for ln in urlopen(_BASE_URL + part))
 
 
+def _load_test_data():
+    """Loads included test data, so people outside the CoNLL'02 project
+    can test without violating the license.
+    """
+    import os
+    selfdir = os.path.dirname(os.path.abspath(__file__))
+    return open(os.path.join(selfdir, "conll_test_set.txt"))
+
 
 def _features(sentence, i):
     """Baseline named-entity recognition features for i'th token in sentence.
@@ -57,7 +65,13 @@ def _features(sentence, i):
 
 
 def _train_ner_model():
-    x_train, y_train, lengths_train = load_conll(_download_training_data(),
+    import sys
+    if 'nose' in sys.modules:
+        x_train, y_train, lengths_train = load_conll(_load_test_data(),
+                                                 _features)
+    else:
+        x_train, y_train, lengths_train = load_conll(
+                                                 _download_training_data(),
                                                  _features)
 
     clf = StructuredPerceptron()

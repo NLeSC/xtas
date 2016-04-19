@@ -122,12 +122,14 @@ def morphy(doc):
 
 
 @app.task
-def movie_review_emotions(doc):
+def movie_review_emotions(doc, **kwargs):
     """Emotion (fine-grained sentiment) tagger for movie reviews.
 
     The training data for this function is that of Buitinck et al., with the
     training and test data concatenated. The algorithm is SVMs in a binary
-    relevance (one-vs-rest) combination.
+    relevance (one-vs-rest) combination. You may use the training data
+    (and this function) for academic/research purposes only. Add a parameter
+    for_academic_research=True if you accept the license.
 
     Returns
     -------
@@ -141,6 +143,14 @@ def movie_review_emotions(doc):
     Multi-emotion detection in user-generated reviews. Proc. ECIR.
     https://staff.fnwi.uva.nl/m.derijke/wp-content/papercite-data/pdf/buitinck-multi-emotion-2015.pdf
     """
+    if not (kwargs.get('for_academic_research', False) or
+            kwargs.get('unittest', False)
+           ):
+        raise RuntimeError("This functionality is only available for"
+            " academic research. Please use movie_review_emotions(doc,"
+            " for_academic_research=True) to use this function for"
+            " that purpose.")
+
     from ._emotion import classify
     nltk_download('punkt')
     sentences = pipe(doc, fetch, nltk.sent_tokenize)
@@ -175,11 +185,12 @@ def _tokenize_if_needed(s):
 
 
 @app.task
-def nlner_conll(doc):
+def nlner_conll(doc, **kwargs):
     """Baseline NER tagger for Dutch, based on the CoNLL'02 dataset.
 
     See http://www.clips.uantwerpen.be/conll2002/ner/ for the dataset and
-    its license.
+    its license. Add a parameter conll2002_project=True if you accept the
+    license.
 
     See also
     --------
@@ -187,6 +198,15 @@ def nlner_conll(doc):
 
     stanford_ner_tag: NER tagger for English.
     """
+
+    if not (kwargs.get('conll2002_project', False) or
+            kwargs.get('unittest', False)
+           ):
+        raise RuntimeError("This functionality is only available to the"
+            " CoNLL'02 project. Please use nlner_conll(doc,"
+            " conll2002_project=True) if you are doing research"
+            " in the context of the shared CoNLL-2002 shared task.")
+
     from ._nl_conll_ner import ner
     return pipe(doc, fetch, _tokenize_if_needed, ner)
 

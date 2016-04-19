@@ -38,19 +38,26 @@ _BASE_URL = "https://raw.githubusercontent.com/NLeSC/spudisc-emotion-classificat
 
 
 def _download():
-    data_home = make_data_home() + os.path.sep
-    path = os.path.join(data_home, "movie_review_emotions.txt")
-    if not os.path.exists(path):
-        tmp = NamedTemporaryFile(prefix=data_home, delete=False)
-        try:
-            for part in ["train.txt", "test.txt"]:
-                copyfileobj(urlopen(_BASE_URL + part), tmp)
-        except:
+    import sys
+    import os
+
+    if 'nose' in sys.modules:
+        selfdir = os.path.dirname(os.path.abspath(__file__))
+        return os.path.join(selfdir, "mre_test_set.txt")
+    else:
+        data_home = make_data_home() + os.path.sep
+        path = os.path.join(data_home, "movie_review_emotions.txt")
+        if not os.path.exists(path):
+            tmp = NamedTemporaryFile(prefix=data_home, delete=False)
+            try:
+                for part in ["train.txt", "test.txt"]:
+                    copyfileobj(urlopen(_BASE_URL + part), tmp)
+            except:
+                tmp.close()
+                os.remove(tmp)
+                raise
             tmp.close()
-            os.remove(tmp)
-            raise
-        tmp.close()
-        move(tmp.name, path)
+            move(tmp.name, path)
     return path
 
 
