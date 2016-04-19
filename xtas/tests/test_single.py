@@ -125,7 +125,7 @@ def test_nlner_conll():
 def test_movie_review_emotions():
     text = "Saw is a scary film."
 
-    result = movie_review_emotions(text)
+    result = movie_review_emotions(text, unittest=True)
     assert_equal(len(result), 1)
 
     # We tend to get ('Fear', 'Joy', 'Love') or ('Fear', 'Love') for this
