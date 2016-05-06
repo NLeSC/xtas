@@ -24,9 +24,8 @@ document in an Elasticsearch store.
 from __future__ import absolute_import
 
 import json
-
-from six.moves.urllib.parse import urlencode
-from six.moves.urllib.request import urlopen
+from urllib import urlencode
+from urllib2 import urlopen
 
 from cytoolz import identity, pipe
 import nltk
