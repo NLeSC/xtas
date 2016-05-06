@@ -18,9 +18,8 @@ import logging
 import os
 import os.path
 from tempfile import NamedTemporaryFile
+from urllib import urlretrieve
 from zipfile import ZipFile
-
-from six.moves.urllib.request import urlretrieve
 
 
 logger = logging.getLogger(__name__)

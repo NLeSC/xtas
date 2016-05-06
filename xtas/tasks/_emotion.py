@@ -18,8 +18,7 @@ from itertools import chain
 import os.path
 from shutil import copyfileobj, move
 from tempfile import NamedTemporaryFile
-
-from six.moves.urllib.request import urlopen
+from urllib2 import urlopen
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.grid_search import GridSearchCV

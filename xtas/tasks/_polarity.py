@@ -17,8 +17,7 @@ import os.path
 from pprint import pprint
 import tarfile
 from tempfile import NamedTemporaryFile
-
-from six.moves.urllib.request import urlretrieve
+from urllib import urlretrieve
 
 from sklearn.datasets import load_files
 from sklearn.externals.joblib import dump, load

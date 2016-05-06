@@ -16,11 +16,11 @@
 # Contributed by Daan Odijk (UvA), based on an example in the seqlearn
 # package (https://github.com/larsmans/seqlearn).
 
+from urllib2 import urlopen
+
 from seqlearn.datasets import load_conll
 from seqlearn.perceptron import StructuredPerceptron
 from sklearn.feature_extraction import FeatureHasher
-
-from six.moves.urllib.request import urlopen
 
 
 _BASE_URL = 'http://www.cnts.ua.ac.be/conll2002/ner/data/ned.'
