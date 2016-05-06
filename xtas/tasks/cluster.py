@@ -164,7 +164,7 @@ def lsa(docs, k, random_state=None):
 
 
 @app.task
-def lda(docs, k):
+def lda(docs, k, random_state=None):
     """Latent Dirichlet allocation topic model.
 
     Uses scikit-learn's TfidfVectorizer and LatentDirichletAllocation.
@@ -178,7 +178,7 @@ def lda(docs, k):
     from sklearn.pipeline import make_pipeline
 
     vect = _vectorizer()
-    lda = LatentDirichletAllocation(n_topics=k)
+    lda = LatentDirichletAllocation(n_topics=k, random_state=random_state)
     pipe = make_pipeline(vect, lda).fit(docs)
 
     vocab = vect.vocabulary_
@@ -218,7 +218,7 @@ def parsimonious_wordcloud(docs, w=.5, k=10):
         For each document in docs, a top-k list of most probable words and
         their log-probabilities.
     """
-    from weighwords import ParsimoniousLM
+    from ._weighwords import ParsimoniousLM
 
     model = ParsimoniousLM(docs, w=w)
     return [model.top(k, d) for d in docs]
