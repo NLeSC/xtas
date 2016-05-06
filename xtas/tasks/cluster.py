@@ -202,7 +202,7 @@ def parsimonious_wordcloud(docs, w=.5, k=10):
     Parameters
     ----------
     docs : list
-        List of documents.
+        List of documents. Each document should be a list of terms.
 
     w : float
         Weight assigned to the document terms when fitting individual models,
