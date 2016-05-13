@@ -288,6 +288,33 @@ def pos_tag(tokens, model='nltk'):
 
 
 @app.task
+def semanticizest(doc, location):
+    """Perform entity linking with Semanticizest.
+
+    Semanticizest must be installed separately (see
+    http://github.com/semanticize/st).
+
+    Parameters
+    ----------
+    doc : string or es_document result
+        Input document.
+    location : string
+        The URL of a running semanticizest instance.
+
+    Returns
+    -------
+    entities : list of dict
+        Each entity is represented by a dictionary with keys 'target'
+        (title of target link), 'offset', 'length' (location of entity mention
+        in input), 'commonness', 'senseprob', 'linkprob', 'ngramcount'
+        (scores).
+    """
+    from ._semanticizest import Client
+    return Client().all_candidates(fetch(doc))
+
+
+
+@app.task
 def sentiwords_tag(doc, output="bag"):
     """Tag doc with SentiWords polarity priors.
 
