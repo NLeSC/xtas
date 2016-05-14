@@ -44,7 +44,7 @@ def test_pipeline():
     s = "cats are furry"
     expected = [('cats', 'NNS'), ('are', 'VBP'), ('furry', 'JJ')]
     result = pos_tag(tokenize(s), 'nltk')
-    assert_equal(result, expected)
+    assert_equal(result, expected) #
     with eager_celery():
         # do we get correct result from pipeline?
         r = pipeline(s, [{"module": tokenize},

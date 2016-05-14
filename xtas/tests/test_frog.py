@@ -94,4 +94,4 @@ def test_frog_task():
     assert_equal(tokens[0]['lemma'], 'dit')
     saf = frog("dit is een test", output='saf')
     assert_equal(len(saf['tokens']), 4)
-    assert_equal(saf['header']['processed'][0]['module'], 'frog')
+    assert_equal(saf['header']['processed'][0]['module'], 'frog') #

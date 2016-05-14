@@ -86,7 +86,7 @@ def test_query_batch():
         assert_equal(set(b), {"test", "test2"})
 
 
-def test_store_get_result():
+def test_store_get_result(): #
     "test whether results can be stored and retrieved"
     from xtas.tasks.es import (
         store_single,

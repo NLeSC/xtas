@@ -61,7 +61,7 @@ def test_lemmatize_unicode():
                   annotators=['tokenize', 'ssplit', 'pos', 'lemma'])
     saf = stanford_to_saf(lines)
     assert_equal({t['lemma'] for t in saf['tokens']},
-                 {'Cesar', 'hit', 'Hovik'})
+                 {'Cesar', 'hit', 'Hovik'}) #
 
 
 def test_ner():
@@ -92,7 +92,7 @@ def test_parse():
     assert_equal(corefs, {tuple(sorted(['John', 'himself']))})
 
 
-def test_multiple_sentences():
+def test_multiple_sentences(): #
     _check_corenlp()
     p = parse("John lives in Amsterdam. He works in London")
     saf = stanford_to_saf(p)
