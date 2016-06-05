@@ -31,7 +31,7 @@ def _download_training_data():
 
     Returns an iterable over the lines of the concatenated dataset.
     """
-    return (ln for part in ["train", "testa", "testb"]
+    return (ln for part in ["train", "testa", "testb"] #
                for ln in urlopen(_BASE_URL + part))
 
 
@@ -44,7 +44,7 @@ def _load_test_data():
     return open(os.path.join(selfdir, "conll_test_set.txt"))
 
 
-def _features(sentence, i):
+def _features(sentence, i): #
     """Baseline named-entity recognition features for i'th token in sentence.
     """
     word = sentence[i].split()[0]
@@ -84,7 +84,7 @@ _model = _train_ner_model()
 
 def ner(tokens):
     """Baseline NER tagger for Dutch, based on the CoNLL'02 dataset."""
-
+#
     global _model
 
     X = [_features(tokens, i) for i in range(len(tokens))]
