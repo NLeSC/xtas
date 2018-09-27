@@ -1,0 +1,50 @@
+{
+    "creators": [
+        {
+            "affiliation": "Netherlands eScience Center",
+            "name": "Buitinck, Lars"
+        },
+        {
+            "affiliation": "Netherlands eScience Center",
+            "name": "Veen, Lourens"
+        },
+        {
+            "affiliation": "VU University",
+            "name": "van Atteveldt, Wouter"
+        },
+        {
+            "name": "Hendrike, Maria"
+        },
+        {
+            "affiliation": "Netherlands eScience Center",
+            "name": "Martinez-Ortiz, Carlos"
+        },
+        {
+            "affiliation": "Open State Foundation",
+            "name": "van Sas, Sicco"
+        },
+        {
+            "name": "christa23, github user"
+        },
+        {
+            "affiliation": "Stamkracht",
+            "name": "Olieman, Alex"
+        },
+        {
+            "affiliation": "RTL NL",
+            "name": "Odijk, Daan"
+        },
+        {
+            "name": "Haaze, Isaac"
+        }
+    ],
+    "description": "Distributed text analysis suite based on Celery.",
+    "keywords": [
+        "text analysis",
+        "Dutch",
+        "English",
+        "ElasticSearch",
+        "NLP"
+    ],
+    "title": "xtas"
+}

@@ -1,0 +1,57 @@
+# YAML 1.2
+---
+abstract: "Distributed text analysis suite based on Celery."
+authors: 
+  -
+    affiliation: "Netherlands eScience Center"
+    family-names: Buitinck
+    given-names: Lars
+  -
+    affiliation: "Netherlands eScience Center"
+    family-names: Veen
+    given-names: Lourens
+  -
+    affiliation: "VU University"
+    family-names: Atteveldt
+    given-names: Wouter
+    name-particle: van
+  -
+    family-names: Hendrike
+    given-names: Maria
+  -
+    affiliation: "Netherlands eScience Center"
+    family-names: "Martinez-Ortiz"
+    given-names: Carlos
+  -
+    affiliation: "Open State Foundation"
+    family-names: Sas
+    given-names: Sicco
+    name-particle: van
+  -
+    family-names: christa23
+    given-names: "github user"
+  -
+    affiliation: Stamkracht
+    family-names: Olieman
+    given-names: Alex
+  -
+    affiliation: "RTL NL"
+    family-names: Odijk
+    given-names: Daan
+  -
+    family-names: Haaze
+    given-names: Isaac
+cff-version: "1.0.3"
+date-released: 2018-09-27
+doi: "10.5281/zenodo.1436531"
+keywords: 
+  - "text analysis"
+  - Dutch
+  - English
+  - ElasticSearch
+  - NLP
+message: "If you use this software, please cite it using these metadata."
+repository-code: "https://github.com/NLeSC/xtas"
+title: xtas
+version: "v3.5"
+...
